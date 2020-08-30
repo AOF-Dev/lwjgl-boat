@@ -219,6 +219,9 @@ public class Cursor {
 				CursorElement cursor_element = new CursorElement(handle, -1, -1);
 				cursors = new CursorElement[]{cursor_element};
 				break;
+			case LWJGLUtil.PLATFORM_BOAT:
+			        cursors = null;
+			        break;
 			default:
 				throw new RuntimeException("Unknown OS");
 		}

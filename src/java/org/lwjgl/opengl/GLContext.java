@@ -398,7 +398,7 @@ public final class GLContext {
 		 * Unload the native OpenGL library unless we're on linux, since
 		 * some drivers (NVIDIA proprietary) crash on exit when unloading the library.
 		 */
-		if ( gl_ref_count == 0 && LWJGLUtil.getPlatform() != LWJGLUtil.PLATFORM_LINUX )
+		if ( gl_ref_count == 0 && LWJGLUtil.getPlatform() != LWJGLUtil.PLATFORM_LINUX && LWJGLUtil.getPlatform() != LWJGLUtil.PLATFORM_BOAT)
 			nUnloadOpenGLLibrary();
 	}
 
