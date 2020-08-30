@@ -18,3 +18,27 @@ LWJGL requires a JDK and Ant installed to compile, as well as your platforms nat
 * ant generate-all
 * ant compile
 * ant compile_native
+
+
+There are some extra Ant variables needed when building for Boat, use `-D` flag of Ant to specific.
+* `-Dinclude=`
+  Specific compiler flags to include JDK headers.
+
+* `-Dcross.compile.target=`
+  Prefix of target cross-compile platform, such as `arm-linux-androideabi` and `aarch64-linux-android`.
+  
+* `-Dlwjgl.platform.boat=`
+  Set this variable to `true` to enable building for Boat.
+
+* `-Dbuild.32bit.only=`
+  Set this variable to `true` to enable building 32bit only.
+  
+* `-Dbuild.64bit.only=`
+  Set this variable to `true` to enable building 64bit only.
+
+* `-Dboat.include=`
+  Specific the directory of Boat headers (`boat.h`).
+  
+* `-Dboat.lib=`
+  Specific the directory of Boat libraries (`libboat.so`).
+
