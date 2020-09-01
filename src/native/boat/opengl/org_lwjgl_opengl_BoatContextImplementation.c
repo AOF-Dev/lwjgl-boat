@@ -38,11 +38,7 @@
  */
 
 #include <jni.h>
-/*
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-*/
+
 #include "org_lwjgl_opengl_BoatContextImplementation.h"
 #include "extgl_egl.h"
 #include "context.h"
@@ -51,7 +47,6 @@
 #include <boat.h>
 
 typedef struct {
-	//GLXExtensions extension_flags;
 	EGLContext context;
 } BoatContext;
 
@@ -67,52 +62,9 @@ static bool checkContext(JNIEnv *env, EGLDisplay display, EGLContext context) {
 	 * Now the test is at best useless, and at worst wrong,
 	 * in case the current X server accelerates indirect rendering.
 	 */
-/*	jboolean allow_software_acceleration = getBooleanProperty(env, "org.lwjgl.opengl.Display.allowSoftwareOpenGL");
-	if (!allow_software_acceleration && lwjgl_glXIsDirect(display, context) == False) {
-		lwjgl_glXDestroyContext(display, context);
-		throwException(env, "Could not create a direct GLX context");
-		return false;
-	}*/
+
 	return true;
 }
-
-
-/*
-static void createContextGLX13(JNIEnv *env, BoatPeerInfo *peer_info, BoatContext *context_info, jobject attribs, EGLContext shared_context) {
-	GLXFBConfig *config = getFBConfigFromPeerInfo(env, peer_info);
-	if (config == NULL)
-		return;
-	GLXContext context;
-	if (attribs) {
-		const int *attrib_list = (const int *)(*env)->GetDirectBufferAddress(env, attribs);
-		context = lwjgl_glXCreateContextAttribsARB(peer_info->display, *config, shared_context, True, attrib_list);
-	} else {
-		int render_type;
-		if (lwjgl_glXGetFBConfigAttrib(peer_info->display, *config, GLX_RENDER_TYPE, &render_type) != 0) {
-			throwException(env, "Could not get GLX_RENDER_TYPE attribute");
-			return;
-		}
-		int context_render_type = (render_type & GLX_RGBA_FLOAT_BIT) != 0 ? GLX_RGBA_FLOAT_TYPE : GLX_RGBA_TYPE;
-		context = lwjgl_glXCreateNewContext(peer_info->display, *config, context_render_type, shared_context, True);
-	}
-	XFree(config);
-	if (!checkContext(env, peer_info->display, context))
-		return;
-	context_info->context = context;
-}
-
-static void createContextGLX(JNIEnv *env, BoatPeerInfo *peer_info, BoatContext *context_info, EGLContext shared_context) {
-	EGLConfig vis_info = getVisualInfoFromPeerInfo(env, peer_info);
-	if (vis_info == NULL)
-		return;
-	EGLContext context = lwjgl_glXCreateContext(peer_info->display, vis_info, shared_context, True);
-	XFree(vis_info);
-	if (!checkContext(env, peer_info->display, context))
-		return;
-	context_info->context = context;
-}
-
-*/
 
 static void createContextEGL(JNIEnv *env, BoatPeerInfo *peer_info, BoatContext *context_info, jobject attribs, EGLContext shared_context) {
 	
@@ -136,28 +88,6 @@ static void createContextEGL(JNIEnv *env, BoatPeerInfo *peer_info, BoatContext *
 		return;
 	context_info->context = context;
 	
-	/*
-	EGLConfig config = getEGLConfigFromPeerInfo(env, peer_info);    //getFBConfigFromPeerInfo
-	if (config == NULL)
-		return;
-	EGLContext context;
-	if (attribs) {
-		const int *attrib_list = (const int *)(*env)->GetDirectBufferAddress(env, attribs);
-		context = lwjgl_glXCreateContextAttribsARB(peer_info->display, *config, shared_context, True, attrib_list);
-	} else {
-		int render_type;
-		if (lwjgl_glXGetFBConfigAttrib(peer_info->display, *config, GLX_RENDER_TYPE, &render_type) != 0) {
-			throwException(env, "Could not get GLX_RENDER_TYPE attribute");
-			return;
-		}
-		int context_render_type = (render_type & GLX_RGBA_FLOAT_BIT) != 0 ? GLX_RGBA_FLOAT_TYPE : GLX_RGBA_TYPE;
-		context = lwjgl_glXCreateNewContext(peer_info->display, *config, context_render_type, shared_context, True);
-	}
-	XFree(config);
-	if (!checkContext(env, peer_info->display, context))
-		return;
-	context_info->context = context;
-	*/
 }
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_getEGLContext(JNIEnv *env, jclass clazz, jobject context_handle) {
@@ -174,16 +104,8 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nSetSwapI
   (JNIEnv *env, jclass clazz, jobject peer_info_handle, jobject context_handle, jint value)
 {
 	BoatPeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	BoatContext *context_info = (*env)->GetDirectBufferAddress(env, context_handle);
         lwjgl_eglSwapInterval(peer_info->display, value);
-        /*
-	if (context_info->extension_flags.GLX_EXT_swap_control) {
-		lwjgl_glXSwapIntervalEXT(peer_info->display, peer_info->drawable, value);
-	}
-	else if (context_info->extension_flags.GLX_SGI_swap_control) {
-		lwjgl_glXSwapIntervalSGI(value);
-	}
-	*/
+        
 }
 
 JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nCreate
@@ -195,7 +117,7 @@ JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nCreat
 	}
 	BoatPeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_handle);
 	BoatContext *context_info = (*env)->GetDirectBufferAddress(env, context_handle);
-	//GLXExtensions extension_flags;
+	
 	if (!extgl_InitEGL(peer_info->display)) {
 		throwException(env, "Could not initialize EGL");
 		return NULL;
@@ -206,14 +128,7 @@ JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nCreat
 		shared_context = shared_context_info->context;
 	}
 	createContextEGL(env, peer_info, context_info, attribs , shared_context);
-	/*
-	if (peer_info->glx13) {
-		createContextGLX13(env, peer_info, context_info, extension_flags.GLX_ARB_create_context ? attribs : NULL, shared_context);
-	} else {
-		createContextGLX(env, peer_info, context_info, shared_context);
-	}
-	*/
-	//context_info->extension_flags = extension_flags;
+	
 	return context_handle;
 }
 
@@ -232,15 +147,7 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nReleaseC
 
 	if (!result)
 		throwException(env, "Could not release current context");
-	/*
-	if (peer_info->glx13) {
-		result = lwjgl_glXMakeContextCurrent(peer_info->display, None, None, NULL);
-	} else {
-		result = lwjgl_glXMakeCurrent(peer_info->display, None, NULL);
-	}
-	if (!result)
-		throwException(env, "Could not release current context");
-	*/
+	
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nMakeCurrent
@@ -252,15 +159,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nMakeCurr
 
 	if (!result)
 		throwException(env, "Could not make context current");
-	/*
-	if (peer_info->glx13) {
-		result = lwjgl_glXMakeContextCurrent(peer_info->display, peer_info->drawable, peer_info->drawable, context_info->context);
-	} else {
-		result = lwjgl_glXMakeCurrent(peer_info->display, peer_info->drawable, context_info->context);
-	}
-	if (!result)
-		throwException(env, "Could not make context current");
-	*/
 }
 
 JNIEXPORT jboolean JNICALL Java_org_lwjgl_opengl_BoatContextImplementation_nIsCurrent

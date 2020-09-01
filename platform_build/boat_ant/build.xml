@@ -2,7 +2,6 @@
 
 <project name="lwjgl native code, boat" basedir="../../bin/lwjgl" default="compile">
 
-
 	<property name="native" location="../../src/native"/>
 	<property name="libname32" value="liblwjgl.so"/>
 	<property name="libname64" value="liblwjgl64.so"/>
@@ -14,7 +13,6 @@
 	<property name="linker_flags64" value="-shared -O2 -Wall -Wl,--soname=${libname64} -o ${libname64} ${libs64}"/>
 	<property name="cflags_pthread" value="-pthread"/>
 	
-
 	<target name="clean">
 		<delete>
 			<fileset dir="x32"/>
@@ -25,50 +23,6 @@
 	</target>
 
     <target name="compile">
-                <!--
-		<exec executable="uname" outputproperty="hwplatform">
-			<arg value="-m"/>
-		</exec>
-		<condition property="cflags_pthread" value="-pthreads" else="-pthread">
-			<os name="SunOS" />
-		</condition>
-		<condition property="version_script_flags32" value="" else="-Wl,- -version-script='${native}/linux/lwjgl.map'">
-			<os name="SunOS" />
-		</condition>
-		<condition property="version_script_flags64" value="-m64" else="-Wl,- -version-script='${native}/linux/lwjgl.map'">
-			<and>
-				<os name="SunOS" />
-			</and>
-		</condition>
-    	<condition property="cflags64" value="-O2 -m64 -Wall -c -fPIC -std=c99 -Wunused" else="-O2 -Wall -c -fPIC -std=c99 -Wunused">
-    		<os name="SunOS" />
-    	</condition>
-    	-->
-
-
-        <!--
-    	<condition property="build.32bit.only">
-    	        
-    		<not>
-	    		<or>
-					<equals arg1="${hwplatform}" arg2="x86_64"/>
-					<equals arg1="${hwplatform}" arg2="i86pc"/>
-				</or>
-    		</not>
-    		
-    	</condition>
-    	-->
-
-    	<!-- On linux, the 64 bit jre doesn't have the 32 bit libs -->
-    	<!--
-    	<condition property="build.64bit.only">
-    		<and>
-    			<os name="Linux"/>
-    			<equals arg1="${hwplatform}" arg2="x86_64"/>
-    		</and>
-    	</condition>
-    	-->
-
     	<antcall target="compile32"/>
     	<antcall target="compile64"/>
     </target>
@@ -77,16 +31,9 @@
     	<mkdir dir="x32"/>
     	<apply dir="x32" executable="${cross.compile.target}-gcc" skipemptyfilesets="true" failonerror="true" parallel="true">
 			<arg line="${cflags32} ${cflags_pthread}"/>
-			<arg line="${include}"/>
-			<arg line="-I${boat.include}"/>
-			<!--
-			<arg value="-I${java.home}/include"/>
-			<arg value="-I${java.home}/include/linux"/>
-			<arg value="-I${java.home}/../include"/>
-			<arg value="-I${java.home}/../include/linux"/>
-			<arg value="-I${java.home}/../include/solaris"/>
-			-->
-			
+			<arg value="-I${jdk.include}"/>
+			<arg value="-I${jdk.include}/linux"/>
+			<arg value="-I${boat.include}"/>
 			<arg value="-I${native}/common"/>
 		    <arg value="-I${native}/common/opengl"/>
 			<arg value="-I${native}/boat"/>
@@ -114,16 +61,9 @@
     	<mkdir dir="x64"/>
     	<apply dir="x64" executable="${cross.compile.target}-gcc" skipemptyfilesets="true" failonerror="true" parallel="true">
 			<arg line="${cflags64} ${cflags_pthread}"/>
-			<arg line="${include}"/>
-			<arg line="-I${boat.include}"/>
-			<!--
-			<arg value="-I${java.home}/include"/>
-			<arg value="-I${java.home}/include/linux"/>
-			<arg value="-I${java.home}/../include"/>
-			<arg value="-I${java.home}/../include/linux"/>
-			<arg value="-I${java.home}/../include/solaris"/>
-			-->
-			
+			<arg value="-I${jdk.include}"/>
+			<arg value="-I${jdk.include}/linux"/>
+			<arg value="-I${boat.include}"/>
 			<arg value="-I${native}/common"/>
 		    <arg value="-I${native}/common/opengl"/>
 			<arg value="-I${native}/boat"/>

@@ -45,8 +45,6 @@ import java.lang.UnsatisfiedLinkError;
 final class BoatSysImplementation extends J2SESysImplementation {
 	private static final int JNI_VERSION = 19;
 
-	
-
 	public int getRequiredJNIVersion() {
 		return JNI_VERSION;
 	}

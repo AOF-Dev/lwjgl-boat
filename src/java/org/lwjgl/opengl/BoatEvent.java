@@ -41,22 +41,12 @@ import java.nio.ByteBuffer;
  * $Id: LinuxPeerInfo.java 2286 2006-03-23 19:32:21Z matzon $
  */
 final class BoatEvent {
-	//public static final int FocusIn         = 9;
-	//public static final int FocusOut        = 10;
+
 	public static final int KeyPress        = 2;
 	public static final int KeyRelease      = 3;
 	public static final int ButtonPress     = 4;
 	public static final int ButtonRelease	= 5;
 	public static final int MotionNotify	= 6;
-	/*
-	public static final int EnterNotify		= 7;
-	public static final int LeaveNotify		= 8;
-	public static final int UnmapNotify     = 18;
-	public static final int MapNotify       = 19;
-	public static final int Expose          = 12;
-	public static final int ConfigureNotify = 22;
-	public static final int ClientMessage   = 33;
-	*/
 
 	private final ByteBuffer event_buffer;
 
@@ -72,19 +62,6 @@ final class BoatEvent {
 		event_buffer.position(pos);
 		event.event_buffer.position(event_pos);
 	}
-        /*
-	public static native int getPending(long display);
-        
-	public void sendEvent(long display, long window, boolean propagate, long event_mask) {
-		nSendEvent(event_buffer, display, window, propagate, event_mask);
-	}
-	private static native void nSendEvent(ByteBuffer event_buffer, long display, long window, boolean propagate, long event_mask);
-        
-	public boolean filterEvent(long window) {
-		return nFilterEvent(event_buffer, window);
-	}
-	private static native boolean nFilterEvent(ByteBuffer event_buffer, long window);
-        */
         
 	public void nextEvent() {
 		nNextEvent(event_buffer);
@@ -102,43 +79,6 @@ final class BoatEvent {
 	}
 	private static native long nGetWindow(ByteBuffer event_buffer);
 
-        /*
-	public void setWindow(long window) {
-		nSetWindow(event_buffer, window);
-	}
-	private static native void nSetWindow(ByteBuffer event_buffer, long window);
-
-        
-	// Focus methods 
-
-	public int getFocusMode() {
-		return nGetFocusMode(event_buffer);
-	}
-	private static native int nGetFocusMode(ByteBuffer event_buffer);
-
-	public int getFocusDetail() {
-		return nGetFocusDetail(event_buffer);
-	}
-	private static native int nGetFocusDetail(ByteBuffer event_buffer);
-
-	// ClientMessage methods 
-
-	public long getClientMessageType() {
-		return nGetClientMessageType(event_buffer);
-	}
-	private static native long nGetClientMessageType(ByteBuffer event_buffer);
-
-	public int getClientData(int index) {
-		return nGetClientData(event_buffer, index);
-	}
-	private static native int nGetClientData(ByteBuffer event_buffer, int index);
-
-	public int getClientFormat() {
-		return nGetClientFormat(event_buffer);
-	}
-	private static native int nGetClientFormat(ByteBuffer event_buffer);
-	*/
-
 	/* Button methods */
 
 	public long getButtonTime() {
@@ -146,13 +86,6 @@ final class BoatEvent {
 	}
 	private static native long nGetButtonTime(ByteBuffer event_buffer);
         
-        /*
-	public int getButtonState() {
-		return nGetButtonState(event_buffer);
-	}
-	private static native int nGetButtonState(ByteBuffer event_buffer);
-	*/
-
 	public int getButtonType() {
 		return nGetButtonType(event_buffer);
 	}
@@ -162,23 +95,7 @@ final class BoatEvent {
 		return nGetButtonButton(event_buffer);
 	}
 	private static native int nGetButtonButton(ByteBuffer event_buffer);
-        /*
-	public long getButtonRoot() {
-		return nGetButtonRoot(event_buffer);
-	}
-	private static native long nGetButtonRoot(ByteBuffer event_buffer);
-
-	public int getButtonXRoot() {
-		return nGetButtonXRoot(event_buffer);
-	}
-	private static native int nGetButtonXRoot(ByteBuffer event_buffer);
-
-	public int getButtonYRoot() {
-		return nGetButtonYRoot(event_buffer);
-	}
-	private static native int nGetButtonYRoot(ByteBuffer event_buffer);
-	*/
-
+        
 	public int getButtonX() {
 		return nGetButtonX(event_buffer);
 	}
@@ -215,10 +132,5 @@ final class BoatEvent {
 		return nGetKeyKeyChar(event_buffer);
 	}
 	private static native int nGetKeyKeyChar(ByteBuffer event_buffer);
-        /*
-	public int getKeyState() {
-		return nGetKeyState(event_buffer);
-	}
-	private static native int nGetKeyState(ByteBuffer event_buffer);
-	*/
+        
 }

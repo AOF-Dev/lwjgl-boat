@@ -67,8 +67,7 @@ final class BoatMouse {
 	private final long display;
 	private final long window;
 	private final long input_window;
-	//private final long warp_atom;
-	//private final IntBuffer query_pointer_buffer = BufferUtils.createIntBuffer(4);
+
 	private final ByteBuffer event_buffer = ByteBuffer.allocate(Mouse.EVENT_SIZE);
 
 	private int last_x;
@@ -85,7 +84,7 @@ final class BoatMouse {
 		this.display = display;
 		this.window = window;
 		this.input_window = input_window;
-		//this.warp_atom = LinuxDisplay.nInternAtom(display, "_LWJGL", false);
+
 		button_count = nGetButtonCount(display);
 		buttons = new byte[button_count];
 		reset(false, false);
@@ -94,15 +93,7 @@ final class BoatMouse {
 	private void reset(boolean grab, boolean warp_pointer) {
 		event_queue = new EventQueue(event_buffer.capacity());
 		accum_dx = accum_dy = 0;
-		/*
-		long root_window = nQueryPointer(display, window, query_pointer_buffer);
-
-		int root_x = query_pointer_buffer.get(0);
-		int root_y = query_pointer_buffer.get(1);
 		
-		int win_x = query_pointer_buffer.get(3);
-		int win_y = query_pointer_buffer.get(4);
-		*/
 		int win_x = 0;
 		int win_y = 0;
 		
@@ -154,44 +145,11 @@ final class BoatMouse {
 			}
 		}
 	}
-        /*
-	private void doWarpPointer(int center_x, int center_y) {
-		nSendWarpEvent(display, input_window, warp_atom, center_x, center_y);
-		nWarpCursor(display, window, center_x, center_y);
-	}
-	private static native void nSendWarpEvent(long display, long window, long warp_atom, int center_x, int center_y);
-        */
+        
 	private void doHandlePointerMotion(boolean grab, boolean warp_pointer,/* long root_window, int root_x, int root_y,*/ int win_x, int win_y, long nanos) {
 		setCursorPos(grab, win_x, win_y, nanos);
 		if (!warp_pointer)
 			return;
-		/*
-		int root_window_height = nGetWindowHeight(display, root_window);
-		int root_window_width = nGetWindowWidth(display, root_window);
-		
-		int window_height = nGetWindowHeight(display, window);
-		int window_width = nGetWindowWidth(display, window);
-
-		// find the window position in root coordinates
-		int win_left = root_x - win_x;
-		int win_top = root_y - win_y;
-		int win_right = win_left + window_width;
-		int win_bottom = win_top + window_height;
-		// cap the window position to the screen dimensions
-		int border_left = Math.max(0, win_left);
-		int border_top = Math.max(0, win_top);
-		int border_right = Math.min(root_window_width, win_right);
-		int border_bottom = Math.min(root_window_height, win_bottom);
-		// determine whether the cursor is outside the bounds
-		boolean outside_limits = root_x < border_left + POINTER_WARP_BORDER || root_y < border_top + POINTER_WARP_BORDER ||
-			root_x > border_right - POINTER_WARP_BORDER || root_y > border_bottom - POINTER_WARP_BORDER;
-		if (outside_limits) {
-			// Find the center of the limits in window coordinates
-			int center_x = (border_right - border_left)/2;
-			int center_y = (border_bottom - border_top)/2;
-			doWarpPointer(center_x, center_y);
-		}
-		*/
 	}
 
 	public void changeGrabbed(boolean grab, boolean warp_pointer) {
@@ -217,8 +175,8 @@ final class BoatMouse {
 	}
 	private static native void nWarpCursor(long display, long window, int x, int y);
 
-	private void handlePointerMotion(boolean grab, boolean warp_pointer, long nanos, /*long root_window, int x_root, int y_root,*/ int x, int y) {
-		doHandlePointerMotion(grab, warp_pointer, /*root_window, x_root, y_root,*/ x, y, /*millis*1000000*/nanos);
+	private void handlePointerMotion(boolean grab, boolean warp_pointer, long nanos, int x, int y) {
+		doHandlePointerMotion(grab, warp_pointer, x, y, nanos);
 	}
 
 	private void handleButton(boolean grab, int button, byte state, long nanos) {
@@ -283,7 +241,6 @@ final class BoatMouse {
 	}
 
 	private void handleButtonEvent(boolean grab, long nanos, int type, byte button) {
-		//long nanos = millis*1000000;
 		switch (type) {
 			case ButtonRelease:
 				handleButton(grab, button, (byte)0, nanos);
@@ -307,20 +264,13 @@ final class BoatMouse {
 
 	public boolean filterEvent(boolean grab, boolean warp_pointer, BoatEvent event) {
 		switch (event.getType()) {
-		        /*
-			case LinuxEvent.ClientMessage:
-				if (event.getClientMessageType() == warp_atom) {
-					handleWarpEvent(event.getClientData(0), event.getClientData(1));
-					return true;
-				}
-				break;
-			*/
+		       
 			case BoatEvent.ButtonPress: /* Fall through */
 			case BoatEvent.ButtonRelease:
 				handleButtonEvent(grab, event.getButtonTime(), event.getButtonType(), (byte)event.getButtonButton());
 				return true;
 			case BoatEvent.MotionNotify:
-				handlePointerMotion(grab, warp_pointer, event.getButtonTime(), /*event.getButtonRoot(), event.getButtonXRoot(), event.getButtonYRoot(),*/ event.getButtonX(), event.getButtonY());
+				handlePointerMotion(grab, warp_pointer, event.getButtonTime(), event.getButtonX(), event.getButtonY());
 				return true;
 			default:
 				break;

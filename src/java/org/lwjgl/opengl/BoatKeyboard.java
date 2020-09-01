@@ -46,29 +46,7 @@ import org.lwjgl.input.Keyboard;
 
 final class BoatKeyboard {
 
-        /*
-	private static final int LockMapIndex                      = 1;
-	private static final long NoSymbol = 0;
-	private static final long ShiftMask = 1 << 0;
-	private static final long LockMask = 1 << 1;
-	private static final int XLookupChars            = 2;
-	private static final int XLookupBoth             = 4;
-	*/
-
 	private static final int KEYBOARD_BUFFER_SIZE = 50;
-        
-        /*
-	private final long xim;
-	private final long xic;
-	*/
-        /*
-	private final int numlock_mask;
-	private final int modeswitch_mask;
-	private final int caps_lock_mask;
-	private final int shift_lock_mask;
-	*/
-
-	//private final ByteBuffer compose_status;
 
 	private final byte[] key_down_buffer = new byte[Keyboard.KEYBOARD_SIZE];
 	private final EventQueue event_queue = new EventQueue(Keyboard.EVENT_SIZE);
@@ -87,102 +65,13 @@ final class BoatKeyboard {
 	private byte deferred_key_state;
 
 	BoatKeyboard(long display, long window) {
-	        /*
-		long modifier_map = getModifierMapping(display);
-		int tmp_numlock_mask = 0;
-		int tmp_modeswitch_mask = 0;
-		int tmp_caps_lock_mask = 0;
-		int tmp_shift_lock_mask = 0;
-		if (modifier_map != 0) {
-			int max_keypermod = getMaxKeyPerMod(modifier_map);
-			// Find modifier masks
-			int i, j;
-			for (i = 0; i < 8; i++) {
-				for (j = 0; j < max_keypermod; j++) {
-					int key_code = lookupModifierMap(modifier_map, i*max_keypermod + j);
-					int key_sym = (int)keycodeToKeySym(display, key_code);
-					int mask = 1 << i;
-					switch (key_sym) {
-						case LinuxKeycodes.XK_Num_Lock:
-							tmp_numlock_mask |= mask;
-							break;
-						case LinuxKeycodes.XK_Mode_switch:
-							tmp_modeswitch_mask |= mask;
-							break;
-						case LinuxKeycodes.XK_Caps_Lock:
-							if (i == LockMapIndex) {
-								tmp_caps_lock_mask = mask;
-								tmp_shift_lock_mask = 0;
-							}
-							break;
-						case LinuxKeycodes.XK_Shift_Lock:
-							if (i == LockMapIndex && tmp_caps_lock_mask == 0)
-								tmp_shift_lock_mask = mask;
-							break;
-						default:
-							break;
-					}
-				}
-			}
-			freeModifierMapping(modifier_map);
-		}
-		numlock_mask = tmp_numlock_mask;
-		modeswitch_mask = tmp_modeswitch_mask;
-		caps_lock_mask = tmp_caps_lock_mask;
-		shift_lock_mask = tmp_shift_lock_mask;
-		
-		setDetectableKeyRepeat(display, true);
-		
-		xim = openIM(display);
-		if (xim != 0) {
-			xic = createIC(xim, window);
-			if (xic != 0) {
-				setupIMEventMask(display, window, xic);
-			} else {
-				destroy(display);
-			}
-		} else {
-			xic = 0;
-		}
-		
-		compose_status = allocateComposeStatus();
-		*/
+	       
 	}
-	/*
-	private static native long getModifierMapping(long display);
-	private static native void freeModifierMapping(long modifier_map);
-	private static native int getMaxKeyPerMod(long modifier_map);
-	private static native int lookupModifierMap(long modifier_map, int index);
-	private static native long keycodeToKeySym(long display, int key_code);
-        
-	private static native long openIM(long display);
-	private static native long createIC(long xim, long window);
-	private static native void setupIMEventMask(long display, long window, long xic);
-	private static native ByteBuffer allocateComposeStatus();
-	
-         
-	private static void setDetectableKeyRepeat(long display, boolean enabled) {
-		boolean success = nSetDetectableKeyRepeat(display, enabled);
-		if (!success)
-			LWJGLUtil.log("Failed to set detectable key repeat to " + enabled);
-	}
-	private static native boolean nSetDetectableKeyRepeat(long display, boolean enabled);
-	*/
 
 	public void destroy(long display) {
-	        /*
-		if (xic != 0)
-			destroyIC(xic);
-		if (xim != 0)
-			closeIM(xim);
-		*/
-		//setDetectableKeyRepeat(display, false);
+	        
 	}
-	/*
-	private static native void destroyIC(long xic);
-	private static native void closeIM(long xim);
-	*/
-
+	
 	public void read(ByteBuffer buffer) {
 		flushDeferredEvent();
 		event_queue.copyEvents(buffer);
@@ -202,129 +91,11 @@ final class BoatKeyboard {
 		event_queue.putEvent(tmp_event);
 	}
         
-        /*
-	private int lookupStringISO88591(long event_ptr, int[] translation_buffer) {
-		int i;
-
-		int num_chars = lookupString(event_ptr, native_translation_buffer, compose_status);
-		for (i = 0; i < num_chars; i++) {
-			translation_buffer[i] = ((int)native_translation_buffer.get(i)) & 0xff;
-		}
-		return num_chars;
-	}
-	private static native int lookupString(long event_ptr, ByteBuffer buffer, ByteBuffer compose_status);
-
-	private int lookupStringUnicode(long event_ptr, int[] translation_buffer) {
-		int status = utf8LookupString(xic, event_ptr, native_translation_buffer, native_translation_buffer.position(), native_translation_buffer.remaining());
-		if (status != XLookupChars && status != XLookupBoth)
-			return 0;
-		native_translation_buffer.flip();
-		utf8_decoder.decode(native_translation_buffer, char_buffer, true);
-		native_translation_buffer.compact();
-		char_buffer.flip();
-		int i = 0;
-		while (char_buffer.hasRemaining() && i < translation_buffer.length) {
-			translation_buffer[i++] = char_buffer.get();
-		}
-		char_buffer.compact();
-		return i;
-	}
-	private static native int utf8LookupString(long xic, long event_ptr, ByteBuffer buffer, int pos, int size);
-
-	private int lookupString(long event_ptr, int[] translation_buffer) {
-		if (xic != 0) {
-			return lookupStringUnicode(event_ptr, translation_buffer);
-		} else
-			return lookupStringISO88591(event_ptr, translation_buffer);
-	}
-	
-	        /*
-	private static boolean isKeypadKeysym(long keysym) {
-		return (0xFF80 <= keysym && keysym <= 0xFFBD) ||
-			(0x11000000 <= keysym && keysym <= 0x1100FFFF);
-	}
-
-	private static boolean isNoSymbolOrVendorSpecific(long keysym) {
-		return keysym == NoSymbol || (keysym & (1 << 28)) != 0;
-	}
-
-	private static long getKeySym(long event_ptr, int group, int index) {
-		long keysym = lookupKeysym(event_ptr, group*2 + index);
-		if (isNoSymbolOrVendorSpecific(keysym) && index == 1) {
-			keysym = lookupKeysym(event_ptr, group*2 + 0);
-		}
-		if (isNoSymbolOrVendorSpecific(keysym) && group == 1)
-			keysym = getKeySym(event_ptr, 0, index);
-		return keysym;
-	}
-	private static native long lookupKeysym(long event_ptr, int index);
-	private static native long toUpper(long keysym);
-
-	private long mapEventToKeySym(long event_ptr, int event_state) {
-		int group;
-		long keysym;
-		if ((event_state & modeswitch_mask) != 0)
-			group = 1;
-		else
-			group = 0;
-		if ((event_state & numlock_mask) != 0 && isKeypadKeysym(keysym = getKeySym(event_ptr, group, 1))) {
-			if ((event_state & (ShiftMask | shift_lock_mask)) != 0) {
-				return getKeySym(event_ptr, group, 0);
-			} else {
-				return keysym;
-			}
-		} else if ((event_state & (ShiftMask | LockMask)) == 0) {
-			return getKeySym(event_ptr, group, 0);
-		} else if ((event_state & ShiftMask) == 0) {
-			keysym = getKeySym(event_ptr, group, 0);
-			if ((event_state & caps_lock_mask) != 0)
-				keysym = toUpper(keysym);
-			return keysym;
-		} else {
-			keysym = getKeySym(event_ptr, group, 1);
-			if ((event_state & caps_lock_mask) != 0)
-				keysym = toUpper(keysym);
-			return keysym;
-		}
-	}
-        
-	private int getKeycode(long event_ptr, int event_state) {
-		long keysym = mapEventToKeySym(event_ptr, event_state);
-		int keycode = LinuxKeycodes.mapKeySymToLWJGLKeyCode(keysym);
-		if (keycode == Keyboard.KEY_NONE) {
-			// Try unshifted keysym mapping
-			keysym = lookupKeysym(event_ptr, 0);
-			keycode = LinuxKeycodes.mapKeySymToLWJGLKeyCode(keysym);
-		}
-		return keycode;
-	}
-	*/
-	
-	
-
 	private void translateEvent(long event_ptr, int keycode, int keychar, byte key_state, long nanos, boolean repeat) {
-		/*
-		int num_chars, i;
-		int ch;
-
-		num_chars = lookupString(event_ptr, temp_translation_buffer);
-		if (num_chars > 0) {
-			ch = temp_translation_buffer[0];
-			putKeyboardEvent(keycode, key_state, ch, nanos, repeat);
-			for (i = 1; i < num_chars; i++) {
-				ch = temp_translation_buffer[i];
-				putKeyboardEvent(0, (byte)0, ch, nanos, repeat);
-			}
-		} else {
-			putKeyboardEvent(keycode, key_state, 0, nanos, repeat);
-		}
-		*/
 		
 		int ch = keychar; 
 		putKeyboardEvent(keycode, key_state, ch, nanos, repeat);
 	}
-        
-
 
 	private static byte getKeyState(int event_type) {
 		switch (event_type) {
@@ -347,8 +118,8 @@ final class BoatKeyboard {
 		}
 	}
 
-	private void handleKeyEvent(long event_ptr, long millis, int event_type, int event_keycode, int event_keychar/* int event_state*/) {
-		int keycode = BoatKeycodes.mapKeySymToLWJGLKeyCode(event_keycode);//event_keycode; //getKeycode(event_ptr, event_state);
+	private void handleKeyEvent(long event_ptr, long millis, int event_type, int event_keycode, int event_keychar) {
+		int keycode = BoatKeycodes.mapKeySymToLWJGLKeyCode(event_keycode);
 		int keychar = event_keychar;
 		
 		byte key_state = getKeyState(event_type);
@@ -387,7 +158,7 @@ final class BoatKeyboard {
 		switch (event.getType()) {
 			case BoatEvent.KeyPress: /* Fall through */
 			case BoatEvent.KeyRelease:
-				handleKeyEvent(event.getKeyAddress(), event.getKeyTime(), event.getKeyType(), event.getKeyKeyCode(), event.getKeyKeyChar()/*, event.getKeyState()*/);
+				handleKeyEvent(event.getKeyAddress(), event.getKeyTime(), event.getKeyType(), event.getKeyKeyCode(), event.getKeyKeyChar());
 				return true;
 			default:
 				break;

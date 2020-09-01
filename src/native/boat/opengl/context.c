@@ -40,154 +40,11 @@
  */
 
 #include <jni.h>
-/*
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-*/
+
 #include "extgl_egl.h"
 #include "context.h"
 
 #include <boat.h>
-
-/*
-EGLConfig getVisualInfoFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info) {
-	XVisualInfo *vis_info;
-	if (!peer_info->glx13) {
-		XVisualInfo template;
-		template.visualid = peer_info->config.glx_config.visualid;
-		template.depth = peer_info->config.glx_config.depth;
-		template.screen = peer_info->screen;
-		int num_infos;
-		vis_info = XGetVisualInfo(peer_info->display, VisualIDMask | VisualScreenMask | VisualDepthMask, &template, &num_infos);
-		if (vis_info == NULL) {
-			throwException(env, "Could not find VisualInfo from peer info");
-			return NULL;
-		}
-		// Check the assumption from GLX 1.3 docs that a VisualInfo is uniquely identified by its
-		// {VisualID, screen, depth} tuple
-		if (num_infos != 1) {
-			XFree(vis_info);
-			throwException(env, "No unique VisualInfo matches peer info");
-			return NULL;
-		}
-	} else {
-		GLXFBConfig *configs = getFBConfigFromPeerInfo(env, peer_info);
-		if (configs == NULL)
-			return NULL;
-		vis_info = lwjgl_glXGetVisualFromFBConfig(peer_info->display, configs[0]);
-		if (vis_info == NULL)
-			throwException(env, "Could not get VisualInfo from GLX 1.3 config");
-		XFree(configs);
-	}
-	return vis_info;
-}
-
-GLXFBConfig *getFBConfigFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info) {
-	int attribs[] = {GLX_FBCONFIG_ID, peer_info->config.glx13_config.config_id, None, None};
-	int num_elements;
-	GLXFBConfig *configs = lwjgl_glXChooseFBConfig(peer_info->display, peer_info->screen, attribs, &num_elements);
-	if (configs == NULL) {
-		throwException(env, "Could not find EGL config from peer info");
-		return NULL;
-	}
-	// Check that only one FBConfig matches the config id
-	if (num_elements != 1) {
-		XFree(configs);
-		throwException(env, "No unique GLX 1.3 config matches peer info");
-		return NULL;
-	}
-	return configs;
-}
-
-
-
-static EGLConfig chooseVisualEGLFromBPP(JNIEnv *env, EGLDisplay disp, int screen, jobject pixel_format, int bpp, int drawable_type, bool double_buffer) {
-	jclass cls_pixel_format = (*env)->GetObjectClass(env, pixel_format);
-	int alpha = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "alpha", "I"));
-	int depth = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "depth", "I"));
-	int stencil = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "stencil", "I"));
-	int samples = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "samples", "I"));
-	int colorSamples = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "colorSamples", "I"));
-	int num_aux_buffers = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "num_aux_buffers", "I"));
-	int accum_bpp = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "accum_bpp", "I"));
-	int accum_alpha = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "accum_alpha", "I"));
-	
-	bool stereo = (bool)(*env)->GetBooleanField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "stereo", "Z"));
-	bool floating_point = (bool)(*env)->GetBooleanField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "floating_point", "Z"));
-	bool floating_point_packed = (bool)(*env)->GetBooleanField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "floating_point_packed", "Z"));
-	bool sRGB = (bool)(*env)->GetBooleanField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "sRGB", "Z"));
-
-	int bpe = convertToBPE(bpp);
-	int accum_bpe = convertToBPE(accum_bpp);
-	attrib_list_t attrib_list;
-	initAttribList(&attrib_list);
-	int render_type;
-	
-	if ( floating_point )
-		render_type = GLX_RGBA_FLOAT_BIT;
-	else if ( floating_point_packed )
-		render_type = GLX_RGBA_UNSIGNED_FLOAT_BIT_EXT;
-	else
-		render_type = GLX_RGBA_BIT;
-		
-	putAttrib(&attrib_list, GLX_RENDER_TYPE); putAttrib(&attrib_list, render_type);
-	putAttrib(&attrib_list, GLX_DOUBLEBUFFER); putAttrib(&attrib_list, double_buffer ? True : False);
-	putAttrib(&attrib_list, GLX_DRAWABLE_TYPE); putAttrib(&attrib_list, drawable_type);
-	putAttrib(&attrib_list, GLX_DEPTH_SIZE); putAttrib(&attrib_list, depth);
-	putAttrib(&attrib_list, GLX_RED_SIZE); putAttrib(&attrib_list, bpe);
-	putAttrib(&attrib_list, GLX_GREEN_SIZE); putAttrib(&attrib_list, bpe);
-	putAttrib(&attrib_list, GLX_BLUE_SIZE); putAttrib(&attrib_list, bpe);
-	putAttrib(&attrib_list, GLX_ALPHA_SIZE); putAttrib(&attrib_list, alpha);
-	putAttrib(&attrib_list, GLX_STENCIL_SIZE); putAttrib(&attrib_list, stencil);
-	putAttrib(&attrib_list, GLX_AUX_BUFFERS); putAttrib(&attrib_list, num_aux_buffers);
-	putAttrib(&attrib_list, GLX_ACCUM_RED_SIZE); putAttrib(&attrib_list, accum_bpe);
-	putAttrib(&attrib_list, GLX_ACCUM_GREEN_SIZE); putAttrib(&attrib_list, accum_bpe);
-	putAttrib(&attrib_list, GLX_ACCUM_BLUE_SIZE); putAttrib(&attrib_list, accum_bpe);
-	putAttrib(&attrib_list, GLX_ACCUM_ALPHA_SIZE); putAttrib(&attrib_list, accum_alpha);
-	if (stereo) {
-		putAttrib(&attrib_list, GLX_STEREO); putAttrib(&attrib_list, True);
-	}
-	// Assume the caller has checked support for multisample
-	if (samples > 0) {
-		putAttrib(&attrib_list, GLX_SAMPLE_BUFFERS_ARB); putAttrib(&attrib_list, 1);
-		putAttrib(&attrib_list, GLX_SAMPLES_ARB); putAttrib(&attrib_list, samples); // GLX_COVERAGE_SAMPLES_NV if colorSamples > 0
-        if ( colorSamples > 0 ) {
-            putAttrib(&attrib_list, GLX_COLOR_SAMPLES_NV); putAttrib(&attrib_list, colorSamples);
-        }
-	}
-	if (sRGB) {
-		putAttrib(&attrib_list, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB); putAttrib(&attrib_list, True);
-	}
-	putAttrib(&attrib_list, None); putAttrib(&attrib_list, None);
-	int num_formats = 0;
-	GLXFBConfig* configs = lwjgl_glXChooseFBConfig(disp, screen, attrib_list.attribs, &num_formats);
-	if (num_formats > 0) {
-		return configs;
-	} else {
-		if (configs != NULL)
-			XFree(configs);
-		return NULL;
-	}
-}
-
-
-XVisualInfo *chooseVisualGLX(JNIEnv *env, Display *disp, int screen, jobject pixel_format, bool use_display_bpp, bool double_buffer) {
-	jclass cls_pixel_format = (*env)->GetObjectClass(env, pixel_format);
-	int bpp;
-	if (use_display_bpp) {
-		bpp = XDefaultDepthOfScreen(XScreenOfDisplay(disp, screen));
-		XVisualInfo *vis_info = chooseVisualGLXFromBPP(env, disp, screen, pixel_format, bpp, double_buffer);
-		if (vis_info != NULL)
-			return vis_info;
-		else
-			bpp = 16;
-	} else
-		bpp = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "bpp", "I"));
-	return chooseVisualGLXFromBPP(env, disp, screen, pixel_format, bpp, double_buffer);
-}
-
-*/
 
 
 EGLConfig getEGLConfigFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info) {
@@ -203,14 +60,6 @@ EGLConfig getEGLConfigFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info) {
 		throwException(env, "Could not find EGL config from peer info");
 		return NULL;
 	}
-	// Check that only one FBConfig matches the config id
-	/*
-	if (num_elements != 1) {
-		XFree(configs);
-		throwException(env, "No unique GLX 1.3 config matches peer info");
-		return NULL;
-	}
-	*/
 	
 	return config;
 }
@@ -219,7 +68,7 @@ EGLConfig getVisualInfoFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info) {
 	return getEGLConfigFromPeerInfo(env, peer_info);
 
 }
-
+/*
 static int convertToBPE(int bpp) {
 	int bpe;
 	switch (bpp) {
@@ -237,13 +86,11 @@ static int convertToBPE(int bpp) {
 	}
 	return bpe;
 }
-
-
-
-
-
+*/
 static EGLConfig chooseVisualEGLFromBPP(JNIEnv *env, EGLDisplay disp, int screen, jobject pixel_format, int bpp, int drawable_type, bool double_buffer) {
+	/*
 	jclass cls_pixel_format = (*env)->GetObjectClass(env, pixel_format);
+	
 	int alpha = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "alpha", "I"));
 	int depth = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "depth", "I"));
 	int stencil = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "stencil", "I"));
@@ -258,7 +105,7 @@ static EGLConfig chooseVisualEGLFromBPP(JNIEnv *env, EGLDisplay disp, int screen
 
 	int bpe = convertToBPE(bpp);
 	int accum_bpe = convertToBPE(accum_bpp);
-	/*
+	
 	attrib_list_t attrib_list;
 	initAttribList(&attrib_list);
 	putAttrib(&attrib_list, GLX_RGBA);
@@ -301,23 +148,6 @@ static EGLConfig chooseVisualEGLFromBPP(JNIEnv *env, EGLDisplay disp, int screen
 	        EGL_CONFORMANT, EGL_OPENGL_ES2_BIT,
 	        EGL_NONE
 	};
-	/*
-	if (stereo)
-		putAttrib(&attrib_list, GLX_STEREO);
-		
-	// Assume the caller has checked support for multisample
-	
-	if (samples > 0) {
-		putAttrib(&attrib_list, GLX_SAMPLE_BUFFERS_ARB); putAttrib(&attrib_list, 1);
-		putAttrib(&attrib_list, GLX_SAMPLES_ARB); putAttrib(&attrib_list, samples); // GLX_COVERAGE_SAMPLES_NV if colorSamples > 0
-        if ( colorSamples > 0 )
-            putAttrib(&attrib_list, GLX_COLOR_SAMPLES_NV); putAttrib(&attrib_list, colorSamples);
-	}
-	
-	if (sRGB)
-		putAttrib(&attrib_list, GLX_FRAMEBUFFER_SRGB_CAPABLE_ARB);
-	putAttrib(&attrib_list, None);
-	*/
 	
 	EGLConfig config;
 	EGLint useless;
@@ -328,18 +158,7 @@ static EGLConfig chooseVisualEGLFromBPP(JNIEnv *env, EGLDisplay disp, int screen
 
 EGLConfig chooseVisualEGL(JNIEnv *env, EGLDisplay disp, int screen, jobject pixel_format, bool use_display_bpp, int drawable_type, bool double_buffer) {
 	jclass cls_pixel_format = (*env)->GetObjectClass(env, pixel_format);
-	int bpp;
-	/*
-	if (use_display_bpp) {
-		bpp = XDefaultDepthOfScreen(XScreenOfDisplay(disp, screen));
-		GLXFBConfig *configs = chooseVisualGLX13FromBPP(env, disp, screen, pixel_format, bpp, drawable_type, double_buffer);
-		if (configs != NULL)
-			return configs;
-		else
-			bpp = 16;
-	} else
-	*/
-	bpp = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "bpp", "I"));
+	int bpp = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "bpp", "I"));
 	return chooseVisualEGLFromBPP(env, disp, screen, pixel_format, bpp, drawable_type, double_buffer);
 }
 
@@ -353,12 +172,7 @@ static void dumpVisualInfo(JNIEnv *env, EGLDisplay display, EGLConfig vis_info) 
 	lwjgl_eglGetConfigAttrib(display, vis_info, EGL_ALPHA_SIZE, &alpha);
 	lwjgl_eglGetConfigAttrib(display, vis_info, EGL_DEPTH_SIZE, &depth);
 	lwjgl_eglGetConfigAttrib(display, vis_info, EGL_STENCIL_SIZE, &stencil);
-	/*
-	if (extension_flags->GLX_ARB_multisample) {
-		lwjgl_glXGetConfig(display, vis_info, GLX_SAMPLE_BUFFERS_ARB, &sample_buffers);
-		lwjgl_glXGetConfig(display, vis_info, GLX_SAMPLES_ARB, &samples);
-	}
-	*/
+	
 	printfDebugJava(env, "Pixel format info: r = %d, g = %d, b = %d, a = %d, depth = %d, stencil = %d, sample buffers = %d, samples = %d", r, g, b, alpha, depth, stencil, sample_buffers, samples);
 }
 
@@ -371,93 +185,21 @@ bool initPeerInfo(JNIEnv *env, jobject peer_info_handle, EGLDisplay display, int
 		return false;
 	}
 	BoatPeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	//GLXExtensions extension_flags;
 	if (!extgl_InitEGL(display)) {
 		throwException(env, "Could not init EGL");
 		return false;
 	}
-	/*
-	if (!extension_flags.GLX13 && force_glx13) {
-		throwException(env, "GLX13 is required, but is not available");
-		return false;
-	}
-	jclass cls_pixel_format = (*env)->GetObjectClass(env, pixel_format);
-	int samples = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "samples", "I"));
-	if (samples > 0 && !extension_flags.GLX_ARB_multisample) {
-		throwException(env, "Samples > 0 specified but there's no support for GLX_ARB_multisample");
-		return false;
-	}
-	int colorSamples = (int)(*env)->GetIntField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "colorSamples", "I"));
-	if (colorSamples > 0 && !extension_flags.GLX_NV_multisample_coverage) {
-		throwException(env, "Color samples > 0 specified but there's no support for GLX_NV_multisample_coverage");
-		return false;
-	}
-	bool floating_point = (bool)(*env)->GetBooleanField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "floating_point", "Z"));
-	if (floating_point && !(extension_flags.GLX13 && extension_flags.GLX_ARB_fbconfig_float)) { // We need GLX13 to support floating point
-		throwException(env, "Floating point specified but there's no support for GLX_ARB_fbconfig_float");
-		return false;
-	}
-	bool floating_point_packed = (bool)(*env)->GetBooleanField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "floating_point_packed", "Z"));
-	if (floating_point_packed && !(extension_flags.GLX13 && extension_flags.GLX_EXT_fbconfig_packed_float)) { // We need GLX13 to support packed floating point
-		throwException(env, "Packed floating point specified but there's no support for GLX_EXT_fbconfig_packed_float");
-		return false;
-	}
-	bool sRGB = (bool)(*env)->GetBooleanField(env, pixel_format, (*env)->GetFieldID(env, cls_pixel_format, "sRGB", "Z"));
-		if (sRGB && !extension_flags.GLX_ARB_framebuffer_sRGB) {
-			throwException(env, "sRGB specified but there's no support for GLX_ARB_framebuffer_sRGB");
-			return false;
-	}
 	
-
-	peer_info->glx13 = extension_flags.GLX13;
-	*/
-	/*if (peer_info->glx13) {*/
-		EGLConfig config = chooseVisualEGL(env, display, screen, pixel_format, use_display_bpp, drawable_type, double_buffered);
-		if (config == NULL) {
-			throwException(env, "Could not choose EGL config");
-			return false;
-		}
-		
-		dumpVisualInfo(env, display, config);
-		
-		/*
-		if (isDebugEnabled()) {
-			XVisualInfo *vis_info = lwjgl_glXGetVisualFromFBConfig(display, configs[0]);
-			if (vis_info != NULL) {
-				dumpVisualInfo(env, display, &extension_flags, vis_info);
-				XFree(vis_info);
-			}
-		}
-		*/
-		/*
-		int config_id;
-		__android_log_print(ANDROID_LOG_ERROR, "Boat-LWJGL", "Trying to lwjgl_eglGetConfigAttrib.");
-		int result = lwjgl_eglGetConfigAttrib(display, config, EGL_CONFIG_ID, &config_id);
-		//XFree(configs);
-		if (result != true) {
-			throwException(env, "Could not get GLX_FBCONFIG_ID from GLXFBConfig");
-			return false;
-		}
-		peer_info->config.egl_config.config_id = config_id;
-		*/
-		peer_info->config = config;
-	/*
-	} else {
-		XVisualInfo *vis_info = chooseVisualGLX(env, display, screen, pixel_format, use_display_bpp, double_buffered);
-		if (vis_info == NULL) {
-			throwException(env, "Could not choose visual");
-			return false;
-		}
-		peer_info->config.glx_config.visualid = vis_info->visualid;
-		peer_info->config.glx_config.depth = vis_info->depth;
-		peer_info->screen = vis_info->screen;
-		if (isDebugEnabled())
-			dumpVisualInfo(env, display, &extension_flags, vis_info);
-		XFree(vis_info);
+	EGLConfig config = chooseVisualEGL(env, display, screen, pixel_format, use_display_bpp, drawable_type, double_buffered);
+	if (config == NULL) {
+		throwException(env, "Could not choose EGL config");
+		return false;
 	}
-	*/
+		
+	dumpVisualInfo(env, display, config);
+	peer_info->config = config;
+	
 	peer_info->display = display;
-	//peer_info->screen = screen;
 	peer_info->drawable = EGL_NO_SURFACE;
 	return true;
 }

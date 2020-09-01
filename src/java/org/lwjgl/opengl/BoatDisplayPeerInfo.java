@@ -43,16 +43,11 @@ import org.lwjgl.LWJGLException;
  */
 final class BoatDisplayPeerInfo extends BoatPeerInfo {
 
-	final boolean egl;
-
 	BoatDisplayPeerInfo() throws LWJGLException {
-		egl = true;
 		org.lwjgl.opengles.GLContext.loadOpenGLLibrary();
 	}
 
 	BoatDisplayPeerInfo(PixelFormat pixel_format) throws LWJGLException {
-		egl = true;//false;
-		//LinuxDisplay.lockAWT();
 		try {
 			GLContext.loadOpenGLLibrary();
 			try {
@@ -68,17 +63,17 @@ final class BoatDisplayPeerInfo extends BoatPeerInfo {
 				throw e;
 			}
 		} finally {
-			//LinuxDisplay.unlockAWT();
+			
 		}
 	}
 	private static native void initDefaultPeerInfo(long display, int screen, ByteBuffer peer_info_handle, PixelFormat pixel_format) throws LWJGLException;
 
 	protected void doLockAndInitHandle() throws LWJGLException {
-		//LinuxDisplay.lockAWT();
+		
 		try {
 			initDrawable(BoatDisplay.getWindow(), getHandle());
 		} finally {
-			//LinuxDisplay.unlockAWT();
+			
 		}
 	}
 	private static native void initDrawable(long window, ByteBuffer peer_info_handle);
@@ -90,16 +85,6 @@ final class BoatDisplayPeerInfo extends BoatPeerInfo {
 	public void destroy() {
 		super.destroy();
                 
-                /*
-		if ( egl )
-			org.lwjgl.opengles.GLContext.unloadOpenGLLibrary();
-		else {
-			//LinuxDisplay.lockAWT();
-			BoatDisplay.decDisplay();
-			GLContext.unloadOpenGLLibrary();
-			//LinuxDisplay.unlockAWT();
-		}
-		*/
 		BoatDisplay.decDisplay();
 		GLContext.unloadOpenGLLibrary();
 	}

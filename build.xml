@@ -36,8 +36,7 @@
 		<mkdir dir="${lwjgl.temp}/native/openbsd"   taskname="initialiazing temp/openbsd folder" />
 		<mkdir dir="${lwjgl.temp}/native/macosx"    taskname="initialiazing temp/macosx folder" />
 		<mkdir dir="${lwjgl.temp}/native/solaris"   taskname="initialiazing temp/solaris folder" />
-		
-		<mkdir dir="${lwjgl.temp}/native/boat"   taskname="initialiazing temp/boat folder" />
+		<mkdir dir="${lwjgl.temp}/native/boat"      taskname="initialiazing temp/boat folder" />
 	</target>
 
 	<!-- Cleans up any files created during the execution of this script -->
@@ -518,40 +517,67 @@
 	</target>
 
 	<target name="compile_native" depends="-initialize, headers, touch-version, version-mismatch" description="Compiles the native files">
-		<!--
+		
 		<condition property="lwjgl.platform.windows">
-			<os family="windows" />
+		        <and>
+			        <os family="windows" />
+			        <not>
+			                <isset property="lwjgl.platform.boat" />
+			        </not>
+			</and>
 		</condition>
-		<antcall target="-compile_native_win32" />
 
 		<condition property="lwjgl.platform.linux">
-			<os name="Linux" />
+			<and>
+			        <os name="Linux" />
+			        <not>
+			                <isset property="lwjgl.platform.boat" />
+			        </not>
+			</and>
 		</condition>
-		<antcall target="-compile_native_linux" />
-
+		
 		<condition property="lwjgl.platform.freebsd">
-			<os name="FreeBSD" />
+			<and>
+			        <os name="FreeBSD" />
+			        <not>
+			                <isset property="lwjgl.platform.boat" />
+			        </not>
+			</and>
 		</condition>
-		<antcall target="-compile_native_freebsd" />
-
+		
 		<condition property="lwjgl.platform.openbsd">
-			<os name="OpenBSD" />
+			<and>
+			        <os name="OpenBSD" />
+			        <not>
+			                <isset property="lwjgl.platform.boat" />
+			        </not>
+			</and>
 		</condition>
-		<antcall target="-compile_native_openbsd" />
-
+		
 		<condition property="lwjgl.platform.solaris">
-			<os name="SunOS" />
+			<and>
+			        <os name="SunOS" />
+			        <not>
+			                <isset property="lwjgl.platform.boat" />
+			        </not>
+			</and>
 		</condition>
-		<antcall target="-compile_native_solaris" />
-
+		
 		<condition property="lwjgl.platform.macosx">
-			<os name="Mac OS X" />
+			<and>
+			        <os name="Mac OS X" />
+			        <not>
+			                <isset property="lwjgl.platform.boat" />
+			        </not>
+			</and>
 		</condition>
+		
+		<antcall target="-compile_native_win32" />
+		<antcall target="-compile_native_linux" />
+		<antcall target="-compile_native_freebsd" />
+		<antcall target="-compile_native_openbsd" />
+		<antcall target="-compile_native_solaris" />
 		<antcall target="-compile_native_macosx" />
-		-->
-		
-		
-		
 		<antcall target="-compile_native_boat" />
 	</target>
 

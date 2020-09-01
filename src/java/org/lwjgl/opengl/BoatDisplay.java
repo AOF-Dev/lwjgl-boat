@@ -38,10 +38,7 @@ package org.lwjgl.opengl;
  * @author elias_naur
  */
 
-
 import java.awt.Canvas;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -56,11 +53,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.LWJGLUtil;
 import org.lwjgl.MemoryUtil;
-/*
-import org.lwjgl.opengl.XRandR.Screen;
-*/
-
-import org.lwjgl.opengles.EGL;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -166,146 +158,15 @@ final class BoatDisplay implements DisplayImplementation {
 	private BoatMouse mouse;
 	
 	private String wm_class;
-        
-        /*
-	private final FocusListener focus_listener = new FocusListener() {
-		public void focusGained(FocusEvent e) {
-			synchronized (GlobalLock.lock) {
-				parent_focused = true;
-				parent_focus_changed = true;
-			}
-		}
-		public void focusLost(FocusEvent e) {
-			synchronized (GlobalLock.lock) {
-				parent_focused = false;
-				parent_focus_changed = true;
-			}
-		}
-	};
-
-	private static ByteBuffer getCurrentGammaRamp() throws LWJGLException {
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				if (isXF86VidModeSupported())
-					return nGetCurrentGammaRamp(getDisplay(), getDefaultScreen());
-				else
-					return null;
-			} finally {
-				decDisplay();
-			}
-		} finally {
-			unlockAWT();
-		}
-	}
-	private static native ByteBuffer nGetCurrentGammaRamp(long display, int screen) throws LWJGLException;
-	*/
-	
 
 	private static int getBestDisplayModeExtension() {
 	
 		int result;
-		/*
-		if (isXrandrSupported()) {
-			LWJGLUtil.log("Using Xrandr for display mode switching");
-			result = XRANDR;
-		} else if (isXF86VidModeSupported()) {
-			LWJGLUtil.log("Using XF86VidMode for display mode switching");
-			result = XF86VIDMODE;
-		} else {
-			LWJGLUtil.log("No display mode extensions available");
-			result = NONE;
-		}
-		*/
 		
 		LWJGLUtil.log("Using Boat for display mode switching");
 		result = BOAT;
 		return result;
 	}
-/*
-	private static boolean isXrandrSupported() {
-		if (Display.getPrivilegedBoolean("LWJGL_DISABLE_XRANDR"))
-			return false;
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nIsXrandrSupported(getDisplay());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Got exception while querying Xrandr support: " + e);
-			return false;
-		} finally {
-			unlockAWT();
-		}
-	}
-	private static native boolean nIsXrandrSupported(long display) throws LWJGLException;
-
-	private static boolean isXF86VidModeSupported() {
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nIsXF86VidModeSupported(getDisplay());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Got exception while querying XF86VM support: " + e);
-			return false;
-		} finally {
-			unlockAWT();
-		}
-	}
-	private static native boolean nIsXF86VidModeSupported(long display) throws LWJGLException;
-
-	private static boolean isNetWMFullscreenSupported() throws LWJGLException {
-		if (Display.getPrivilegedBoolean("LWJGL_DISABLE_NETWM"))
-			return false;
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nIsNetWMFullscreenSupported(getDisplay(), getDefaultScreen());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Got exception while querying NetWM support: " + e);
-			return false;
-		} finally {
-			unlockAWT();
-		}
-	}
-	private static native boolean nIsNetWMFullscreenSupported(long display, int screen) throws LWJGLException;
-*/
-	/* Since Xlib is not guaranteed to be thread safe, we need a way to synchronize LWJGL
-	 * Xlib calls with AWT Xlib calls. Fortunately, JAWT implements Lock()/Unlock() to
-	 * do just that.
-	 */
-	 /*
-	static void lockAWT() {
-		try {
-			nLockAWT();
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Caught exception while locking AWT: " + e);
-		}
-	}
-	private static native void nLockAWT() throws LWJGLException;
-	
-
-	static void unlockAWT() {
-		try {
-			nUnlockAWT();
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Caught exception while unlocking AWT: " + e);
-		}
-	}
-	private static native void nUnlockAWT() throws LWJGLException;
-	*/
 
 	/**
 	 * increment and decrement display usage.
@@ -362,15 +223,6 @@ final class BoatDisplay implements DisplayImplementation {
 	static native void closeDisplay(long display);
 
 	private int getWindowMode(boolean fullscreen) throws LWJGLException {
-	        /*
-		if (fullscreen) {
-			
-			LWJGLUtil.log("Using legacy mode for fullscreen window");
-			return FULLSCREEN_LEGACY;
-			
-		} else
-			return FULLSCREEN_LEGACY;//WINDOWED;
-		*/
 		
 		LWJGLUtil.log("Using legacy mode for fullscreen window");
 		return FULLSCREEN_LEGACY;
@@ -383,35 +235,25 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	static int getDefaultScreen() {
-		return 0; //nGetDefaultScreen(getDisplay());
+		return 0;
 	}
-	//static native int nGetDefaultScreen(long display);
 
 	static long getWindow() {
 		return current_window;
 	}
         
-        
 	private void ungrabKeyboard() {
 		if (keyboard_grabbed) {
-			//nUngrabKeyboard(getDisplay());
 			keyboard_grabbed = false;
 		}
 	}
-	//static native int nUngrabKeyboard(long display);
 
 	private void grabKeyboard() {
 		if (!keyboard_grabbed) {
-		        /*
-			int res = nGrabKeyboard(getDisplay(), getWindow());
-			if (res == GrabSuccess)
-			*/
-				keyboard_grabbed = true;
+			keyboard_grabbed = true;
 		}
 	}
-	//static native int nGrabKeyboard(long display, long window);
 	
-
 	private void grabPointer() {
 		if (!pointer_grabbed) {
 			int result = nGrabPointer(getDisplay(), getWindow(), None);
@@ -419,13 +261,12 @@ final class BoatDisplay implements DisplayImplementation {
 				pointer_grabbed = true;
 				// make sure we have a centered window
 				if (isLegacyFullscreen()) {
-					//nSetViewPort(getDisplay(), getWindow(), getDefaultScreen());
+					// do nothing
 				}
 			}
 		}
 	}
 	static native int nGrabPointer(long display, long window, long cursor);
-	//private static native void nSetViewPort(long display, long window, int screen);
 
 	private void ungrabPointer() {
 		if (pointer_grabbed) {
@@ -436,7 +277,7 @@ final class BoatDisplay implements DisplayImplementation {
 	static native int nUngrabPointer(long display);
 
 	private static boolean isFullscreen() {
-		return true;//current_window_mode == FULLSCREEN_LEGACY || current_window_mode == FULLSCREEN_NETWM;
+		return true;
 	}
 
 	private boolean shouldGrab() {
@@ -444,7 +285,7 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	private void updatePointerGrab() {
-		if (/*isFullscreen() || */shouldGrab()) {
+		if (isFullscreen() || shouldGrab()) {
 			grabPointer();
 		} else {
 			ungrabPointer();
@@ -460,18 +301,12 @@ final class BoatDisplay implements DisplayImplementation {
 		} else {
 			cursor = current_cursor;
 		}
-		//nDefineCursor(getDisplay(), getWindow(), cursor);
 	}
-	//private static native void nDefineCursor(long display, long window, long cursor_handle);
 	
-
-        
 	private static boolean isLegacyFullscreen() {
 		return current_window_mode == FULLSCREEN_LEGACY;
 	}
 	
-        
-        
 	private void updateKeyboardGrab() {
 		if (isLegacyFullscreen())
 			grabKeyboard();
@@ -479,10 +314,7 @@ final class BoatDisplay implements DisplayImplementation {
 			ungrabKeyboard();
 	}
 	
-	
-
 	public void createWindow(final DrawableLWJGL drawable, DisplayMode mode, Canvas parent, int x, int y) throws LWJGLException {
-		//lockAWT();
 		current_boat_display = this;
 		
 		
@@ -518,14 +350,7 @@ final class BoatDisplay implements DisplayImplementation {
                                         // overwrite arguments x and y - superclass always uses 0,0 for fullscreen windows
                                         // use the coordinates of XRandRs primary screen instead
                                         // this is required to let the fullscreen window appear on the primary screen
-                                        /*
-                                        if (mode.isFullscreenCapable()  && current_displaymode_extension == XRANDR) {
-                                            Screen primaryScreen = XRandR.DisplayModetoScreen(Display.getDisplayMode());
-                                            x = primaryScreen.xPos;
-                                            y = primaryScreen.yPos;
-                                        }
-                                        */
-
+                                        
 					current_window = nCreateWindow(getDisplay(), getDefaultScreen(), handle, mode, current_window_mode, x, y, undecorated, parent_window, resizable);
 					
 					window_x = 0;
@@ -533,17 +358,6 @@ final class BoatDisplay implements DisplayImplementation {
 					window_width = nGetWidth(getDisplay(), getWindow());
 					window_height = nGetHeight(getDisplay(), getWindow());
 					
-					/*
-					// Set the WM_CLASS hint which is needed by some WM's e.g. Gnome Shell
-					wm_class = Display.getPrivilegedString("LWJGL_WM_CLASS");
-					if (wm_class == null) wm_class = Display.getTitle();
-					setClassHint(Display.getTitle(), wm_class);
-					
-					
-					mapRaised(getDisplay(), current_window);
-					xembedded = parent != null && isAncestorXEmbedded(parent_window);
-					*/
-					//blank_cursor = createBlankCursor();
 					current_cursor = None;
 					focused = false;
 					input_released = false;
@@ -553,16 +367,7 @@ final class BoatDisplay implements DisplayImplementation {
 					grab = false;
 					minimized = false;
 					dirty = true;
-                                        /*
-					if ( drawable instanceof DrawableGLES )
-						((DrawableGLES)drawable).initialize(current_window, getDisplay(), EGL.EGL_WINDOW_BIT, (org.lwjgl.opengles.PixelFormat)drawable.getPixelFormat());
                                         
-					if (parent != null) {
-						parent.addFocusListener(focus_listener);
-						parent_focused = parent.isFocusOwner();
-						parent_focus_changed = true;
-					}
-					*/
 				} finally {
 					peer_info.unlock();
 				}
@@ -571,50 +376,15 @@ final class BoatDisplay implements DisplayImplementation {
 				throw e;
 			}
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 	private static native long nCreateWindow(long display, int screen, ByteBuffer peer_info_handle, DisplayMode mode, int window_mode, int x, int y, boolean undecorated, long parent_handle, boolean resizable) throws LWJGLException;
-	//private static native long getRootWindow(long display, int screen);
-	//private static native boolean hasProperty(long display, long window, long property);
-	//private static native long getParentWindow(long display, long window) throws LWJGLException;
-	//private static native int getChildCount(long display, long window) throws LWJGLException;
-	//private static native void mapRaised(long display, long window);
-	//private static native void reparentWindow(long display, long window, long parent, int x, int y);
-	//private static native long nGetInputFocus(long display) throws LWJGLException;
-	//private static native void nSetInputFocus(long display, long window, long time);
-	//private static native void nSetWindowSize(long display, long window, int width, int height, boolean resizable);
 	
 	private static native int nGetX(long display, long window);
 	private static native int nGetY(long display, long window);
 	private static native int nGetWidth(long display, long window);
 	private static native int nGetHeight(long display, long window);
-        
-        /*
-	private static boolean isAncestorXEmbedded(long window) throws LWJGLException {
-		long xembed_atom = internAtom("_XEMBED_INFO", true);
-		if (xembed_atom != None) {
-			long w = window;
-			while (w != None) {
-				if (hasProperty(getDisplay(), w, xembed_atom))
-					return true;
-				w = getParentWindow(getDisplay(), w);
-			}
-		}
-		return false;
-	}
-        
-	private static long getHandle(Canvas parent) throws LWJGLException {
-		//AWTCanvasImplementation awt_impl = AWTGLCanvas.createImplementation();
-		BoatPeerInfo parent_peer_info = (LinuxPeerInfo)awt_impl.createPeerInfo(parent, null, null);
-		ByteBuffer parent_peer_info_handle = parent_peer_info.lockAndGetHandle();
-		try {
-			return parent_peer_info.getDrawable();
-		} finally {
-			parent_peer_info.unlock();
-		}
-	}
-	*/
 
 	private void updateInputGrab() {
 		updatePointerGrab();
@@ -623,64 +393,29 @@ final class BoatDisplay implements DisplayImplementation {
 
 	public void destroyWindow() {
 	        current_boat_display = null;
-	        
-		//lockAWT();
 		try {
-		        /*
-			if (parent != null) {
-				parent.removeFocusListener(focus_listener);
-			}
-			try {
-				setNativeCursor(null);
-			} catch (LWJGLException e) {
-				LWJGLUtil.log("Failed to reset cursor: " + e.getMessage());
-			}
-			nDestroyCursor(getDisplay(), blank_cursor);
-			blank_cursor = None;
-			*/
 			ungrabKeyboard();
 			nDestroyWindow(getDisplay(), getWindow());
 			decDisplay();
-
-
-
-                        /*
-			if ( current_window_mode != WINDOWED )
-				Compiz.setLegacyFullscreenSupport(false);
-			*/
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 	static native void nDestroyWindow(long display, long window);
 
 	public void switchDisplayMode(DisplayMode mode) throws LWJGLException {
 	        
-		//lockAWT();
 		try {
 			switchDisplayModeOnTmpDisplay(mode);
 			current_mode = mode;
 		} finally {
-			//unlockAWT();
+			
 		}
 		
 	}
         
         
 	private void switchDisplayModeOnTmpDisplay(DisplayMode mode) throws LWJGLException {
-	        /*
-                if (current_displaymode_extension == XRANDR) {
-                        // let Xrandr set the display mode
-                        XRandR.setConfiguration(false, XRandR.DisplayModetoScreen(mode));
-                } else {
-                        incDisplay();
-                        try {
-                                nSwitchDisplayMode(getDisplay(), getDefaultScreen(), current_displaymode_extension, mode);
-                        } finally {
-                                decDisplay();
-                        }
-                }
-                */
                 
                 incDisplay();
                 try {
@@ -694,117 +429,25 @@ final class BoatDisplay implements DisplayImplementation {
 	
 	private static native void nSwitchDisplayMode(long display, int screen, int extension, DisplayMode mode) throws LWJGLException;
         
-        /*
-	private static long internAtom(String atom_name, boolean only_if_exists) throws LWJGLException {
-		incDisplay();
-		try {
-			return nInternAtom(getDisplay(), atom_name, only_if_exists);
-		} finally {
-			decDisplay();
-		}
-	}
-	*/
-	//static native long nInternAtom(long display, String atom_name, boolean only_if_exists);
-
 	public void resetDisplayMode() {
 	        
-		//lockAWT();
 		try {
-		        /*
-			if( current_displaymode_extension == XRANDR )
-			{
-				AccessController.doPrivileged(new PrivilegedAction<Object>() {
-					public Object run() {
-						XRandR.restoreConfiguration();
-						return null;
-					}
-				});
-			}
-			else
-			{
-				switchDisplayMode(saved_mode);
-			}
-			if (isXF86VidModeSupported())
-				doSetGamma(saved_gamma);
-			*/
-				
 			switchDisplayMode(saved_mode);
-
-			//Compiz.setLegacyFullscreenSupport(false);
 		} catch (LWJGLException e) {
 			LWJGLUtil.log("Caught exception while resetting mode: " + e);
 		} finally {
-			//unlockAWT();
+			
 		}
 		
 	}
-        
         
 	public int getGammaRampLength() {
-	        /*
-		if (!isXF86VidModeSupported())
-			return 0;
-		lockAWT();
-		try {
-			try {
-				incDisplay();
-				try {
-					return nGetGammaRampLength(getDisplay(), getDefaultScreen());
-				} catch (LWJGLException e) {
-					LWJGLUtil.log("Got exception while querying gamma length: " + e);
-					return 0;
-				} finally {
-					decDisplay();
-				}
-			} catch (LWJGLException e) {
-				LWJGLUtil.log("Failed to get gamma ramp length: " + e);
-				return 0;
-			}
-		} finally {
-			unlockAWT();
-		}
-		*/
 		return 0;
 	}
-	//private static native int nGetGammaRampLength(long display, int screen) throws LWJGLException;
 	
-
 	public void setGammaRamp(FloatBuffer gammaRamp) throws LWJGLException {
-	        /*
-		if (!isXF86VidModeSupported())
-			throw new LWJGLException("No gamma ramp support (Missing XF86VM extension)");
-		doSetGamma(convertToNativeRamp(gammaRamp));
-		*/
 		
 	}
-
-
-        /*
-	private void doSetGamma(ByteBuffer native_gamma) throws LWJGLException {
-		lockAWT();
-		try {
-			setGammaRampOnTmpDisplay(native_gamma);
-			current_gamma = native_gamma;
-		} finally {
-			unlockAWT();
-		}
-	}
-
-	private static void setGammaRampOnTmpDisplay(ByteBuffer native_gamma) throws LWJGLException {
-		incDisplay();
-		try {
-			nSetGammaRamp(getDisplay(), getDefaultScreen(), native_gamma);
-		} finally {
-			decDisplay();
-		}
-	}
-	private static native void nSetGammaRamp(long display, int screen, ByteBuffer gammaRamp) throws LWJGLException;
-
-	private static ByteBuffer convertToNativeRamp(FloatBuffer ramp) throws LWJGLException {
-		return nConvertToNativeRamp(ramp, ramp.position(), ramp.remaining());
-	}
-	private static native ByteBuffer nConvertToNativeRamp(FloatBuffer ramp, int offset, int length) throws LWJGLException;
-	*/
 
 	public String getAdapter() {
 		return null;
@@ -816,11 +459,7 @@ final class BoatDisplay implements DisplayImplementation {
 
 	public DisplayMode init() throws LWJGLException {
 	        
-		//lockAWT();
 		try {
-			//Compiz.init();
-
-			//delete_atom = internAtom("WM_DELETE_WINDOW", false);
 			current_displaymode_extension = getBestDisplayModeExtension();
 			if (current_displaymode_extension == NONE)
 				throw new LWJGLException("No display mode extension is available");
@@ -828,19 +467,6 @@ final class BoatDisplay implements DisplayImplementation {
 			if (modes == null || modes.length == 0)
 				throw new LWJGLException("No modes available");
 			switch (current_displaymode_extension) {
-			        /*
-				case XRANDR:
-					saved_mode = AccessController.doPrivileged(new PrivilegedAction<DisplayMode>() {
-						public DisplayMode run() {
-							XRandR.saveConfiguration();
-                                                        return XRandR.ScreentoDisplayMode(XRandR.getConfiguration());
-						}
-					});
-					break;
-				case XF86VIDMODE:
-					saved_mode = modes[0];
-					break;
-				*/
 				case BOAT:
 					saved_mode = modes[0];
 					break;
@@ -848,63 +474,19 @@ final class BoatDisplay implements DisplayImplementation {
 					throw new LWJGLException("Unknown display mode extension: " + current_displaymode_extension);
 			}
 			current_mode = saved_mode;
-			saved_gamma = null;//getCurrentGammaRamp();
+			saved_gamma = null;
 			current_gamma = saved_gamma;
 			return saved_mode;
 		} finally {
-			//unlockAWT();
+			
 		}
 		
 	}
 
-        /*
-	private static DisplayMode getCurrentXRandrMode() throws LWJGLException {
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nGetCurrentXRandrMode(getDisplay(), getDefaultScreen());
-			} finally {
-				decDisplay();
-			}
-		} finally {
-			unlockAWT();
-		}
-	}
-	*/
-
-	/** Assumes extension == XRANDR */
-	//private static native DisplayMode nGetCurrentXRandrMode(long display, int screen) throws LWJGLException;
-
 	public void setTitle(String title) {
-	        /*
-		lockAWT();
-		try {
-			final ByteBuffer titleText = MemoryUtil.encodeUTF8(title);
-			nSetTitle(getDisplay(), getWindow(), MemoryUtil.getAddress(titleText), titleText.remaining() - 1);
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 	}
-	//private static native void nSetTitle(long display, long window, long title, int len);
 	
-	/** the WM_CLASS hint is needed by some WM's e.g. gnome shell */
-	/*
-	private void setClassHint(String wm_name, String wm_class) {
-		lockAWT();
-		try {
-			final ByteBuffer nameText = MemoryUtil.encodeUTF8(wm_name);
-			final ByteBuffer classText = MemoryUtil.encodeUTF8(wm_class);
-			
-			nSetClassHint(getDisplay(), getWindow(), MemoryUtil.getAddress(nameText), MemoryUtil.getAddress(classText));
-		} finally {
-			unlockAWT();
-		}
-	}
-	private static native void nSetClassHint(long display, long window, long wm_name, long wm_class);
-	*/
-
 	public boolean isCloseRequested() {
 		boolean result = close_requested;
 		close_requested = false;
@@ -916,7 +498,7 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public boolean isActive() {
-		return true; //focused || isLegacyFullscreen();
+		return true; //focused;
 	}
 
 	public boolean isDirty() {
@@ -929,51 +511,16 @@ final class BoatDisplay implements DisplayImplementation {
 		peer_info = new BoatDisplayPeerInfo(pixel_format);
 		return peer_info;
 	}
-        
-        /*
-	private void relayEventToParent(LinuxEvent event_buffer, int event_mask) {
-		tmp_event_buffer.copyFrom(event_buffer);
-		tmp_event_buffer.setWindow(parent_window);
-		tmp_event_buffer.sendEvent(getDisplay(), parent_window, true, event_mask);
-	}
-
-	private void relayEventToParent(BoatEvent event_buffer) {
-		if (parent == null)
-			return;
-		switch (event_buffer.getType()) {
-			case LinuxEvent.KeyPress:
-				relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			case LinuxEvent.KeyRelease:
-				relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			case LinuxEvent.ButtonPress:
-				if (xembedded || !focused) relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			case LinuxEvent.ButtonRelease:
-				if (xembedded || !focused) relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			default:
-				break;
-		}
-	}
-	*/
-	
-	
-	
-	
-	
 	
 	private static BoatDisplay current_boat_display = null;
-	//Boat input event processor. To be invoked by Boat.
+	// Boat input event processor. To be invoked by Boat.
 	public static int processEvent() {
 	        if (current_boat_display != null) {
 	                current_boat_display.processEvents();
 	        }
 	        return 0;
 	}
-	
-	/////
+	// Boat input event processor.
 	
 	public void processEvents() {
 	        
@@ -986,122 +533,24 @@ final class BoatDisplay implements DisplayImplementation {
 		}
 		
 	}
-        
-        /*
-	private void processEvents() {
-		while (BoatEvent.getPending(getDisplay()) > 0) {
-			event_buffer.nextEvent(getDisplay());
-			long event_window = event_buffer.getWindow();
-			relayEventToParent(event_buffer);
-			if (event_window != getWindow() || event_buffer.filterEvent(event_window) ||
-					(mouse != null && mouse.filterEvent(grab, shouldWarpPointer(), event_buffer)) ||
-					 (keyboard != null && keyboard.filterEvent(event_buffer)))
-				continue;
-			
-			switch (event_buffer.getType()) {
-				case LinuxEvent.FocusIn:
-					setFocused(true, event_buffer.getFocusDetail());
-					break;
-				case LinuxEvent.FocusOut:
-					setFocused(false, event_buffer.getFocusDetail());
-					break;
-				case LinuxEvent.ClientMessage:
-					if ((event_buffer.getClientFormat() == 32) && (event_buffer.getClientData(0) == delete_atom))
-						close_requested = true;
-					break;
-				case LinuxEvent.MapNotify:
-					dirty = true;
-					minimized = false;
-					break;
-				case LinuxEvent.UnmapNotify:
-					dirty = true;
-					minimized = true;
-					break;
-				case LinuxEvent.Expose:
-					dirty = true;
-					break;
-				case LinuxEvent.ConfigureNotify:
-					int x = nGetX(getDisplay(), getWindow());
-					int y = nGetY(getDisplay(), getWindow());
-					
-					int width = nGetWidth(getDisplay(), getWindow());
-					int height = nGetHeight(getDisplay(), getWindow());
-					
-					window_x = x;
-					window_y = y;
-					
-					if (window_width != width || window_height != height) {
-						resized = true;
-						window_width = width;
-						window_height = height;
-					}
-					
-					break;
-				case LinuxEvent.EnterNotify:
-					mouseInside = true;
-					break;
-				case LinuxEvent.LeaveNotify:
-					mouseInside = false;
-					break;
-				default:
-					break;
-			}
-			
-		}
-	}
-	*/
 
 	public void update() {
-		//lockAWT();
 		try {
 			//processEvents();
 			//checkInput();
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
 	public void reshape(int x, int y, int width, int height) {
-	        /*
-		lockAWT();
-		try {
-			nReshape(getDisplay(), getWindow(), x, y, width, height);
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 	}
-	//private static native void nReshape(long display, long window, int x, int y, int width, int height);
-
+	
 	public DisplayMode[] getAvailableDisplayModes() throws LWJGLException {
 	        
-		//lockAWT();
 		try {
                         incDisplay();
-                        /*
-                        if (current_displaymode_extension == XRANDR) {
-                                // nGetAvailableDisplayModes cannot be trusted. Use it only for bitsPerPixel
-                                DisplayMode[] nDisplayModes = nGetAvailableDisplayModes(getDisplay(), getDefaultScreen(), current_displaymode_extension);
-                                int bpp = 24;
-                                if (nDisplayModes.length > 0) {
-                                    bpp = nDisplayModes[0].getBitsPerPixel();
-                                }
-                                // get the resolutions and frequencys from XRandR
-                                Screen[] resolutions = XRandR.getResolutions(XRandR.getScreenNames()[0]);
-                                DisplayMode[] modes = new DisplayMode[resolutions.length];
-                                for (int i = 0; i < modes.length; i++) {
-                                    modes[i] = new DisplayMode(resolutions[i].width, resolutions[i].height, bpp, resolutions[i].freq);
-                                }
-                                return modes;
-                        } else {
-                                try {
-                                        DisplayMode[] modes = nGetAvailableDisplayModes(getDisplay(), getDefaultScreen(), current_displaymode_extension);
-                                        return modes;
-                                } finally {
-                                        decDisplay();
-                                }
-                        }
-                        */
                         
                         try {
                                 DisplayMode[] modes = nGetAvailableDisplayModes(getDisplay(), getDefaultScreen(), current_displaymode_extension);
@@ -1111,7 +560,7 @@ final class BoatDisplay implements DisplayImplementation {
                         }
                         
 		} finally {
-			//unlockAWT();
+			
 		}
 		
 	}
@@ -1127,11 +576,11 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void createMouse() throws LWJGLException {
-		//lockAWT();
+		
 		try {
 			mouse = new BoatMouse(getDisplay(), getWindow(), getWindow());
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
@@ -1141,194 +590,31 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void pollMouse(IntBuffer coord_buffer, ByteBuffer buttons) {
-		//lockAWT();
 		try {
 			mouse.poll(grab, coord_buffer, buttons);
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
 	public void readMouse(ByteBuffer buffer) {
-		//lockAWT();
 		try {
 			mouse.read(buffer);
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
 	public void setCursorPosition(int x, int y) {
-		//lockAWT();
+		
 		try {
 			mouse.setCursorPosition(x, y);
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
-	/*
-
-	private void checkInput() {
-		if (parent == null) return;
-
-		if (xembedded) {
-			long current_focus_window = 0;
-
-			if (last_window_focus != current_focus_window || parent_focused != focused) {
-				if (isParentWindowActive(current_focus_window)) {
-					if (parent_focused) {
-						nSetInputFocus(getDisplay(), current_window, CurrentTime);
-						last_window_focus = current_window;
-						focused = true;
-					}
-					else {
-						// return focus to the parent proxy focus window
-						nSetInputFocus(getDisplay(), parent_proxy_focus_window, CurrentTime);
-						last_window_focus = parent_proxy_focus_window;
-						focused = false;
-					}
-				}
-				else {
-					last_window_focus = current_focus_window;
-					focused = false;
-				}
-			}
-		}
-		else {
-			if (parent_focus_changed && parent_focused) {
-				setInputFocusUnsafe(getWindow());
-				parent_focus_changed = false;
-			}
-		}
-	}
-	
-	
-	private void setInputFocusUnsafe(long window) {
-		try {
-			nSetInputFocus(getDisplay(), window, CurrentTime);
-			nSync(getDisplay(), false);
-		} catch (LWJGLException e) {
-			// Since we don't have any event timings for XSetInputFocus, a race condition might give a BadMatch, which we'll catch and ignore
-			LWJGLUtil.log("Got exception while trying to focus: " + e);
-		}
-	}
-	*/
-	
-	//private static native void nSync(long display, boolean throw_away_events) throws LWJGLException;
-
-	/**
-	 * This method will check if the parent window is active when running
-	 * in xembed mode. Every xembed embedder window has a focus proxy
-	 * window that recieves all the input. This method will test whether
-	 * the provided window handle is the focus proxy, if so it will get its
-	 * parent window and then test whether this is an ancestor to our
-	 * current_window. If so then parent window is active.
-	 *
-	 * @param window - the window handle to test
-	 */
-	/*
-	private boolean isParentWindowActive(long window) {
-	        
-		try {
-			// parent window already active as window is current_window
-			if (window == current_window) return true;
-
-			// xembed focus proxy will have no children
-			if (getChildCount(getDisplay(), window) != 0) return false;
-
-			// get parent, will be xembed embedder window and ancestor of current_window
-			long parent_window = getParentWindow(getDisplay(), window);
-
-			// parent must not be None
-			if (parent_window == None) return false;
-
-			// scroll current_window's ancestors to find parent_window
-			long w = current_window;
-
-			while (w != None) {
-				w = getParentWindow(getDisplay(), w);
-				if (w == parent_window) {
-					parent_proxy_focus_window = window; // save focus proxy window
-					return true;
-				}
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Failed to detect if parent window is active: " + e.getMessage());
-			return true; // on failure assume still active
-		}
-
-		return false; // failed to find an active parent window
-		
-	}
-
-	private void setFocused(boolean got_focus, int focus_detail) {
-	        
-		if (focused == got_focus || focus_detail == NotifyDetailNone || focus_detail == NotifyPointer || focus_detail == NotifyPointerRoot || xembedded)
-			return;
-		focused = got_focus;
-
-		if (focused) {
-			acquireInput();
-		}
-		else {
-			releaseInput();
-		}
-		
-	}
-
-	private void releaseInput() {
-	        
-		if (isLegacyFullscreen() || input_released)
-			return;
-		if ( keyboard != null )
-			keyboard.releaseAll();
-		input_released = true;
-		updateInputGrab();
-		if (current_window_mode == FULLSCREEN_NETWM) {
-			nIconifyWindow(getDisplay(), getWindow(), getDefaultScreen());
-			try {
-				if( current_displaymode_extension == XRANDR )
-				{
-					AccessController.doPrivileged(new PrivilegedAction<Object>() {
-						public Object run() {
-							XRandR.restoreConfiguration();
-							return null;
-						}
-					});
-				}
-				else
-				{
-					switchDisplayModeOnTmpDisplay(saved_mode);
-				}
-				setGammaRampOnTmpDisplay(saved_gamma);
-			} catch (LWJGLException e) {
-				LWJGLUtil.log("Failed to restore saved mode: " + e.getMessage());
-			}
-		}
-		
-	}
-	//private static native void nIconifyWindow(long display, long window, int screen);
-
-	private void acquireInput() {
-	        
-		if (isLegacyFullscreen() || !input_released)
-			return;
-		input_released = false;
-		updateInputGrab();
-		if (current_window_mode == FULLSCREEN_NETWM) {
-			try {
-				switchDisplayModeOnTmpDisplay(current_mode);
-				setGammaRampOnTmpDisplay(current_gamma);
-			} catch (LWJGLException e) {
-				LWJGLUtil.log("Failed to restore mode: " + e.getMessage());
-			}
-		}
-		
-	}
-	*/
 
 	public void grabMouse(boolean new_grab) {
-		//lockAWT();
 		try {
 			if (new_grab != grab) {
 				grab = new_grab;
@@ -1336,7 +622,7 @@ final class BoatDisplay implements DisplayImplementation {
 				mouse.changeGrabbed(grab, shouldWarpPointer());
 			}
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
@@ -1345,187 +631,76 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public int getNativeCursorCapabilities() {
-	        /*
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nGetNativeCursorCapabilities(getDisplay());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			throw new RuntimeException(e);
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 		return 0xffffffff;
 	}
-	//private static native int nGetNativeCursorCapabilities(long display) throws LWJGLException;
 
 	public void setNativeCursor(Object handle) throws LWJGLException {
-	        /*
-		current_cursor = getCursorHandle(handle);
-		lockAWT();
-		try {
-			updateCursor();
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 	}
 
 	public int getMinCursorSize() {
-	        /*
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nGetMinCursorSize(getDisplay(), getWindow());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Exception occurred in getMinCursorSize: " + e);
-			return 0;
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 		return 16;
 	}
-	//private static native int nGetMinCursorSize(long display, long window);
-
+	
 	public int getMaxCursorSize() {
-	        /*
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nGetMaxCursorSize(getDisplay(), getWindow());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Exception occurred in getMaxCursorSize: " + e);
-			return 0;
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 		return 16;
 	}
-	//private static native int nGetMaxCursorSize(long display, long window);
-
+	
 	/* Keyboard */
 	public void createKeyboard() throws LWJGLException {
-		//lockAWT();
+		
 		try {
 			keyboard = new BoatKeyboard(getDisplay(), getWindow());
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
 	public void destroyKeyboard() {
-		//lockAWT();
+		
 		try {
 			keyboard.destroy(getDisplay());
 			keyboard = null;
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
 	public void pollKeyboard(ByteBuffer keyDownBuffer) {
-		//lockAWT();
+		
 		try {
 			keyboard.poll(keyDownBuffer);
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
 
 	public void readKeyboard(ByteBuffer buffer) {
-		//lockAWT();
+		
 		try {
 			keyboard.read(buffer);
 		} finally {
-			//unlockAWT();
+			
 		}
 	}
-        
-        /*
-	private static native long nCreateCursor(long display, int width, int height, int xHotspot, int yHotspot, int numImages, IntBuffer images, int images_offset, IntBuffer delays, int delays_offset) throws LWJGLException;
-
-	private static long createBlankCursor() {
-		return nCreateBlankCursor(getDisplay(), getWindow());
-	}
-	static native long nCreateBlankCursor(long display, long window);
-	*/
 
 	public Object createCursor(int width, int height, int xHotspot, int yHotspot, int numImages, IntBuffer images, IntBuffer delays) throws LWJGLException {
-	        /*
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				long cursor = nCreateCursor(getDisplay(), width, height, xHotspot, yHotspot, numImages, images, images.position(), delays, delays != null ? delays.position() : -1);
-				return cursor;
-			} catch (LWJGLException e) {
-				decDisplay();
-				throw e;
-			}
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 		return null;
 	}
-        /*
-	private static long getCursorHandle(Object cursor_handle) {
-		return cursor_handle != null ? (Long)cursor_handle : None;
-	}
-	*/
 
 	public void destroyCursor(Object cursorHandle) {
-	        /*
-		lockAWT();
-		try {
-			nDestroyCursor(getDisplay(), getCursorHandle(cursorHandle));
-			decDisplay();
-		} finally {
-			unlockAWT();
-		}
-		*/
+	       
 	}
-	//static native void nDestroyCursor(long display, long cursorHandle);
-
-
-
+	
 	public int getPbufferCapabilities() {
-	        /*
-		///lockAWT();
-		try {
-			incDisplay();
-			try {
-				return nGetPbufferCapabilities(getDisplay(), getDefaultScreen());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Exception occurred in getPbufferCapabilities: " + e);
-			return 0;
-		} finally {
-			//unlockAWT();
-		}
-		*/
-		
+	        
 		return 0;
 	}
-	//private static native int nGetPbufferCapabilities(long display, int screen);
-
+	
 	public boolean isBufferLost(PeerInfo handle) {
 		return false;
 	}
@@ -1553,63 +728,6 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 	
 	/**
-	 * This method will convert icon bytebuffers into a single bytebuffer
-	 * as the icon format required by _NET_WM_ICON should be in a cardinal
-	 * 32 bit ARGB format i.e. all icons in a single buffer the data starting
-	 * with 32 bit width & height followed by the color data as 32bit ARGB.
-	 * 
-	 * @param icons Array of icons in RGBA format
-	 */
-	/*
-	private static ByteBuffer convertIcons(ByteBuffer[] icons) {
-		
-		int bufferSize = 0;
-		
-		// calculate size of bytebuffer
-		for ( ByteBuffer icon : icons ) {
-			int size = icon.limit() / 4;
-			int dimension = (int)Math.sqrt(size);
-			if ( dimension > 0 ) {
-				bufferSize += 2 * 4; // add 32 bit width & height, 4 bytes each
-				bufferSize += dimension * dimension * 4;
-			}
-		}
-		
-		if (bufferSize == 0) return null;
-		
-		ByteBuffer icon_argb = BufferUtils.createByteBuffer(bufferSize);//icon.capacity()+(2*4));
-		icon_argb.order(ByteOrder.BIG_ENDIAN);
-		
-		for ( ByteBuffer icon : icons ) {
-			int size = icon.limit() / 4;
-			int dimension = (int)Math.sqrt(size);
-			
-			icon_argb.putInt(dimension); // width
-			icon_argb.putInt(dimension); // height
-			
-			for (int y = 0; y < dimension; y++) {
-				for (int x = 0; x < dimension; x++) {
-					
-					byte r = icon.get((x*4)+(y*dimension*4));
-					byte g = icon.get((x*4)+(y*dimension*4)+1);
-					byte b = icon.get((x*4)+(y*dimension*4)+2);
-					byte a = icon.get((x*4)+(y*dimension*4)+3);
-					
-					icon_argb.put(a);
-					icon_argb.put(r);
-					icon_argb.put(g);
-					icon_argb.put(b);
-				}
-			}
-		}
-		
-		return icon_argb;
-		
-		return null;
-	}
-	*/
-
-	/**
 	 * Sets one or more icons for the Display.
 	 * <ul>
 	 * <li>On Windows you should supply at least one 16x16 icon and one 32x32.</li>
@@ -1623,30 +741,9 @@ final class BoatDisplay implements DisplayImplementation {
 	 * @return number of icons used.
 	 */
 	public int setIcon(ByteBuffer[] icons) {
-	        /*
-		lockAWT();
-		try {
-			incDisplay();
-			try {
-				// get icons as cardinal ARGB format
-				ByteBuffer icons_data = convertIcons(icons);
-				if (icons_data == null) return 0;
-				nSetWindowIcon(getDisplay(), getWindow(), icons_data, icons_data.capacity());//, icon_mask, icon_mask.capacity(), dimension, dimension);
-				return icons.length;
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Failed to set display icon: " + e);
-			return 0;
-		} finally {
-			unlockAWT();
-		}
-		*/
+	        
 		return 0;
 	}
-
-	//private static native void nSetWindowIcon(long display, long window, ByteBuffer icons_data, int icons_size);
 
 	public int getX() {
 		return window_x;
@@ -1669,217 +766,15 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void setResizable(boolean resizable) {
-	        /*
-		if (this.resizable == resizable) {
-			return;
-		}
-		
-		this.resizable = resizable;
-		nSetWindowSize(getDisplay(), getWindow(), window_width, window_height, resizable);
-		*/
+	        
 	}
 
 	public boolean wasResized() {
-	        /*
-		if (resized) {
-			resized = false;
-			return true;
-		}
-		*/
+	        
 		return false;
 	}
 
 	public float getPixelScaleFactor() {
 		return 1f;
 	}
-	
-	/**
-	 * Helper class for managing Compiz's workarounds. We need this to enable Legacy
-	 * Fullscreen Support in Compiz, else we'll have trouble with fullscreen windows
-	 * when Compiz effects are enabled.
-	 *
-	 * Implementation Note: This code is probably too much for an inner class, but
-	 * keeping it here until we're sure we cannot find a better solution.
-	 */
-	 /*
-	private static final class Compiz {
-
-		private static boolean applyFix;
-
-		private static Provider provider;
-
-		private Compiz() {
-		}
-
-		static void init() {
-			if ( Display.getPrivilegedBoolean("org.lwjgl.opengl.Window.nocompiz_lfs") )
-				return;
-
-			AccessController.doPrivileged(new PrivilegedAction<Object>() {
-				public Object run() {
-					try {
-						// Check if Compiz is active
-						if ( !isProcessActive("compiz") )
-							return null;
-
-						provider = null;
-
-						String providerName = null;
-
-						// Check if Dbus is available
-						if ( isProcessActive("dbus-daemon") ) {
-							providerName = "Dbus";
-							provider = new Provider() {
-
-								private static final String KEY = "/org/freedesktop/compiz/workarounds/allscreens/legacy_fullscreen";
-
-								public boolean hasLegacyFullscreenSupport() throws LWJGLException {
-									final List output = Compiz.run(
-										"dbus-send", "--print-reply", "--type=method_call", "--dest=org.freedesktop.compiz", KEY, "org.freedesktop.compiz.get"
-									);
-
-									if ( output == null || output.size() < 2 )
-										throw new LWJGLException("Invalid Dbus reply.");
-
-									String line = (String)output.get(0);
-
-									if ( !line.startsWith("method return") )
-										throw new LWJGLException("Invalid Dbus reply.");
-
-									line = ((String)output.get(1)).trim(); // value
-									if ( !line.startsWith("boolean") || line.length() < 12)
-										throw new LWJGLException("Invalid Dbus reply.");
-
-									return "true".equalsIgnoreCase(line.substring("boolean".length() + 1));
-								}
-
-								public void setLegacyFullscreenSupport(final boolean state) throws LWJGLException {
-									if ( Compiz.run(
-										"dbus-send", "--type=method_call", "--dest=org.freedesktop.compiz", KEY, "org.freedesktop.compiz.set", "boolean:" + Boolean.toString(state)
-									) == null )
-										throw new LWJGLException("Failed to apply Compiz LFS workaround.");
-								}
-							};
-						} else {
-							try {
-								// Check if Gconf is available
-								Runtime.getRuntime().exec("gconftool");
-
-								providerName = "gconftool";
-								provider = new Provider() {
-
-									private static final String KEY = "/apps/compiz/plugins/workarounds/allscreens/options/legacy_fullscreen";
-
-									public boolean hasLegacyFullscreenSupport() throws LWJGLException {
-										final List output = Compiz.run(new String[] {
-											"gconftool", "-g", KEY
-										});
-
-										if ( output == null || output.size() == 0 )
-											throw new LWJGLException("Invalid gconftool reply.");
-
-										return Boolean.parseBoolean(((String)output.get(0)).trim());
-									}
-
-									public void setLegacyFullscreenSupport(final boolean state) throws LWJGLException {
-										if ( Compiz.run(new String[] {
-											"gconftool", "-s", KEY, "-s", Boolean.toString(state), "-t", "bool"
-										}) == null )
-											throw new LWJGLException("Failed to apply Compiz LFS workaround.");
-
-										if ( state ) {
-											try {
-												// gconftool will not apply the workaround immediately, sleep a bit
-												// to make sure it will be ok when we create the window.
-												Thread.sleep(200); // 100 is too low, 150 works, set to 200 to be safe.
-											} catch (InterruptedException e) {
-												e.printStackTrace();
-											}
-										}
-									}
-								};
-							} catch (IOException e) {
-								// Ignore
-							}
-						}
-
-						if ( provider != null && !provider.hasLegacyFullscreenSupport() ) { // No need to do anything if LFS is already enabled.
-							applyFix = true;
-							LWJGLUtil.log("Using " + providerName + " to apply Compiz LFS workaround.");
-						}
-					} catch (LWJGLException e) {
-						// Ignore
-					} finally {
-						return null;
-					}
-				}
-			});
-		}
-
-		static void setLegacyFullscreenSupport(final boolean enabled) {
-			if ( !applyFix )
-				return;
-
-			AccessController.doPrivileged(new PrivilegedAction<Object>() {
-				public Object run() {
-					try {
-						provider.setLegacyFullscreenSupport(enabled);
-					} catch (LWJGLException e) {
-						LWJGLUtil.log("Failed to change Compiz Legacy Fullscreen Support. Reason: " + e.getMessage());
-					}
-					return null;
-				}
-			});
-		}
-
-		private static List<String> run(final String... command) throws LWJGLException {
-			final List<String> output = new ArrayList<String>();
-
-			try {
-				final Process p = Runtime.getRuntime().exec(command);
-				try {
-					final int exitValue = p.waitFor();
-					if ( exitValue != 0 )
-						return null;
-				} catch (InterruptedException e) {
-					throw new LWJGLException("Process interrupted.", e);
-				}
-
-				final BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-				String line;
-				while ( (line = br.readLine()) != null )
-					output.add(line);
-
-				br.close();
-			} catch (final IOException e) {
-				throw new LWJGLException("Process failed.", e);
-			}
-
-			return output;
-		}
-
-		private static boolean isProcessActive(final String processName) throws LWJGLException {
-			final List<String> output = run(new String[] { "ps", "-C", processName });
-			if ( output == null )
-				return false;
-
-			for ( final String line : output ) {
-				if ( line.contains(processName) )
-					return true;
-			}
-
-			return false;
-		}
-
-		private interface Provider {
-
-			boolean hasLegacyFullscreenSupport() throws LWJGLException;
-
-			void setLegacyFullscreenSupport(boolean state) throws LWJGLException;
-
-		}
-	}
-	*/
-
 }

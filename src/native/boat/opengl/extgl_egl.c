@@ -121,7 +121,6 @@ static void extgl_InitEGL14() {
                 {"eglSwapBuffers", (void*)&lwjgl_eglSwapBuffers},
                 {"eglCopyBuffers", (void*)&lwjgl_eglCopyBuffers},
                 {"eglGetProcAddress", (void*)&lwjgl_eglGetProcAddress}};
-	//extgl_InitializeFunctions(sizeof(functions)/sizeof(ExtFunction), functions);
 	ext_InitializeFunctions(&extgl_eglSym, sizeof(functions)/sizeof(ExtFunction), functions);
 }
 
@@ -149,9 +148,7 @@ bool extgl_Open(JNIEnv *env) {
 		throwException(env, "Could not get address of glXGetProcAddressARB");
 		return false;
 	}
-	/* Unlike Windows, GLX function addresses are context-independent
-	 * so we only have to initialize the addresses once at load
-	 */
+
 	extgl_InitEGL14();
 	return true;
 }

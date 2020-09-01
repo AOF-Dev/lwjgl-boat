@@ -43,11 +43,7 @@
 #define _LWJGL_CONTEXT_H_INCLUDED_
 
 #include <jni.h>
-/*
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-*/
+
 #include "extgl_egl.h"
 
 typedef struct {
@@ -56,44 +52,17 @@ typedef struct {
 	int config_id;
 } BoatEGLConfig;
 
-/*
-typedef struct {
-	GLXFBConfigID config_id;
-} GLX13Config;
-*/
 
 typedef struct {
-	//Display *display;
 	EGLDisplay display;
-	//int screen;
-	//GLXDrawable drawable;
 	EGLSurface drawable;
-	// This flag determines the appropriate glx struct
-	//bool glx13;
 	EGLConfig config;
-	/*
-	union {
-		BoatEGLConfig egl_config;
-		//GLX13Config glx13_config;
-	} config;
-	*/
 	
 } BoatPeerInfo;
 
-/*
-// GLX 1.3 chooser 
-extern GLXFBConfig *chooseVisualGLX13(JNIEnv *env, Display *disp, int screen, jobject pixel_format, bool use_display_bpp, int drawable_type, bool double_buffer);
-
-// Default GLX chooser
-extern XVisualInfo *chooseVisualGLX(JNIEnv *env, Display *disp, int screen, jobject pixel_format, bool use_display_bpp, bool double_buffer);
-
-extern XVisualInfo *getVisualInfoFromPeerInfo(JNIEnv *env, X11PeerInfo *peer_info);
-extern GLXFBConfig *getFBConfigFromPeerInfo(JNIEnv *env, X11PeerInfo *peer_info);
-*/
 extern EGLConfig getVisualInfoFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info);
 extern EGLConfig getEGLConfigFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info);
 extern EGLConfig chooseVisualEGL(JNIEnv *env, EGLDisplay disp, int screen, jobject pixel_format, bool use_display_bpp, int drawable_type, bool double_buffer);
-
 
 extern bool initPeerInfo(JNIEnv *env, jobject peer_info_handle, void *display, int screen, jobject pixel_format, bool use_display_bpp, int drawable_type, bool double_buffered, bool force_glx13);
 

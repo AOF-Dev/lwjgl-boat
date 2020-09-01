@@ -39,102 +39,29 @@
  * @version $Revision: 2399 $
  */
 
-/*
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-*/
-#include <android/native_window.h>
+
+#include <boat.h>
 
 #include "common_tools.h"
 #include "org_lwjgl_opengl_BoatMouse.h"
 
-/*
-static void getWindowAttributes(jlong display_ptr, jlong window_ptr, XWindowAttributes *attr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XGetWindowAttributes(disp, win, attr);
-}
-*/
+
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatMouse_nGetWindowHeight(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-        /*
-	XWindowAttributes window_attributes;
-	getWindowAttributes(display_ptr, window_ptr, &window_attributes);
-	return window_attributes.height;
-	*/
+        
 	return ANativeWindow_getHeight((ANativeWindow*)(intptr_t)window_ptr);
 }
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatMouse_nGetWindowWidth(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-        /*
-	XWindowAttributes window_attributes;
-	getWindowAttributes(display_ptr, window_ptr, &window_attributes);
-	return window_attributes.width;
-	*/
 	return ANativeWindow_getWidth((ANativeWindow*)(intptr_t)window_ptr);
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatMouse_nWarpCursor(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jint x, jint y) {
-	/*
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XWarpPointer(disp, None, win, 0, 0, 0, 0, x, y);
-	*/
-}
-/*
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatMouse_nQueryPointer(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jobject result_buffer) {
-	
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	Window root_return, child_return;
-	int root_x, root_y, win_x, win_y;
-	unsigned int mask_return;
-	jint *result = (jint *)(*env)->GetDirectBufferAddress(env, result_buffer);
-	int result_size = (*env)->GetDirectBufferCapacity(env, result_buffer);
-	if (result_size < 4) {
-		throwFormattedException(env, "Not enough space in result buffer (%d)", result_size);
-		return (intptr_t)NULL;
-	}
-	
-	XQueryPointer(disp, win, &root_return, &child_return, &root_x, &root_y, &win_x, &win_y, &mask_return);
-	result[0] = root_x;
-	result[1] = root_y;
-	result[2] = win_x;
-	result[3] = win_y;
-	return root_return;
 	
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatMouse_nSendWarpEvent(JNIEnv *env, jclass unusued, jlong display_ptr, jlong window_ptr, jlong warp_atom_ptr, jint x, jint y) {
-
-	Atom warp_atom = (Atom)warp_atom_ptr;
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XEvent warp_event;
-	warp_event.type = ClientMessage;
-	warp_event.xclient.window = win;
-	warp_event.xclient.message_type = warp_atom;
-	warp_event.xclient.format = 32;
-	warp_event.xclient.data.l[0] = x;
-	warp_event.xclient.data.l[1] = y;
-	XSendEvent(disp, win, False, 0, &warp_event);
-	
-}
-*/
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatMouse_nGetButtonCount(JNIEnv *env, jclass unused, jlong display_ptr) {
-        /*
-	Display *disp = (Display *)(intptr_t)display_ptr;
-
-	int count = 256;
-
-	unsigned char * pointer_map = malloc(sizeof(unsigned char) * count);
-	count = XGetPointerMapping(disp, pointer_map, count);
-
-	free(pointer_map);
-
-	return count;
-	*/
+        
 	return 3;
 }
