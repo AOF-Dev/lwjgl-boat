@@ -285,7 +285,7 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	private void updatePointerGrab() {
-		if (isFullscreen() || shouldGrab()) {
+		if (shouldGrab()) {
 			grabPointer();
 		} else {
 			ungrabPointer();
