@@ -150,7 +150,7 @@ final class BoatKeycodes {
 
         public static final int  KEY_KPCOMMA         = 121;
         
-        public static final int  KEY_LEFTMATA        = 125;
+        public static final int  KEY_LEFTMETA        = 125;
         public static final int  KEY_RIGHTMETA       = 126;
 
         public static final int  KEY_F13             = 183;
@@ -311,9 +311,6 @@ final class BoatKeycodes {
 				return Keyboard.KEY_LMENU;
 			case KEY_RIGHTALT:
 				return Keyboard.KEY_RMENU;
-
-			case KEY_GRAVE:
-				return Keyboard.KEY_GRAVE;
 
 				/*
 				 *  Latin 1
