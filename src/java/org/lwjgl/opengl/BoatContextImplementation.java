@@ -37,14 +37,11 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 /**
- * @author elias_naur <elias_naur@users.sourceforge.net>
- * @version $Revision$
- *          $Id$
+ * @author cosine
  */
-final class LinuxContextImplementation implements ContextImplementation {
+final class BoatContextImplementation implements ContextImplementation {
 
 	public ByteBuffer create(PeerInfo peer_info, IntBuffer attribs, ByteBuffer shared_context_handle) throws LWJGLException {
-		LinuxDisplay.lockAWT();
 		try {
 			ByteBuffer peer_handle = peer_info.lockAndGetHandle();
 			try {
@@ -52,14 +49,12 @@ final class LinuxContextImplementation implements ContextImplementation {
 			} finally {
 				peer_info.unlock();
 			}
-		} finally {
-			LinuxDisplay.unlockAWT();
 		}
 	}
 
 	private static native ByteBuffer nCreate(ByteBuffer peer_handle, IntBuffer attribs, ByteBuffer shared_context_handle) throws LWJGLException;
 
-	native long getGLXContext(ByteBuffer context_handle);
+	native long getEGLContext(ByteBuffer context_handle);
 
 	native long getDisplay(ByteBuffer peer_info_handle);
 
@@ -72,7 +67,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 			throw new IllegalStateException("No context is current");
 		synchronized ( current_context ) {
 			PeerInfo current_peer_info = current_context.getPeerInfo();
-			LinuxDisplay.lockAWT();
 			try {
 				ByteBuffer peer_handle = current_peer_info.lockAndGetHandle();
 				try {
@@ -80,8 +74,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 				} finally {
 					current_peer_info.unlock();
 				}
-			} finally {
-				LinuxDisplay.unlockAWT();
 			}
 		}
 	}
@@ -94,7 +86,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 			throw new IllegalStateException("No context is current");
 		synchronized ( current_context ) {
 			PeerInfo current_peer_info = current_context.getPeerInfo();
-			LinuxDisplay.lockAWT();
 			try {
 				ByteBuffer peer_handle = current_peer_info.lockAndGetHandle();
 				try {
@@ -102,8 +93,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 				} finally {
 					current_peer_info.unlock();
 				}
-			} finally {
-				LinuxDisplay.unlockAWT();
 			}
 		}
 	}
@@ -114,7 +103,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 	}
 
 	public void makeCurrent(PeerInfo peer_info, ByteBuffer handle) throws LWJGLException {
-		LinuxDisplay.lockAWT();
 		try {
 			ByteBuffer peer_handle = peer_info.lockAndGetHandle();
 			try {
@@ -122,20 +110,15 @@ final class LinuxContextImplementation implements ContextImplementation {
 			} finally {
 				peer_info.unlock();
 			}
-		} finally {
-			LinuxDisplay.unlockAWT();
 		}
 	}
 
 	private static native void nMakeCurrent(ByteBuffer peer_handle, ByteBuffer context_handle) throws LWJGLException;
 
 	public boolean isCurrent(ByteBuffer handle) throws LWJGLException {
-		LinuxDisplay.lockAWT();
 		try {
 			boolean result = nIsCurrent(handle);
 			return result;
-		} finally {
-			LinuxDisplay.unlockAWT();
 		}
 	}
 
@@ -148,7 +131,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 		if ( current_context == null )
 			throw new IllegalStateException("No context is current");
 		synchronized ( current_context ) {
-			LinuxDisplay.lockAWT();
 			try {
 				ByteBuffer peer_handle = peer_info.lockAndGetHandle();
 				try {
@@ -159,8 +141,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 			} catch (LWJGLException e) {
 				// API CHANGE - this methods should throw LWJGLException
 				e.printStackTrace();
-			} finally {
-				LinuxDisplay.unlockAWT();
 			}
 		}
 	}
@@ -168,7 +148,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 	private static native void nSetSwapInterval(ByteBuffer peer_handle, ByteBuffer context_handle, int value);
 
 	public void destroy(PeerInfo peer_info, ByteBuffer handle) throws LWJGLException {
-		LinuxDisplay.lockAWT();
 		try {
 			ByteBuffer peer_handle = peer_info.lockAndGetHandle();
 			try {
@@ -176,8 +155,6 @@ final class LinuxContextImplementation implements ContextImplementation {
 			} finally {
 				peer_info.unlock();
 			}
-		} finally {
-			LinuxDisplay.unlockAWT();
 		}
 	}
 
