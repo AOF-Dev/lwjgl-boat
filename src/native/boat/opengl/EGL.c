@@ -31,91 +31,44 @@
  */
 
 /**
- * GLX extension implementations.
+ * EGL extension stubs.
  *
- * @author Spasi
+ * @author cosine
  */
-#include "GLX.h"
+#include "EGL.h"
 
 /* NV_present_video functions */
 
-typedef struct {
-	GLXExtensions extension_flags;
-	GLXContext context;
-} X11Context;
-
 jint extgl_EnumerateVideoDevicesNV(JNIEnv *env, jobject peer_info_handle, jobject devices, jint devices_position) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	jlong *devices_address = ((jlong *)safeGetBufferAddress(env, devices)) + devices_position;
-	unsigned int *result;
-	int i, elements;
-
-	result = lwjgl_glXEnumerateVideoDevicesNV(peer_info->display, peer_info->screen, &elements);
-	if ( devices_address != NULL ) {
-		for ( i = 0; i < elements; i++ )
-			devices_address[i] = (jlong)result[i];
-	}
-	XFree(result);
-
-	return elements;
+	return 0;
 }
 
 jboolean extgl_BindVideoDeviceNV(JNIEnv *env, jobject peer_info_handle, jint video_slot, jlong video_device, jobject attrib_list, jint attrib_list_position) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	const int *attrib_list_address = ((const int *)safeGetBufferAddress(env, attrib_list)) + attrib_list_position;
-
-	return lwjgl_glXBindVideoDeviceNV(peer_info->display, video_slot, (unsigned int)video_device, attrib_list_address);
+	return false;
 }
 
 jboolean extgl_QueryContextNV(JNIEnv *env, jobject peer_info_handle, jobject context_handle, jint attrib, jobject value, jint value_position) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	X11Context *context_info = (*env)->GetDirectBufferAddress(env, context_handle);
-	int *value_address = ((int *)(*env)->GetDirectBufferAddress(env, value)) + value_position;
-
-	return lwjgl_glXQueryContext(peer_info->display, context_info->context, attrib, value_address) == GLX_BAD_ATTRIBUTE ? 0 : 1;
+	return false;
 }
 
 /* NV_video_capture functions */
 
 jboolean extgl_BindVideoCaptureDeviceNV(JNIEnv *env, jobject peer_info_handle, jint video_slot, jlong device) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-
-	return lwjgl_glXBindVideoCaptureDeviceNV(peer_info->display, video_slot, (GLXVideoCaptureDeviceNV)device);
+	return false;
 }
 
 jint extgl_EnumerateVideoCaptureDevicesNV(JNIEnv *env, jobject peer_info_handle, jobject devices, jint devices_position) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	jlong *devices_address = ((jlong *)safeGetBufferAddress(env, devices)) + devices_position;
-	GLXVideoCaptureDeviceNV *result;
-	int i, elements;
-
-	result = lwjgl_glXEnumerateVideoCaptureDevicesNV(peer_info->display, peer_info->screen, &elements);
-	if ( devices_address != NULL ) {
-		for ( i = 0; i < elements; i++ )
-			devices_address[i] = (jlong)result[i];
-	}
-	XFree(devices);
-
-	return elements;
+	return 0;
 }
 
 jboolean extgl_LockVideoCaptureDeviceNV(JNIEnv *env, jobject peer_info_handle, jlong device) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-
-	lwjgl_glXLockVideoCaptureDeviceNV(peer_info->display, (GLXVideoCaptureDeviceNV)device);
-	return true;
+	return false;
 }
 
 jboolean extgl_QueryVideoCaptureDeviceNV(JNIEnv *env, jobject peer_info_handle, jlong device, jint attribute, jobject value, jint value_position) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	int *value_address = ((int *)(*env)->GetDirectBufferAddress(env, value)) + value_position;
-
-	return lwjgl_glXQueryVideoCaptureDeviceNV(peer_info->display, (GLXVideoCaptureDeviceNV)device, attribute, value_address);
+	return false;
 }
 
 jboolean extgl_ReleaseVideoCaptureDeviceNV(JNIEnv *env, jobject peer_info_handle, jlong device) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-
-	lwjgl_glXReleaseVideoCaptureDeviceNV(peer_info->display, (GLXVideoCaptureDeviceNV)device);
-	return true;
+	return false;
 }

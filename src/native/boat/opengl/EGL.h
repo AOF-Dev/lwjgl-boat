@@ -31,9 +31,9 @@
  */
 
 /**
- * GLX extension implementations.
+ * EGL extension stubs.
  *
- * @author Spasi
+ * @author cosine
  */
 #ifndef __LWJGL_GLX_H
 #define __LWJGL_GLX_H
@@ -43,7 +43,7 @@
 #include "context.h"
 
 #include "extgl.h"
-#include "extgl_glx.h"
+#include "extgl_egl.h"
 
 /* NV_present_video functions */
 extern jint extgl_EnumerateVideoDevicesNV(JNIEnv *env, jobject peer_info_handle, jobject devices, jint devices_position);
