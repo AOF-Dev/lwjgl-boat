@@ -428,11 +428,6 @@ final class BoatDisplay implements DisplayImplementation {
 				try {
 					current_window_mode = getWindowMode(Display.isFullscreen());
 					
-					// Try to enable Lecagy FullScreen Support in Compiz, else
-					// we may have trouble with stuff overlapping our fullscreen window.
-					if ( current_window_mode != WINDOWED )
-						Compiz.setLegacyFullscreenSupport(true);
-					
 					// Setting _MOTIF_WM_HINTS in fullscreen mode is problematic for certain window
 					// managers. We do not set MWM_HINTS_DECORATIONS in fullscreen mode anymore,
 					// unless org.lwjgl.opengl.Window.undecorated_fs has been specified.
@@ -553,9 +548,6 @@ final class BoatDisplay implements DisplayImplementation {
 			ungrabKeyboard();
 			nDestroyWindow(getDisplay(), getWindow());
 			decDisplay();
-
-			if ( current_window_mode != WINDOWED )
-				Compiz.setLegacyFullscreenSupport(false);
 		}
 	}
 	static native void nDestroyWindow(long display, long window);
@@ -609,8 +601,6 @@ final class BoatDisplay implements DisplayImplementation {
 			}
 			if (isXF86VidModeSupported())
 				doSetGamma(saved_gamma);
-
-			Compiz.setLegacyFullscreenSupport(false);
 		} catch (LWJGLException e) {
 			LWJGLUtil.log("Caught exception while resetting mode: " + e);
 		}
@@ -676,8 +666,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 	public DisplayMode init() throws LWJGLException {
 		try {
-			Compiz.init();
-
 			delete_atom = internAtom("WM_DELETE_WINDOW", false);
 			current_displaymode_extension = getBestDisplayModeExtension();
 			if (current_displaymode_extension == NONE)
@@ -1366,192 +1354,4 @@ final class BoatDisplay implements DisplayImplementation {
 	public float getPixelScaleFactor() {
 		return 1f;
 	}
-	
-	/**
-	 * Helper class for managing Compiz's workarounds. We need this to enable Legacy
-	 * Fullscreen Support in Compiz, else we'll have trouble with fullscreen windows
-	 * when Compiz effects are enabled.
-	 *
-	 * Implementation Note: This code is probably too much for an inner class, but
-	 * keeping it here until we're sure we cannot find a better solution.
-	 */
-	private static final class Compiz {
-
-		private static boolean applyFix;
-
-		private static Provider provider;
-
-		private Compiz() {
-		}
-
-		static void init() {
-			if ( Display.getPrivilegedBoolean("org.lwjgl.opengl.Window.nocompiz_lfs") )
-				return;
-
-			AccessController.doPrivileged(new PrivilegedAction<Object>() {
-				public Object run() {
-					try {
-						// Check if Compiz is active
-						if ( !isProcessActive("compiz") )
-							return null;
-
-						provider = null;
-
-						String providerName = null;
-
-						// Check if Dbus is available
-						if ( isProcessActive("dbus-daemon") ) {
-							providerName = "Dbus";
-							provider = new Provider() {
-
-								private static final String KEY = "/org/freedesktop/compiz/workarounds/allscreens/legacy_fullscreen";
-
-								public boolean hasLegacyFullscreenSupport() throws LWJGLException {
-									final List output = Compiz.run(
-										"dbus-send", "--print-reply", "--type=method_call", "--dest=org.freedesktop.compiz", KEY, "org.freedesktop.compiz.get"
-									);
-
-									if ( output == null || output.size() < 2 )
-										throw new LWJGLException("Invalid Dbus reply.");
-
-									String line = (String)output.get(0);
-
-									if ( !line.startsWith("method return") )
-										throw new LWJGLException("Invalid Dbus reply.");
-
-									line = ((String)output.get(1)).trim(); // value
-									if ( !line.startsWith("boolean") || line.length() < 12)
-										throw new LWJGLException("Invalid Dbus reply.");
-
-									return "true".equalsIgnoreCase(line.substring("boolean".length() + 1));
-								}
-
-								public void setLegacyFullscreenSupport(final boolean state) throws LWJGLException {
-									if ( Compiz.run(
-										"dbus-send", "--type=method_call", "--dest=org.freedesktop.compiz", KEY, "org.freedesktop.compiz.set", "boolean:" + Boolean.toString(state)
-									) == null )
-										throw new LWJGLException("Failed to apply Compiz LFS workaround.");
-								}
-							};
-						} else {
-							try {
-								// Check if Gconf is available
-								Runtime.getRuntime().exec("gconftool");
-
-								providerName = "gconftool";
-								provider = new Provider() {
-
-									private static final String KEY = "/apps/compiz/plugins/workarounds/allscreens/options/legacy_fullscreen";
-
-									public boolean hasLegacyFullscreenSupport() throws LWJGLException {
-										final List output = Compiz.run(new String[] {
-											"gconftool", "-g", KEY
-										});
-
-										if ( output == null || output.size() == 0 )
-											throw new LWJGLException("Invalid gconftool reply.");
-
-										return Boolean.parseBoolean(((String)output.get(0)).trim());
-									}
-
-									public void setLegacyFullscreenSupport(final boolean state) throws LWJGLException {
-										if ( Compiz.run(new String[] {
-											"gconftool", "-s", KEY, "-s", Boolean.toString(state), "-t", "bool"
-										}) == null )
-											throw new LWJGLException("Failed to apply Compiz LFS workaround.");
-
-										if ( state ) {
-											try {
-												// gconftool will not apply the workaround immediately, sleep a bit
-												// to make sure it will be ok when we create the window.
-												Thread.sleep(200); // 100 is too low, 150 works, set to 200 to be safe.
-											} catch (InterruptedException e) {
-												e.printStackTrace();
-											}
-										}
-									}
-								};
-							} catch (IOException e) {
-								// Ignore
-							}
-						}
-
-						if ( provider != null && !provider.hasLegacyFullscreenSupport() ) { // No need to do anything if LFS is already enabled.
-							applyFix = true;
-							LWJGLUtil.log("Using " + providerName + " to apply Compiz LFS workaround.");
-						}
-					} catch (LWJGLException e) {
-						// Ignore
-					} finally {
-						return null;
-					}
-				}
-			});
-		}
-
-		static void setLegacyFullscreenSupport(final boolean enabled) {
-			if ( !applyFix )
-				return;
-
-			AccessController.doPrivileged(new PrivilegedAction<Object>() {
-				public Object run() {
-					try {
-						provider.setLegacyFullscreenSupport(enabled);
-					} catch (LWJGLException e) {
-						LWJGLUtil.log("Failed to change Compiz Legacy Fullscreen Support. Reason: " + e.getMessage());
-					}
-					return null;
-				}
-			});
-		}
-
-		private static List<String> run(final String... command) throws LWJGLException {
-			final List<String> output = new ArrayList<String>();
-
-			try {
-				final Process p = Runtime.getRuntime().exec(command);
-				try {
-					final int exitValue = p.waitFor();
-					if ( exitValue != 0 )
-						return null;
-				} catch (InterruptedException e) {
-					throw new LWJGLException("Process interrupted.", e);
-				}
-
-				final BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
-
-				String line;
-				while ( (line = br.readLine()) != null )
-					output.add(line);
-
-				br.close();
-			} catch (final IOException e) {
-				throw new LWJGLException("Process failed.", e);
-			}
-
-			return output;
-		}
-
-		private static boolean isProcessActive(final String processName) throws LWJGLException {
-			final List<String> output = run(new String[] { "ps", "-C", processName });
-			if ( output == null )
-				return false;
-
-			for ( final String line : output ) {
-				if ( line.contains(processName) )
-					return true;
-			}
-
-			return false;
-		}
-
-		private interface Provider {
-
-			boolean hasLegacyFullscreenSupport() throws LWJGLException;
-
-			void setLegacyFullscreenSupport(boolean state) throws LWJGLException;
-
-		}
-	}
-
 }
