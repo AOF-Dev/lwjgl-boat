@@ -33,16 +33,13 @@
 /**
  * $Id$
  *
- * Linux specific display functions.
+ * Boat specific display functions.
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  */
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/extensions/xf86vmode.h>
+#include <boat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -50,11 +47,11 @@
 #include <jawt_md.h>
 #include "common_tools.h"
 #include "extgl.h"
-#include "extgl_glx.h"
+#include "extgl_egl.h"
 #include "context.h"
-#include "org_lwjgl_opengl_LinuxDisplay.h"
-#include "org_lwjgl_opengl_LinuxDisplayPeerInfo.h"
-#include "org_lwjgl_LinuxSysImplementation.h"
+#include "org_lwjgl_opengl_BoatDisplay.h"
+#include "org_lwjgl_opengl_BoatDisplayPeerInfo.h"
+#include "org_lwjgl_BoatSysImplementation.h"
 
 #define ERR_MSG_SIZE 1024
 
