@@ -35,56 +35,53 @@
  *
  * Linux Pbuffer.
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  */
 
 #include <stdlib.h>
-#include "org_lwjgl_opengl_LinuxPbufferPeerInfo.h"
+#include "org_lwjgl_opengl_BoatPbufferPeerInfo.h"
 #include "org_lwjgl_opengl_Pbuffer.h"
 #include "extgl.h"
 #include "context.h"
 #include "common_tools.h"
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetPbufferCapabilities
-  (JNIEnv *env, jclass clazz, jlong display, jint screen)
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nGetPbufferCapabilities
+  (JNIEnv *env, jclass clazz, jlong display)
 {
-	Display *disp = (Display *)(intptr_t)display;
-	GLXExtensions extension_flags;
-	if (!extgl_InitGLX(disp, screen, &extension_flags))
+	EGLDisplay disp = (EGLDisplay)(intptr_t)display;
+	if (!extgl_InitEGL(disp))
 		return 0;
-	// Only support the GLX 1.3 Pbuffers and ignore the GLX_SGIX_pbuffer extension
-	return extension_flags.GLX13 ? org_lwjgl_opengl_Pbuffer_PBUFFER_SUPPORTED : 0;
+	// Only support the EGL 1.4 Pbuffers
+	return org_lwjgl_opengl_Pbuffer_PBUFFER_SUPPORTED;
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxPbufferPeerInfo_nInitHandle
-  (JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jint width, jint height, jobject pixel_format) {
-	Display *disp = (Display *)(intptr_t)display;
-	GLXExtensions extension_flags;
-	if (!extgl_InitGLX(disp, screen, &extension_flags) || !extension_flags.GLX13) {
+JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatPbufferPeerInfo_nInitHandle
+  (JNIEnv *env, jclass clazz, jlong display, jobject peer_info_handle, jint width, jint height, jobject pixel_format) {
+	EGLDisplay disp = (EGLDisplay)(intptr_t)display;
+	if (!extgl_InitEGL(disp)) {
 		throwException(env, "No Pbuffer support");
 		return;
 	}
-	bool result = initPeerInfo(env, peer_info_handle, disp, screen, pixel_format, false, GLX_PBUFFER_BIT, false, true);
+	bool result = initPeerInfo(env, peer_info_handle, disp, pixel_format, false, EGL_PBUFFER_BIT);
 	if (!result)
 		return;
-	const int buffer_attribs[] = {GLX_PBUFFER_WIDTH, width,
-				      GLX_PBUFFER_HEIGHT, height,
-				      GLX_PRESERVED_CONTENTS, True,
-				      GLX_LARGEST_PBUFFER, False,
-					  None, None};
+	const int buffer_attribs[] = {EGL_PBUFFER_WIDTH, width,
+				      EGL_PBUFFER_HEIGHT, height,
+				      EGL_LARGEST_PBUFFER, EGL_FALSE,
+					  EGL_NONE, EGL_NONE};
 
-	X11PeerInfo *peer_info = (X11PeerInfo *)(*env)->GetDirectBufferAddress(env, peer_info_handle);
-	GLXFBConfig *config = getFBConfigFromPeerInfo(env, peer_info);
+	BoatPeerInfo *peer_info = (BoatPeerInfo *)(*env)->GetDirectBufferAddress(env, peer_info_handle);
+	EGLConfig *config = getFBConfigFromPeerInfo(env, peer_info);
 	if (config != NULL) {
-		GLXPbuffer buffer = lwjgl_glXCreatePbuffer(peer_info->display, *config, buffer_attribs);
-		XFree(config);
+		EGLSurface buffer = lwjgl_eglCreatePbufferSurface(peer_info->display, *config, buffer_attribs);
+		free(config);
 		peer_info->drawable = buffer;
 	}
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxPbufferPeerInfo_nDestroy
+JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatPbufferPeerInfo_nDestroy
   (JNIEnv *env, jclass clazz, jobject peer_info_handle) {
-	X11PeerInfo *peer_info = (X11PeerInfo *)(*env)->GetDirectBufferAddress(env, peer_info_handle);
-	lwjgl_glXDestroyPbuffer(peer_info->display, peer_info->drawable);
+	BoatPeerInfo *peer_info = (BoatPeerInfo *)(*env)->GetDirectBufferAddress(env, peer_info_handle);
+	lwjgl_eglDestroySurface(peer_info->display, peer_info->drawable);
 }

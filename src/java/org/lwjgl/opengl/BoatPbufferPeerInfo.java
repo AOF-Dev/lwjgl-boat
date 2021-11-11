@@ -37,39 +37,34 @@ import org.lwjgl.LWJGLException;
 
 /**
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  * $Id$
  */
-final class LinuxPbufferPeerInfo extends LinuxPeerInfo {
-	LinuxPbufferPeerInfo(int width, int height, PixelFormat pixel_format) throws LWJGLException {
-		LinuxDisplay.lockAWT();
+final class BoatPbufferPeerInfo extends BoatPeerInfo {
+	BoatPbufferPeerInfo(int width, int height, PixelFormat pixel_format) throws LWJGLException {
 		try {
 			GLContext.loadOpenGLLibrary();
 			try {
-				LinuxDisplay.incDisplay();
+				BoatDisplay.incDisplay();
 				try {
-					nInitHandle(LinuxDisplay.getDisplay(), LinuxDisplay.getDefaultScreen(), getHandle(), width, height, pixel_format);
+					nInitHandle(BoatDisplay.getDisplay(), getHandle(), width, height, pixel_format);
 				} catch (LWJGLException e) {
-					LinuxDisplay.decDisplay();
+					BoatDisplay.decDisplay();
 					throw e;
 				}
 			} catch (LWJGLException e) {
 				GLContext.unloadOpenGLLibrary();
 				throw e;
 			}
-		} finally {
-			LinuxDisplay.unlockAWT();
 		}
 	}
-	private static native void nInitHandle(long display, int screen, ByteBuffer handle, int width, int height, PixelFormat pixel_format) throws LWJGLException;
+	private static native void nInitHandle(long display, ByteBuffer handle, int width, int height, PixelFormat pixel_format) throws LWJGLException;
 
 	public void destroy() {
-		LinuxDisplay.lockAWT();
 		nDestroy(getHandle());
-		LinuxDisplay.decDisplay();
+		BoatDisplay.decDisplay();
 		GLContext.unloadOpenGLLibrary();
-		LinuxDisplay.unlockAWT();
 	}
 	private static native void nDestroy(ByteBuffer handle);
 
