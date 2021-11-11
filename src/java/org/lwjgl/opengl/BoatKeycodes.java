@@ -32,529 +32,226 @@
 package org.lwjgl.opengl;
 
 /**
- * @author elias_naur
+ * @author cosine
  */
 
 import org.lwjgl.input.Keyboard;
 
-final class LinuxKeycodes {
-	public static final int XK_Kanji                         = 0xff21;
+final class BoatKeycodes {
+	public static final int  KEY_RESERVED        = 0;
 
-	public static final int XK_ISO_Left_Tab                  = 0xfe20;
+	public static final int  KEY_ESC             = 1;
+	public static final int  KEY_1               = 2;
+	public static final int  KEY_2               = 3;
+	public static final int  KEY_3               = 4;
+	public static final int  KEY_4               = 5;
+	public static final int  KEY_5               = 6;
+	public static final int  KEY_6               = 7;
+	public static final int  KEY_7               = 8;
+	public static final int  KEY_8               = 9;
+	public static final int  KEY_9               = 10;
+	public static final int  KEY_0               = 11;
+	public static final int  KEY_MINUS           = 12;
+	public static final int  KEY_EQUAL           = 13;
+	public static final int  KEY_BACKSPACE       = 14;
+	public static final int  KEY_TAB             = 15;
+	public static final int  KEY_Q               = 16;
+	public static final int  KEY_W               = 17;
+	public static final int  KEY_E               = 18;
+	public static final int  KEY_R               = 19;
+	public static final int  KEY_T               = 20;
+	public static final int  KEY_Y               = 21;
+	public static final int  KEY_U               = 22;
+	public static final int  KEY_I               = 23;
+	public static final int  KEY_O               = 24;
+	public static final int  KEY_P               = 25;
+	public static final int  KEY_LEFTBRACE       = 26;
+	public static final int  KEY_RIGHTBRACE      = 27;
+	public static final int  KEY_ENTER           = 28;
+	public static final int  KEY_LEFTCTRL        = 29;
+	public static final int  KEY_A               = 30;
+	public static final int  KEY_S               = 31;
+	public static final int  KEY_D               = 32;
+	public static final int  KEY_F               = 33;
+	public static final int  KEY_G               = 34;
+	public static final int  KEY_H               = 35;
+	public static final int  KEY_J               = 36;
+	public static final int  KEY_K               = 37;
+	public static final int  KEY_L               = 38;
+	public static final int  KEY_SEMICOLON       = 39;
+	public static final int  KEY_APOSTROPHE      = 40;
+	public static final int  KEY_GRAVE           = 41;
+	public static final int  KEY_LEFTSHIFT       = 42;
+	public static final int  KEY_BACKSLASH       = 43;
+	public static final int  KEY_Z               = 44;
+	public static final int  KEY_X               = 45;
+	public static final int  KEY_C               = 46;
+	public static final int  KEY_V               = 47;
+	public static final int  KEY_B               = 48;
+	public static final int  KEY_N               = 49;
+	public static final int  KEY_M               = 50;
+	public static final int  KEY_COMMA           = 51;
+	public static final int  KEY_DOT             = 52;
+	public static final int  KEY_SLASH           = 53;
+	public static final int  KEY_RIGHTSHIFT      = 54;
+	public static final int  KEY_KPASTERISK      = 55;
+	public static final int  KEY_LEFTALT         = 56;
+	public static final int  KEY_SPACE           = 57;
+	public static final int  KEY_CAPSLOCK        = 58;
+	public static final int  KEY_F1              = 59;
+	public static final int  KEY_F2              = 60;
+	public static final int  KEY_F3              = 61;
+	public static final int  KEY_F4              = 62;
+	public static final int  KEY_F5              = 63;
+	public static final int  KEY_F6              = 64;
+	public static final int  KEY_F7              = 65;
+	public static final int  KEY_F8              = 66;
+	public static final int  KEY_F9              = 67;
+	public static final int  KEY_F10             = 68;
+	public static final int  KEY_NUMLOCK         = 69;
+	public static final int  KEY_SCROLLLOCK      = 70;
+	public static final int  KEY_KP7             = 71;
+	public static final int  KEY_KP8             = 72;
+	public static final int  KEY_KP9             = 73;
+	public static final int  KEY_KPMINUS         = 74;
+	public static final int  KEY_KP4             = 75;
+	public static final int  KEY_KP5             = 76;
+	public static final int  KEY_KP6             = 77;
+	public static final int  KEY_KPPLUS          = 78;
+	public static final int  KEY_KP1             = 79;
+	public static final int  KEY_KP2             = 80;
+	public static final int  KEY_KP3             = 81;
+	public static final int  KEY_KP0             = 82;
+	public static final int  KEY_KPDOT           = 83;
 
-	public static final int XK_dead_grave                    = 0xfe50;
-	public static final int XK_dead_acute                    = 0xfe51;
-	public static final int XK_dead_circumflex               = 0xfe52;
-	public static final int XK_dead_tilde                    = 0xfe53;
-	public static final int XK_dead_macron                   = 0xfe54;
-	public static final int XK_dead_breve                    = 0xfe55;
-	public static final int XK_dead_abovedot                 = 0xfe56;
-	public static final int XK_dead_diaeresis                = 0xfe57;
-	public static final int XK_dead_abovering                = 0xfe58;
-	public static final int XK_dead_doubleacute              = 0xfe59;
-	public static final int XK_dead_caron                    = 0xfe5a;
-	public static final int XK_dead_cedilla                  = 0xfe5b;
-	public static final int XK_dead_ogonek                   = 0xfe5c;
-	public static final int XK_dead_iota                     = 0xfe5d;
-	public static final int XK_dead_voiced_sound             = 0xfe5e;
-	public static final int XK_dead_semivoiced_sound         = 0xfe5f;
-	public static final int XK_dead_belowdot                 = 0xfe60;
-	public static final int XK_dead_hook                     = 0xfe61;
-	public static final int XK_dead_horn                     = 0xfe62;
+	public static final int  KEY_F11             = 87;
+	public static final int  KEY_F12             = 88;
 
-	public static final int XK_BackSpace                     = 0xff08;
-	public static final int XK_Tab                           = 0xff09;
-	public static final int XK_Linefeed                      = 0xff0a;
-	public static final int XK_Clear                         = 0xff0b;
-	public static final int XK_Return                        = 0xff0d;
-	public static final int XK_Pause                         = 0xff13;
-	public static final int XK_Scroll_Lock                   = 0xff14;
-	public static final int XK_Sys_Req                       = 0xff15;
-	public static final int XK_Escape                        = 0xff1b;
-	public static final int XK_Delete                        = 0xffff;
+	public static final int  KEY_KPENTER         = 96;
+	public static final int  KEY_RIGHTCTRL       = 97;
+	public static final int  KEY_KPSLASH         = 98;
+	public static final int  KEY_SYSRQ           = 99;
+	public static final int  KEY_RIGHTALT        = 100;
 
-	public static final int XK_Home                          = 0xff50;
-	public static final int XK_Left                          = 0xff51;
-	public static final int XK_Up                            = 0xff52;
-	public static final int XK_Right                         = 0xff53;
-	public static final int XK_Down                          = 0xff54;
-	public static final int XK_Prior                         = 0xff55;
-	public static final int XK_Page_Up                       = 0xff55;
-	public static final int XK_Next                          = 0xff56;
-	public static final int XK_Page_Down                     = 0xff56;
-	public static final int XK_End                           = 0xff57;
-	public static final int XK_Begin                         = 0xff58;
+	public static final int  KEY_HOME            = 102;
+	public static final int  KEY_UP              = 103;
+	public static final int  KEY_PAGEUP          = 104;
+	public static final int  KEY_LEFT            = 105;
+	public static final int  KEY_RIGHT           = 106;
+	public static final int  KEY_END             = 107;
+	public static final int  KEY_DOWN            = 108;
+	public static final int  KEY_PAGEDOWN        = 109;
+	public static final int  KEY_INSERT          = 110;
+	public static final int  KEY_DELETE          = 111;
 
+	public static final int  KEY_KPEQUAL         = 117;
 
-/* Misc functions */
+	public static final int  KEY_PAUSE           = 119;
 
-	public static final int XK_Select                        = 0xff60;
-	public static final int XK_Print                         = 0xff61;
-	public static final int XK_Execute                       = 0xff62;
-	public static final int XK_Insert                        = 0xff63;
-	public static final int XK_Undo                          = 0xff65;
-	public static final int XK_Redo                          = 0xff66;
-	public static final int XK_Menu                          = 0xff67;
-	public static final int XK_Find                          = 0xff68;
-	public static final int XK_Cancel                        = 0xff69;
-	public static final int XK_Help                          = 0xff6a;
-	public static final int XK_Break                         = 0xff6b;
-	public static final int XK_Mode_switch                   = 0xff7e;
-	public static final int XK_script_switch                 = 0xff7e;
-	public static final int XK_Num_Lock                      = 0xff7f;
+	public static final int  KEY_KPCOMMA         = 121;
 
-/* Keypad functions, keypad numbers cleverly chosen to map to ASCII */
+	public static final int  KEY_LEFTMETA        = 125;
+	public static final int  KEY_RIGHTMETA       = 126;
 
-	public static final int XK_KP_Space                      = 0xff80;
-	public static final int XK_KP_Tab                        = 0xff89;
-	public static final int XK_KP_Enter                      = 0xff8d;
-	public static final int XK_KP_F1                         = 0xff91;
-	public static final int XK_KP_F2                         = 0xff92;
-	public static final int XK_KP_F3                         = 0xff93;
-	public static final int XK_KP_F4                         = 0xff94;
-	public static final int XK_KP_Home                       = 0xff95;
-	public static final int XK_KP_Left                       = 0xff96;
-	public static final int XK_KP_Up                         = 0xff97;
-	public static final int XK_KP_Right                      = 0xff98;
-	public static final int XK_KP_Down                       = 0xff99;
-	public static final int XK_KP_Prior                      = 0xff9a;
-	public static final int XK_KP_Page_Up                    = 0xff9a;
-	public static final int XK_KP_Next                       = 0xff9b;
-	public static final int XK_KP_Page_Down                  = 0xff9b;
-	public static final int XK_KP_End                        = 0xff9c;
-	public static final int XK_KP_Begin                      = 0xff9d;
-	public static final int XK_KP_Insert                     = 0xff9e;
-	public static final int XK_KP_Delete                     = 0xff9f;
-	public static final int XK_KP_Equal                      = 0xffbd;
-	public static final int XK_KP_Multiply                   = 0xffaa;
-	public static final int XK_KP_Add                        = 0xffab;
-	public static final int XK_KP_Separator                  = 0xffac;
-	public static final int XK_KP_Subtract                   = 0xffad;
-	public static final int XK_KP_Decimal                    = 0xffae;
-	public static final int XK_KP_Divide                     = 0xffaf;
+	public static final int  KEY_MENU            = 139;
 
-	public static final int XK_KP_0                          = 0xffb0;
-	public static final int XK_KP_1                          = 0xffb1;
-	public static final int XK_KP_2                          = 0xffb2;
-	public static final int XK_KP_3                          = 0xffb3;
-	public static final int XK_KP_4                          = 0xffb4;
-	public static final int XK_KP_5                          = 0xffb5;
-	public static final int XK_KP_6                          = 0xffb6;
-	public static final int XK_KP_7                          = 0xffb7;
-	public static final int XK_KP_8                          = 0xffb8;
-	public static final int XK_KP_9                          = 0xffb9;
+	public static final int  KEY_F13             = 183;
+	public static final int  KEY_F14             = 184;
+	public static final int  KEY_F15             = 185;
+	public static final int  KEY_F16             = 186;
+	public static final int  KEY_F17             = 187;
+	public static final int  KEY_F18             = 188;
+	public static final int  KEY_F19             = 189;
+	public static final int  KEY_F20             = 190;
+	public static final int  KEY_F21             = 191;
+	public static final int  KEY_F22             = 192;
+	public static final int  KEY_F23             = 193;
+	public static final int  KEY_F24             = 194;
 
-
-
-/*
- * Auxilliary functions; note the duplicate definitions for left and right
- * function keys;  Sun keyboards and a few other manufactures have such
- * function key groups on the left and/or right sides of the keyboard.
- * We've not found a keyboard with more than 35 function keys total.
- */
-
-	public static final int XK_F1                            = 0xffbe;
-	public static final int XK_F2                            = 0xffbf;
-	public static final int XK_F3                            = 0xffc0;
-	public static final int XK_F4                            = 0xffc1;
-	public static final int XK_F5                            = 0xffc2;
-	public static final int XK_F6                            = 0xffc3;
-	public static final int XK_F7                            = 0xffc4;
-	public static final int XK_F8                            = 0xffc5;
-	public static final int XK_F9                            = 0xffc6;
-	public static final int XK_F10                           = 0xffc7;
-	public static final int XK_F11                           = 0xffc8;
-	public static final int XK_L1                            = 0xffc8;
-	public static final int XK_F12                           = 0xffc9;
-	public static final int XK_L2                            = 0xffc9;
-	public static final int XK_F13                           = 0xffca;
-	public static final int XK_L3                            = 0xffca;
-	public static final int XK_F14                           = 0xffcb;
-	public static final int XK_L4                            = 0xffcb;
-	public static final int XK_F15                           = 0xffcc;
-	public static final int XK_L5                            = 0xffcc;
-	public static final int XK_F16                           = 0xffcd;
-	public static final int XK_L6                            = 0xffcd;
-	public static final int XK_F17                           = 0xffce;
-	public static final int XK_L7                            = 0xffce;
-	public static final int XK_F18                           = 0xffcf;
-	public static final int XK_L8                            = 0xffcf;
-	public static final int XK_F19                           = 0xffd0;
-	public static final int XK_L9                            = 0xffd0;
-	public static final int XK_F20                           = 0xffd1;
-	public static final int XK_L10                           = 0xffd1;
-	public static final int XK_F21                           = 0xffd2;
-	public static final int XK_R1                            = 0xffd2;
-	public static final int XK_F22                           = 0xffd3;
-	public static final int XK_R2                            = 0xffd3;
-	public static final int XK_F23                           = 0xffd4;
-	public static final int XK_R3                            = 0xffd4;
-	public static final int XK_F24                           = 0xffd5;
-	public static final int XK_R4                            = 0xffd5;
-	public static final int XK_F25                           = 0xffd6;
-	public static final int XK_R5                            = 0xffd6;
-	public static final int XK_F26                           = 0xffd7;
-	public static final int XK_R6                            = 0xffd7;
-	public static final int XK_F27                           = 0xffd8;
-	public static final int XK_R7                            = 0xffd8;
-	public static final int XK_F28                           = 0xffd9;
-	public static final int XK_R8                            = 0xffd9;
-	public static final int XK_F29                           = 0xffda;
-	public static final int XK_R9                            = 0xffda;
-	public static final int XK_F30                           = 0xffdb;
-	public static final int XK_R10                           = 0xffdb;
-	public static final int XK_F31                           = 0xffdc;
-	public static final int XK_R11                           = 0xffdc;
-	public static final int XK_F32                           = 0xffdd;
-	public static final int XK_R12                           = 0xffdd;
-	public static final int XK_F33                           = 0xffde;
-	public static final int XK_R13                           = 0xffde;
-	public static final int XK_F34                           = 0xffdf;
-	public static final int XK_R14                           = 0xffdf;
-	public static final int XK_F35                           = 0xffe0;
-	public static final int XK_R15                           = 0xffe0;
-
-/* Modifiers */
-
-	public static final int XK_Shift_L                       = 0xffe1;
-	public static final int XK_Shift_R                       = 0xffe2;
-	public static final int XK_Control_L                     = 0xffe3;
-	public static final int XK_Control_R                     = 0xffe4;
-	public static final int XK_Caps_Lock                     = 0xffe5;
-	public static final int XK_Shift_Lock                    = 0xffe6;
-
-	public static final int XK_Meta_L                        = 0xffe7;
-	public static final int XK_Meta_R                        = 0xffe8;
-	public static final int XK_Alt_L                         = 0xffe9;
-	public static final int XK_Alt_R                         = 0xffea;
-	public static final int XK_Super_L                       = 0xffeb;
-	public static final int XK_Super_R                       = 0xffec;
-	public static final int XK_Hyper_L                       = 0xffed;
-	public static final int XK_Hyper_R                       = 0xffee;
-	public static final int XK_space                         = 0x0020;
-	public static final int XK_exclam                        = 0x0021;
-	public static final int XK_quotedbl                      = 0x0022;
-	public static final int XK_numbersign                    = 0x0023;
-	public static final int XK_dollar                        = 0x0024;
-	public static final int XK_percent                       = 0x0025;
-	public static final int XK_ampersand                     = 0x0026;
-	public static final int XK_apostrophe                    = 0x0027;
-	public static final int XK_quoteright                    = 0x0027;
-	public static final int XK_parenleft                     = 0x0028;
-	public static final int XK_parenright                    = 0x0029;
-	public static final int XK_asterisk                      = 0x002a;
-	public static final int XK_plus                          = 0x002b;
-	public static final int XK_comma                         = 0x002c;
-	public static final int XK_minus                         = 0x002d;
-	public static final int XK_period                        = 0x002e;
-	public static final int XK_slash                         = 0x002f;
-
-	public static final int XK_0                             = 0x0030;
-	public static final int XK_1                             = 0x0031;
-	public static final int XK_2                             = 0x0032;
-	public static final int XK_3                             = 0x0033;
-	public static final int XK_4                             = 0x0034;
-	public static final int XK_5                             = 0x0035;
-	public static final int XK_6                             = 0x0036;
-	public static final int XK_7                             = 0x0037;
-	public static final int XK_8                             = 0x0038;
-	public static final int XK_9                             = 0x0039;
-	public static final int XK_colon                         = 0x003a;
-	public static final int XK_semicolon                     = 0x003b;
-	public static final int XK_less                          = 0x003c;
-	public static final int XK_equal                         = 0x003d;
-	public static final int XK_greater                       = 0x003e;
-	public static final int XK_question                      = 0x003f;
-	public static final int XK_at                            = 0x0040;
-	public static final int XK_A                             = 0x0041;
-	public static final int XK_B                             = 0x0042;
-	public static final int XK_C                             = 0x0043;
-	public static final int XK_D                             = 0x0044;
-	public static final int XK_E                             = 0x0045;
-	public static final int XK_F                             = 0x0046;
-	public static final int XK_G                             = 0x0047;
-	public static final int XK_H                             = 0x0048;
-	public static final int XK_I                             = 0x0049;
-	public static final int XK_J                             = 0x004a;
-	public static final int XK_K                             = 0x004b;
-	public static final int XK_L                             = 0x004c;
-	public static final int XK_M                             = 0x004d;
-	public static final int XK_N                             = 0x004e;
-	public static final int XK_O                             = 0x004f;
-	public static final int XK_P                             = 0x0050;
-	public static final int XK_Q                             = 0x0051;
-	public static final int XK_R                             = 0x0052;
-	public static final int XK_S                             = 0x0053;
-	public static final int XK_T                             = 0x0054;
-	public static final int XK_U                             = 0x0055;
-	public static final int XK_V                             = 0x0056;
-	public static final int XK_W                             = 0x0057;
-	public static final int XK_X                             = 0x0058;
-	public static final int XK_Y                             = 0x0059;
-	public static final int XK_Z                             = 0x005a;
-	public static final int XK_bracketleft                   = 0x005b;
-	public static final int XK_backslash                     = 0x005c;
-	public static final int XK_bracketright                  = 0x005d;
-	public static final int XK_asciicircum                   = 0x005e;
-	public static final int XK_underscore                    = 0x005f;
-	public static final int XK_grave                         = 0x0060;
-	public static final int XK_quoteleft                     = 0x0060;
-	public static final int XK_a                             = 0x0061;
-	public static final int XK_b                             = 0x0062;
-	public static final int XK_c                             = 0x0063;
-	public static final int XK_d                             = 0x0064;
-	public static final int XK_e                             = 0x0065;
-	public static final int XK_f                             = 0x0066;
-	public static final int XK_g                             = 0x0067;
-	public static final int XK_h                             = 0x0068;
-	public static final int XK_i                             = 0x0069;
-	public static final int XK_j                             = 0x006a;
-	public static final int XK_k                             = 0x006b;
-	public static final int XK_l                             = 0x006c;
-	public static final int XK_m                             = 0x006d;
-	public static final int XK_n                             = 0x006e;
-	public static final int XK_o                             = 0x006f;
-	public static final int XK_p                             = 0x0070;
-	public static final int XK_q                             = 0x0071;
-	public static final int XK_r                             = 0x0072;
-	public static final int XK_s                             = 0x0073;
-	public static final int XK_t                             = 0x0074;
-	public static final int XK_u                             = 0x0075;
-	public static final int XK_v                             = 0x0076;
-	public static final int XK_w                             = 0x0077;
-	public static final int XK_x                             = 0x0078;
-	public static final int XK_y                             = 0x0079;
-	public static final int XK_z                             = 0x007a;
-	public static final int XK_braceleft                     = 0x007b;
-	public static final int XK_bar                           = 0x007c;
-	public static final int XK_braceright                    = 0x007d;
-	public static final int XK_asciitilde                    = 0x007e;
-
-	public static final int XK_nobreakspace                  = 0x00a0;
-	public static final int XK_exclamdown                    = 0x00a1;
-	public static final int XK_cent                          = 0x00a2;
-	public static final int XK_sterling                      = 0x00a3;
-	public static final int XK_currency                      = 0x00a4;
-	public static final int XK_yen                           = 0x00a5;
-	public static final int XK_brokenbar                     = 0x00a6;
-	public static final int XK_section                       = 0x00a7;
-	public static final int XK_diaeresis                     = 0x00a8;
-	public static final int XK_copyright                     = 0x00a9;
-	public static final int XK_ordfeminine                   = 0x00aa;
-	public static final int XK_guillemotleft                 = 0x00ab;
-	public static final int XK_notsign                       = 0x00ac;
-	public static final int XK_hyphen                        = 0x00ad;
-	public static final int XK_registered                    = 0x00ae;
-	public static final int XK_macron                        = 0x00af;
-	public static final int XK_degree                        = 0x00b0;
-	public static final int XK_plusminus                     = 0x00b1;
-	public static final int XK_twosuperior                   = 0x00b2;
-	public static final int XK_threesuperior                 = 0x00b3;
-	public static final int XK_acute                         = 0x00b4;
-	public static final int XK_mu                            = 0x00b5;
-	public static final int XK_paragraph                     = 0x00b6;
-	public static final int XK_periodcentered                = 0x00b7;
-	public static final int XK_cedilla                       = 0x00b8;
-	public static final int XK_onesuperior                   = 0x00b9;
-	public static final int XK_masculine                     = 0x00ba;
-	public static final int XK_guillemotright                = 0x00bb;
-	public static final int XK_onequarter                    = 0x00bc;
-	public static final int XK_onehalf                       = 0x00bd;
-	public static final int XK_threequarters                 = 0x00be;
-	public static final int XK_questiondown                  = 0x00bf;
-	public static final int XK_Agrave                        = 0x00c0;
-	public static final int XK_Aacute                        = 0x00c1;
-	public static final int XK_Acircumflex                   = 0x00c2;
-	public static final int XK_Atilde                        = 0x00c3;
-	public static final int XK_Adiaeresis                    = 0x00c4;
-	public static final int XK_Aring                         = 0x00c5;
-	public static final int XK_AE                            = 0x00c6;
-	public static final int XK_Ccedilla                      = 0x00c7;
-	public static final int XK_Egrave                        = 0x00c8;
-	public static final int XK_Eacute                        = 0x00c9;
-	public static final int XK_Ecircumflex                   = 0x00ca;
-	public static final int XK_Ediaeresis                    = 0x00cb;
-	public static final int XK_Igrave                        = 0x00cc;
-	public static final int XK_Iacute                        = 0x00cd;
-	public static final int XK_Icircumflex                   = 0x00ce;
-	public static final int XK_Idiaeresis                    = 0x00cf;
-	public static final int XK_ETH                           = 0x00d0;
-	public static final int XK_Eth                           = 0x00d0;
-	public static final int XK_Ntilde                        = 0x00d1;
-	public static final int XK_Ograve                        = 0x00d2;
-	public static final int XK_Oacute                        = 0x00d3;
-	public static final int XK_Ocircumflex                   = 0x00d4;
-	public static final int XK_Otilde                        = 0x00d5;
-	public static final int XK_Odiaeresis                    = 0x00d6;
-	public static final int XK_multiply                      = 0x00d7;
-	public static final int XK_Oslash                        = 0x00d8;
-	public static final int XK_Ooblique                      = 0x00d8;
-	public static final int XK_Ugrave                        = 0x00d9;
-	public static final int XK_Uacute                        = 0x00da;
-	public static final int XK_Ucircumflex                   = 0x00db;
-	public static final int XK_Udiaeresis                    = 0x00dc;
-	public static final int XK_Yacute                        = 0x00dd;
-	public static final int XK_THORN                         = 0x00de;
-	public static final int XK_Thorn                         = 0x00de;
-	public static final int XK_ssharp                        = 0x00df;
-	public static final int XK_agrave                        = 0x00e0;
-	public static final int XK_aacute                        = 0x00e1;
-	public static final int XK_acircumflex                   = 0x00e2;
-	public static final int XK_atilde                        = 0x00e3;
-	public static final int XK_adiaeresis                    = 0x00e4;
-	public static final int XK_aring                         = 0x00e5;
-	public static final int XK_ae                            = 0x00e6;
-	public static final int XK_ccedilla                      = 0x00e7;
-	public static final int XK_egrave                        = 0x00e8;
-	public static final int XK_eacute                        = 0x00e9;
-	public static final int XK_ecircumflex                   = 0x00ea;
-	public static final int XK_ediaeresis                    = 0x00eb;
-	public static final int XK_igrave                        = 0x00ec;
-	public static final int XK_iacute                        = 0x00ed;
-	public static final int XK_icircumflex                   = 0x00ee;
-	public static final int XK_idiaeresis                    = 0x00ef;
-	public static final int XK_eth                           = 0x00f0;
-	public static final int XK_ntilde                        = 0x00f1;
-	public static final int XK_ograve                        = 0x00f2;
-	public static final int XK_oacute                        = 0x00f3;
-	public static final int XK_ocircumflex                   = 0x00f4;
-	public static final int XK_otilde                        = 0x00f5;
-	public static final int XK_odiaeresis                    = 0x00f6;
-	public static final int XK_division                      = 0x00f7;
-	public static final int XK_oslash                        = 0x00f8;
-	public static final int XK_ooblique                      = 0x00f8;
-	public static final int XK_ugrave                        = 0x00f9;
-	public static final int XK_uacute                        = 0x00fa;
-	public static final int XK_ucircumflex                   = 0x00fb;
-	public static final int XK_udiaeresis                    = 0x00fc;
-	public static final int XK_yacute                        = 0x00fd;
-	public static final int XK_thorn                         = 0x00fe;
-	public static final int XK_ydiaeresis                    = 0x00ff;
-
-	public static final int XK_ISO_Level3_Shift              = 0xfe03;
+	public static final int  KEY_UNKNOWN         = 240;
 
 	public static int mapKeySymToLWJGLKeyCode(long keysym) {
 		switch ((int)keysym) {
-			case XK_BackSpace:
+			case KEY_BACKSPACE:
 				return Keyboard.KEY_BACK;
-			case XK_ISO_Left_Tab:
-			case XK_Tab:
+			case KEY_TAB:
 				return Keyboard.KEY_TAB;
-			case XK_Return:
+			case KEY_ENTER:
 				return Keyboard.KEY_RETURN;
-			case XK_Pause:
+			case KEY_PAUSE:
 				return Keyboard.KEY_PAUSE;
-			case XK_Scroll_Lock:
+			case KEY_SCROLLLOCK:
 				return Keyboard.KEY_SCROLL;
-			case XK_Sys_Req:
+			case KEY_SYSRQ:
 				return Keyboard.KEY_SYSRQ;
-			case XK_Escape:
+			case KEY_ESC:
 				return Keyboard.KEY_ESCAPE;
-			case XK_Delete:
+			case KEY_DELETE:
 				return Keyboard.KEY_DELETE;
-
-				/* Japanese keyboard support */
-
-			case XK_Kanji:
-				return Keyboard.KEY_KANJI;
 
 				/* Cursor control & motion */
 
-			case XK_Home:
+			case KEY_HOME:
 				return Keyboard.KEY_HOME;
-			case XK_Left:
+			case KEY_LEFT:
 				return Keyboard.KEY_LEFT;
-			case XK_Up:
+			case KEY_UP:
 				return Keyboard.KEY_UP;
-			case XK_Right:
+			case KEY_RIGHT:
 				return Keyboard.KEY_RIGHT;
-			case XK_Down:
+			case KEY_DOWN:
 				return Keyboard.KEY_DOWN;
-			case XK_Page_Up:
+			case KEY_PAGEUP:
 				return Keyboard.KEY_PRIOR;
-			case XK_Page_Down:
+			case KEY_PAGEDOWN:
 				return Keyboard.KEY_NEXT;
-			case XK_End:
+			case KEY_END:
 				return Keyboard.KEY_END;
 
 
 				/* Misc Functions */
 
-			case XK_Break:
-				return Keyboard.KEY_PAUSE;
-			case XK_Insert:
+			case KEY_INSERT:
 				return Keyboard.KEY_INSERT;
-			case XK_Num_Lock:
+			case KEY_NUMLOCK:
 				return Keyboard.KEY_NUMLOCK;
 
 				/* Keypad Functions, keypad numbers cleverly chosen to map to ascii */
 
-			case XK_KP_Space:
-				return Keyboard.KEY_SPACE;
-			case XK_KP_Tab:
-				return Keyboard.KEY_TAB;
-			case XK_KP_Enter:
+			case KEY_KPENTER:
 				return Keyboard.KEY_NUMPADENTER;
-			case XK_KP_F1:
-				return Keyboard.KEY_F1;
-			case XK_KP_F2:
-				return Keyboard.KEY_F2;
-			case XK_KP_F3:
-				return Keyboard.KEY_F3;
-			case XK_KP_F4:
-				return Keyboard.KEY_F4;
-			case XK_KP_Home:
-				return Keyboard.KEY_HOME;
-			case XK_KP_Left:
-				return Keyboard.KEY_LEFT;
-			case XK_KP_Up:
-				return Keyboard.KEY_UP;
-			case XK_KP_Right:
-				return Keyboard.KEY_RIGHT;
-			case XK_KP_Down:
-				return Keyboard.KEY_DOWN;
-			case XK_KP_Page_Up:
-				return Keyboard.KEY_PRIOR;
-			case XK_KP_Page_Down:
-				return Keyboard.KEY_NEXT;
-			case XK_KP_End:
-				return Keyboard.KEY_END;
-			case XK_KP_Insert:
-				return Keyboard.KEY_INSERT;
-			case XK_KP_Delete:
-				return Keyboard.KEY_DELETE;
-			case XK_KP_Equal:
+			case KEY_KPEQUAL:
 				return Keyboard.KEY_NUMPADEQUALS;
-			case XK_KP_Multiply:
+			case KEY_KPASTERISK:
 				return Keyboard.KEY_MULTIPLY;
-			case XK_KP_Add:
+			case KEY_KPPLUS:
 				return Keyboard.KEY_ADD;
-			case XK_KP_Subtract:
+			case KEY_KPMINUS:
 				return Keyboard.KEY_SUBTRACT;
-			case XK_KP_Decimal:
+			case KEY_KPDOT:
 				return Keyboard.KEY_DECIMAL;
-			case XK_KP_Divide:
+			case KEY_KPSLASH:
 				return Keyboard.KEY_DIVIDE;
 
-			case XK_KP_0:
+			case KEY_KP0:
 				return Keyboard.KEY_NUMPAD0;
-			case XK_KP_1:
+			case KEY_KP1:
 				return Keyboard.KEY_NUMPAD1;
-			case XK_KP_2:
+			case KEY_KP2:
 				return Keyboard.KEY_NUMPAD2;
-			case XK_KP_3:
+			case KEY_KP3:
 				return Keyboard.KEY_NUMPAD3;
-			case XK_KP_4:
+			case KEY_KP4:
 				return Keyboard.KEY_NUMPAD4;
-			case XK_KP_5:
+			case KEY_KP5:
 				return Keyboard.KEY_NUMPAD5;
-			case XK_KP_6:
+			case KEY_KP6:
 				return Keyboard.KEY_NUMPAD6;
-			case XK_KP_7:
+			case KEY_KP7:
 				return Keyboard.KEY_NUMPAD7;
-			case XK_KP_8:
+			case KEY_KP8:
 				return Keyboard.KEY_NUMPAD8;
-			case XK_KP_9:
+			case KEY_KP9:
 				return Keyboard.KEY_NUMPAD9;
 
 				/*
@@ -564,196 +261,156 @@ final class LinuxKeycodes {
 				 * We've not found a keyboard with more than 35 function keys total.
 				 */
 
-			case XK_F1:
+			case KEY_F1:
 				return Keyboard.KEY_F1;
-			case XK_F2:
+			case KEY_F2:
 				return Keyboard.KEY_F2;
-			case XK_F3:
+			case KEY_F3:
 				return Keyboard.KEY_F3;
-			case XK_F4:
+			case KEY_F4:
 				return Keyboard.KEY_F4;
-			case XK_F5:
+			case KEY_F5:
 				return Keyboard.KEY_F5;
-			case XK_F6:
+			case KEY_F6:
 				return Keyboard.KEY_F6;
-			case XK_F7:
+			case KEY_F7:
 				return Keyboard.KEY_F7;
-			case XK_F8:
+			case KEY_F8:
 				return Keyboard.KEY_F8;
-			case XK_F9:
+			case KEY_F9:
 				return Keyboard.KEY_F9;
-			case XK_F10:
+			case KEY_F10:
 				return Keyboard.KEY_F10;
-			case XK_F11:
+			case KEY_F11:
 				return Keyboard.KEY_F11;
-			case XK_F12:
+			case KEY_F12:
 				return Keyboard.KEY_F12;
-			case XK_F13:
+			case KEY_F13:
 				return Keyboard.KEY_F13;
-			case XK_F14:
+			case KEY_F14:
 				return Keyboard.KEY_F14;
-			case XK_F15:
+			case KEY_F15:
 				return Keyboard.KEY_F15;
 
 				/* Modifiers */
 
-			case XK_Shift_L:
+			case KEY_LEFTSHIFT:
 				return Keyboard.KEY_LSHIFT;
-			case XK_Shift_R:
+			case KEY_RIGHTSHIFT:
 				return Keyboard.KEY_RSHIFT;
-			case XK_Control_L:
+			case KEY_LEFTCTRL:
 				return Keyboard.KEY_LCONTROL;
-			case XK_Control_R:
+			case KEY_RIGHTCTRL:
 				return Keyboard.KEY_RCONTROL;
-			case XK_Caps_Lock:
+			case KEY_CAPSLOCK:
 				return Keyboard.KEY_CAPITAL;
 
-			case XK_Meta_L:
+			case KEY_LEFTMETA:
 				return Keyboard.KEY_LMENU;
-			case XK_ISO_Level3_Shift:
-			case XK_Meta_R:
+			case KEY_RIGHTMETA:
 				return Keyboard.KEY_RMENU;
-			case XK_Alt_L:
+			case KEY_LEFTALT:
 				return Keyboard.KEY_LMENU;
-			case XK_Alt_R:
+			case KEY_RIGHTALT:
 				return Keyboard.KEY_RMENU;
-
-			case XK_dead_grave:
-				return Keyboard.KEY_GRAVE;
-			case XK_dead_circumflex:
-				return Keyboard.KEY_CIRCUMFLEX;
 
 				/*
 				 *  Latin 1
 				 *  Byte 3 = 0
 				 */
-			case XK_space:
+			case KEY_SPACE:
 				return Keyboard.KEY_SPACE;
-			case XK_apostrophe:
+			case KEY_APOSTROPHE:
 				return Keyboard.KEY_APOSTROPHE;
-			case XK_comma:
+			case KEY_COMMA:
 				return Keyboard.KEY_COMMA;
-			case XK_minus:
+			case KEY_MINUS:
 				return Keyboard.KEY_MINUS;
-			case XK_period:
+			case KEY_DOT:
 				return Keyboard.KEY_PERIOD;
-			case XK_slash:
+			case KEY_SLASH:
 				return Keyboard.KEY_SLASH;
-			case XK_0:
+			case KEY_0:
 				return Keyboard.KEY_0;
-			case XK_1:
+			case KEY_1:
 				return Keyboard.KEY_1;
-			case XK_2:
+			case KEY_2:
 				return Keyboard.KEY_2;
-			case XK_3:
+			case KEY_3:
 				return Keyboard.KEY_3;
-			case XK_4:
+			case KEY_4:
 				return Keyboard.KEY_4;
-			case XK_5:
+			case KEY_5:
 				return Keyboard.KEY_5;
-			case XK_6:
+			case KEY_6:
 				return Keyboard.KEY_6;
-			case XK_7:
+			case KEY_7:
 				return Keyboard.KEY_7;
-			case XK_8:
+			case KEY_8:
 				return Keyboard.KEY_8;
-			case XK_9:
+			case KEY_9:
 				return Keyboard.KEY_9;
-			case XK_colon:
-				return Keyboard.KEY_COLON;
-			case XK_semicolon:
+			case KEY_SEMICOLON:
 				return Keyboard.KEY_SEMICOLON;
-			case XK_equal:
+			case KEY_EQUAL:
 				return Keyboard.KEY_EQUALS;
-			case XK_at:
-				return Keyboard.KEY_AT;
-			case XK_bracketleft:
+			case KEY_LEFTBRACE:
 				return Keyboard.KEY_LBRACKET;
-			case XK_bracketright:
+			case KEY_RIGHTBRACE:
 				return Keyboard.KEY_RBRACKET;
-			case XK_asciicircum:
-				return Keyboard.KEY_CIRCUMFLEX;
-			case XK_underscore:
-				return Keyboard.KEY_UNDERLINE;
-			case XK_grave:
+			case KEY_GRAVE:
 				return Keyboard.KEY_GRAVE;
-			case XK_a:
-			case XK_A:
+			case KEY_A:
 				return Keyboard.KEY_A;
-			case XK_b:
-			case XK_B:
+			case KEY_B:
 				return Keyboard.KEY_B;
-			case XK_c:
-			case XK_C:
+			case KEY_C:
 				return Keyboard.KEY_C;
-			case XK_d:
-			case XK_D:
+			case KEY_D:
 				return Keyboard.KEY_D;
-			case XK_e:
-			case XK_E:
+			case KEY_E:
 				return Keyboard.KEY_E;
-			case XK_f:
-			case XK_F:
+			case KEY_F:
 				return Keyboard.KEY_F;
-			case XK_g:
-			case XK_G:
+			case KEY_G:
 				return Keyboard.KEY_G;
-			case XK_h:
-			case XK_H:
+			case KEY_H:
 				return Keyboard.KEY_H;
-			case XK_i:
-			case XK_I:
+			case KEY_I:
 				return Keyboard.KEY_I;
-			case XK_j:
-			case XK_J:
+			case KEY_J:
 				return Keyboard.KEY_J;
-			case XK_k:
-			case XK_K:
+			case KEY_K:
 				return Keyboard.KEY_K;
-			case XK_l:
-			case XK_L:
+			case KEY_L:
 				return Keyboard.KEY_L;
-			case XK_m:
-			case XK_M:
+			case KEY_M:
 				return Keyboard.KEY_M;
-			case XK_n:
-			case XK_N:
+			case KEY_N:
 				return Keyboard.KEY_N;
-			case XK_o:
-			case XK_O:
+			case KEY_O:
 				return Keyboard.KEY_O;
-			case XK_p:
-			case XK_P:
+			case KEY_P:
 				return Keyboard.KEY_P;
-			case XK_q:
-			case XK_Q:
+			case KEY_Q:
 				return Keyboard.KEY_Q;
-			case XK_r:
-			case XK_R:
+			case KEY_R:
 				return Keyboard.KEY_R;
-			case XK_s:
-			case XK_S:
+			case KEY_S:
 				return Keyboard.KEY_S;
-			case XK_t:
-			case XK_T:
+			case KEY_T:
 				return Keyboard.KEY_T;
-			case XK_u:
-			case XK_U:
+			case KEY_U:
 				return Keyboard.KEY_U;
-			case XK_v:
-			case XK_V:
+			case KEY_V:
 				return Keyboard.KEY_V;
-			case XK_w:
-			case XK_W:
+			case KEY_W:
 				return Keyboard.KEY_W;
-			case XK_x:
-			case XK_X:
+			case KEY_X:
 				return Keyboard.KEY_X;
-			case XK_y:
-			case XK_Y:
+			case KEY_Y:
 				return Keyboard.KEY_Y;
-			case XK_z:
-			case XK_Z:
+			case KEY_Z:
 				return Keyboard.KEY_Z;
 			default:
 				return Keyboard.KEY_NONE;
