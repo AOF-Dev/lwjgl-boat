@@ -33,26 +33,26 @@
 /**
  * $Id$
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  */
 
 #include <jni.h>
-#include "org_lwjgl_opengl_LinuxPeerInfo.h"
+#include "org_lwjgl_opengl_BoatPeerInfo.h"
 #include "context.h"
 #include "common_tools.h"
 
-JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_LinuxPeerInfo_createHandle
+JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_BoatPeerInfo_createHandle
   (JNIEnv *env, jclass clazz) {
-	return newJavaManagedByteBuffer(env, sizeof(X11PeerInfo));
+	return newJavaManagedByteBuffer(env, sizeof(BoatPeerInfo));
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxPeerInfo_nGetDisplay(JNIEnv *env, jclass unused, jobject handle) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, handle);
+JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatPeerInfo_nGetDisplay(JNIEnv *env, jclass unused, jobject handle) {
+	BoatPeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, handle);
 	return (jlong)(intptr_t)peer_info->display;
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxPeerInfo_nGetDrawable(JNIEnv *env, jclass unused, jobject handle) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, handle);
+JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatPeerInfo_nGetDrawable(JNIEnv *env, jclass unused, jobject handle) {
+	BoatPeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, handle);
 	return peer_info->drawable;
 }

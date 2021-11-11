@@ -35,12 +35,12 @@ import java.nio.ByteBuffer;
 
 /**
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  * $Id$
  */
-abstract class LinuxPeerInfo extends PeerInfo {
-	LinuxPeerInfo() {
+abstract class BoatPeerInfo extends PeerInfo {
+	BoatPeerInfo() {
 		super(createHandle());
 	}
 	private static native ByteBuffer createHandle();
