@@ -33,22 +33,18 @@
 /**
  * $Id$
  *
- * Linux specific library for display handling.
+ * Boat specific library for display handling.
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  */
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/extensions/xf86vmode.h>
-#include <X11/extensions/Xrandr.h>
-#include <X11/Xutil.h>
+#include <boat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "common_tools.h"
-#include "org_lwjgl_opengl_LinuxDisplay.h"
+#include "org_lwjgl_opengl_BoatDisplay.h"
 
 #define NUM_XRANDR_RETRIES 5
 
@@ -259,64 +255,6 @@ static bool setMode(JNIEnv *env, Display *disp, int screen, jint extension, int 
 	return result;
 }
 
-static int getGammaRampLengthOfDisplay(JNIEnv *env, Display *disp, int screen) {
-	int ramp_size;
-	if (XF86VidModeGetGammaRampSize(disp, screen, &ramp_size) == False) {
-		throwException(env, "XF86VidModeGetGammaRampSize call failed");
-		return 0;
-	}
-	return ramp_size;
-}
-
-JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nConvertToNativeRamp(JNIEnv *env, jclass unused, jobject ramp_buffer, jint buffer_offset, jint length) {
-	const jfloat *ramp_ptr = (const jfloat *)(*env)->GetDirectBufferAddress(env, ramp_buffer) + buffer_offset;
-	jobject native_ramp = newJavaManagedByteBuffer(env, length*3*sizeof(unsigned short));
-	if (native_ramp == NULL) {
-		throwException(env, "Failed to allocate gamma ramp buffer");
-		return NULL;
-	}
-	unsigned short *native_ramp_ptr = (unsigned short *)(*env)->GetDirectBufferAddress(env, native_ramp);
-	int i;
-	for (i = 0; i < length; i++) {
-		float scaled_gamma = ramp_ptr[i]*0xffff;
-		short scaled_gamma_short = (unsigned short)roundf(scaled_gamma);
-		native_ramp_ptr[i] = scaled_gamma_short;
-		native_ramp_ptr[i + length] = scaled_gamma_short;
-		native_ramp_ptr[i + length*2] = scaled_gamma_short;
-	}
-	return native_ramp;
-}
-
-JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetCurrentGammaRamp(JNIEnv *env, jclass unused, jlong display, jint screen) {
-	Display *disp = (Display *)(intptr_t)display;
-	int ramp_size = getGammaRampLengthOfDisplay(env, disp, screen);
-	jobject ramp_buffer = newJavaManagedByteBuffer(env, sizeof(unsigned short)*3*ramp_size);
-	if (ramp_buffer == NULL) {
-		throwException(env, "Could not allocate gamma ramp buffer");
-		return NULL;
-	}
-	unsigned short *ramp = (unsigned short *)(*env)->GetDirectBufferAddress(env, ramp_buffer);
-	if (!XF86VidModeGetGammaRamp(disp, screen, ramp_size, ramp,
-				ramp + ramp_size, ramp + ramp_size*2)) {
-		throwException(env, "Could not get the current gamma ramp");
-		return NULL;
-	}
-	return ramp_buffer;
-}
-
-static void setGamma(JNIEnv *env, Display *disp, int screen, jobject ramp_buffer) {
-	if (ramp_buffer == NULL)
-		return;
-	unsigned short *ramp_ptr = (unsigned short *)(*env)->GetDirectBufferAddress(env, ramp_buffer);
-	jlong capacity = (*env)->GetDirectBufferCapacity(env, ramp_buffer);
-	int size = capacity/(sizeof(unsigned short)*3);
-	if (size == 0)
-		return;
-	if (XF86VidModeSetGammaRamp(disp, screen, size, ramp_ptr, ramp_ptr + size, ramp_ptr + size*2) == False) {
-		throwException(env, "Could not set gamma ramp.");
-	}
-}
-
 static bool switchDisplayMode(JNIEnv * env, Display *disp, int screen, jint extension, jobject mode) {
 	if (mode == NULL) {
 		throwException(env, "mode must be non-null");
@@ -397,15 +335,5 @@ JNIEXPORT jobjectArray JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetAvailableD
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSwitchDisplayMode(JNIEnv *env, jclass clazz, jlong display, jint screen, jint extension, jobject mode) {
 	Display *disp = (Display *)(intptr_t)display;
 	switchDisplayMode(env, disp, screen, extension, mode);
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetGammaRampLength(JNIEnv *env, jclass clazz, jlong display_ptr, jint screen) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	return (jint)getGammaRampLengthOfDisplay(env, disp, screen);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetGammaRamp(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject gamma_buffer) {
-	Display *disp = (Display *)(intptr_t)display;
-	setGamma(env, disp, screen, gamma_buffer);
 }
 
