@@ -155,8 +155,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 	private LinuxKeyboard keyboard;
 	private LinuxMouse mouse;
-	
-	private String wm_class;
 
 	private final FocusListener focus_listener = new FocusListener() {
 		public void focusGained(FocusEvent e) {
@@ -435,11 +433,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 					current_window = nCreateWindow(getDisplay(), getDefaultScreen(), handle, mode, current_window_mode, x, y, undecorated, parent_window, resizable);
 					
-					// Set the WM_CLASS hint which is needed by some WM's e.g. Gnome Shell
-					wm_class = Display.getPrivilegedString("LWJGL_WM_CLASS");
-					if (wm_class == null) wm_class = Display.getTitle();
-					setClassHint(Display.getTitle(), wm_class);
-					
 					mapRaised(getDisplay(), current_window);
 					xembedded = parent != null && isAncestorXEmbedded(parent_window);
 					blank_cursor = createBlankCursor();
@@ -651,17 +644,6 @@ final class BoatDisplay implements DisplayImplementation {
 		}
 	}
 	private static native void nSetTitle(long display, long window, long title, int len);
-	
-	/** the WM_CLASS hint is needed by some WM's e.g. gnome shell */
-	private void setClassHint(String wm_name, String wm_class) {
-		try {
-			final ByteBuffer nameText = MemoryUtil.encodeUTF8(wm_name);
-			final ByteBuffer classText = MemoryUtil.encodeUTF8(wm_class);
-			
-			nSetClassHint(getDisplay(), getWindow(), MemoryUtil.getAddress(nameText), MemoryUtil.getAddress(classText));
-		}
-	}
-	private static native void nSetClassHint(long display, long window, long wm_name, long wm_class);
 
 	public boolean isCloseRequested() {
 		boolean result = close_requested;

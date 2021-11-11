@@ -192,17 +192,6 @@ static void setWindowTitle(Display *disp, Window window, jlong title, jint len) 
 		);
 }
 
-static void setClassHint(Display *disp, Window window, jlong wm_name, jlong wm_class) {
-	XClassHint* hint = XAllocClassHint();
-	
-	hint->res_name = (char *)(intptr_t)wm_name;
-	hint->res_class = (char *)(intptr_t)wm_class;
-	
-	XSetClassHint(disp, window, hint);
-	
-	XFree(hint);
-}
-
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_openDisplay(JNIEnv *env, jclass clazz) {
 	return openDisplay(env);
 }
@@ -226,12 +215,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle(JNIEnv * env
 	Display *disp = (Display *)(intptr_t)display;
 	Window window = (Window)window_ptr;
 	setWindowTitle(disp, window, title, len);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetClassHint(JNIEnv * env, jclass clazz, jlong display, jlong window_ptr, jlong wm_name, jlong wm_class) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	setClassHint(disp, window, wm_name, wm_class);
 }
 
 static void destroyWindow(JNIEnv *env, Display *disp, Window window) {
