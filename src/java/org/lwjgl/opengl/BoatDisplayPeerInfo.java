@@ -37,51 +37,45 @@ import org.lwjgl.LWJGLException;
 
 /**
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  * $Id$
  */
-final class LinuxDisplayPeerInfo extends LinuxPeerInfo {
+final class BoatDisplayPeerInfo extends BoatPeerInfo {
 
-	final boolean egl;
+	final boolean gles;
 
-	LinuxDisplayPeerInfo() throws LWJGLException {
-		egl = true;
+	BoatDisplayPeerInfo() throws LWJGLException {
+		gles = true;
 		org.lwjgl.opengles.GLContext.loadOpenGLLibrary();
 	}
 
-	LinuxDisplayPeerInfo(PixelFormat pixel_format) throws LWJGLException {
-		egl = false;
-		LinuxDisplay.lockAWT();
+	BoatDisplayPeerInfo(PixelFormat pixel_format) throws LWJGLException {
+		gles = false;
 		try {
 			GLContext.loadOpenGLLibrary();
 			try {
-				LinuxDisplay.incDisplay();
+				BoatDisplay.incDisplay();
 				try {
-					initDefaultPeerInfo(LinuxDisplay.getDisplay(), LinuxDisplay.getDefaultScreen(), getHandle(), pixel_format);
+					initDefaultPeerInfo(BoatDisplay.getDisplay(), getHandle(), pixel_format);
 				} catch (LWJGLException e) {
-					LinuxDisplay.decDisplay();
+					BoatDisplay.decDisplay();
 					throw e;
 				}
 			} catch (LWJGLException e) {
 				GLContext.unloadOpenGLLibrary();
 				throw e;
 			}
-		} finally {
-			LinuxDisplay.unlockAWT();
 		}
 	}
-	private static native void initDefaultPeerInfo(long display, int screen, ByteBuffer peer_info_handle, PixelFormat pixel_format) throws LWJGLException;
+	private static native void initDefaultPeerInfo(long display, ByteBuffer peer_info_handle, PixelFormat pixel_format) throws LWJGLException;
 
 	protected void doLockAndInitHandle() throws LWJGLException {
-		LinuxDisplay.lockAWT();
 		try {
-			initDrawable(LinuxDisplay.getWindow(), getHandle());
-		} finally {
-			LinuxDisplay.unlockAWT();
+			initDrawable(getHandle());
 		}
 	}
-	private static native void initDrawable(long window, ByteBuffer peer_info_handle);
+	private static native void initDrawable(ByteBuffer peer_info_handle);
 
 	protected void doUnlock() throws LWJGLException {
 		// NO-OP
@@ -90,13 +84,11 @@ final class LinuxDisplayPeerInfo extends LinuxPeerInfo {
 	public void destroy() {
 		super.destroy();
 
-		if ( egl )
+		if ( gles )
 			org.lwjgl.opengles.GLContext.unloadOpenGLLibrary();
 		else {
-			LinuxDisplay.lockAWT();
-			LinuxDisplay.decDisplay();
+			BoatDisplay.decDisplay();
 			GLContext.unloadOpenGLLibrary();
-			LinuxDisplay.unlockAWT();
 		}
 	}
 }

@@ -65,7 +65,7 @@ typedef struct {
 
 #define MWM_HINTS_DECORATIONS   (1L << 1)
 
-static GLXWindow glx_window = None;
+static EGLSurface egl_window = EGL_NO_SURFACE;
 
 static Colormap cmap;
 static int current_depth;
@@ -212,17 +212,14 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_closeDisplay(JNIEnv *e
 	XCloseDisplay(disp);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplayPeerInfo_initDrawable(JNIEnv *env, jclass clazz, jlong window, jobject peer_info_handle) {
-	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
-	if (peer_info->glx13)
-		peer_info->drawable = glx_window;
-	else
-		peer_info->drawable = window;
+JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplayPeerInfo_initDrawable(JNIEnv *env, jclass clazz, jobject peer_info_handle) {
+	BoatPeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
+	peer_info->drawable = egl_window;
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplayPeerInfo_initDefaultPeerInfo(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jobject pixel_format) {
-	Display *disp = (Display *)(intptr_t)display;
-	initPeerInfo(env, peer_info_handle, disp, screen, pixel_format, true, GLX_WINDOW_BIT, true, false);
+JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplayPeerInfo_initDefaultPeerInfo(JNIEnv *env, jclass clazz, jlong display, jobject peer_info_handle, jobject pixel_format) {
+	EGLDisplay disp = (EGLDisplay)(intptr_t)display;
+	initPeerInfo(env, peer_info_handle, disp, pixel_format, true, EGL_WINDOW_BIT);
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle(JNIEnv * env, jclass clazz, jlong display, jlong window_ptr, jlong title, jint len) {
