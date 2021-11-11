@@ -35,7 +35,7 @@
  *
  * Include file to access public window features
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  */
 
@@ -43,41 +43,20 @@
 #define _LWJGL_CONTEXT_H_INCLUDED_
 
 #include <jni.h>
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "extgl_glx.h"
+#include <boat.h>
+#include "extgl_egl.h"
 
 typedef struct {
-	VisualID visualid;
-	int depth;
-} GLXConfig;
+	EGLDisplay display;
+	EGLSurface drawable;
+	EGLint config_id;
+} BoatPeerInfo;
 
-typedef struct {
-	GLXFBConfigID config_id;
-} GLX13Config;
+/* EGL 1.4 chooser */
+extern EGLConfig *chooseVisualEGL(JNIEnv *env, EGLDisplay disp, jobject pixel_format, bool use_display_bpp, int drawable_type);
 
-typedef struct {
-	Display *display;
-	int screen;
-	GLXDrawable drawable;
-	// This flag determines the appropriate glx struct
-	bool glx13;
-	union {
-		GLXConfig glx_config;
-		GLX13Config glx13_config;
-	} config;
-} X11PeerInfo;
+extern EGLConfig *getFBConfigFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info);
 
-/* GLX 1.3 chooser */
-extern GLXFBConfig *chooseVisualGLX13(JNIEnv *env, Display *disp, int screen, jobject pixel_format, bool use_display_bpp, int drawable_type, bool double_buffer);
-
-/* Default GLX chooser*/
-extern XVisualInfo *chooseVisualGLX(JNIEnv *env, Display *disp, int screen, jobject pixel_format, bool use_display_bpp, bool double_buffer);
-
-extern XVisualInfo *getVisualInfoFromPeerInfo(JNIEnv *env, X11PeerInfo *peer_info);
-extern GLXFBConfig *getFBConfigFromPeerInfo(JNIEnv *env, X11PeerInfo *peer_info);
-
-extern bool initPeerInfo(JNIEnv *env, jobject peer_info_handle, Display *display, int screen, jobject pixel_format, bool use_display_bpp, int drawable_type, bool double_buffered, bool force_glx13);
+extern bool initPeerInfo(JNIEnv *env, jobject peer_info_handle, EGLDisplay *display, jobject pixel_format, bool use_display_bpp, int drawable_type);
 
 #endif /* _LWJGL_CONTEXT_H_INCLUDED_ */
