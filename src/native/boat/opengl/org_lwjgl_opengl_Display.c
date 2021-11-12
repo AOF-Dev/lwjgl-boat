@@ -532,26 +532,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nDestroyWindow(JNIEnv 
 	destroyWindow(env, disp, window);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nLockAWT(JNIEnv *env, jclass clazz) {
-	JAWT jawt;
-	jawt.version = JAWT_VERSION_1_4;
-	if (JAWT_GetAWT(env, &jawt) != JNI_TRUE) {
-		throwException(env, "GetAWT failed");
-		return;
-	}
-	jawt.Lock(env);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nUnlockAWT(JNIEnv *env, jclass clazz) {
-	JAWT jawt;
-	jawt.version = JAWT_VERSION_1_4;
-	if (JAWT_GetAWT(env, &jawt) != JNI_TRUE) {
-		throwException(env, "GetAWT failed");
-		return;
-	}
-	jawt.Unlock(env);
-}
-
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nUngrabKeyboard(JNIEnv *env, jclass unused, jlong display_ptr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	return XUngrabKeyboard(disp, CurrentTime);
