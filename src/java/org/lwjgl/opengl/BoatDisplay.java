@@ -101,9 +101,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private final LinuxEvent event_buffer = new LinuxEvent();
 	private final LinuxEvent tmp_event_buffer = new LinuxEvent();
 
-	/** Atom used for the pointer warp messages */
-	private long delete_atom;
-
 	private PeerInfo peer_info;
 
 	/** Saved mode to restore with */
@@ -288,16 +285,6 @@ final class BoatDisplay implements DisplayImplementation {
 		LWJGLUtil.log("Ignore video mode setting on Boat");
 	}
 
-	private static long internAtom(String atom_name, boolean only_if_exists) throws LWJGLException {
-		incDisplay();
-		try {
-			return nInternAtom(getDisplay(), atom_name, only_if_exists);
-		} finally {
-			decDisplay();
-		}
-	}
-	static native long nInternAtom(long display, String atom_name, boolean only_if_exists);
-
 	public void resetDisplayMode() {
 		switchDisplayMode(saved_mode);
 	}
@@ -320,7 +307,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 	public DisplayMode init() throws LWJGLException {
 		try {
-			delete_atom = internAtom("WM_DELETE_WINDOW", false);
 			DisplayMode[] modes = getAvailableDisplayModes();
 			if (modes == null || modes.length == 0)
 				throw new LWJGLException("No modes available");

@@ -66,17 +66,7 @@ static jlong openDisplay(JNIEnv *env) {
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_DefaultSysImplementation_getJNIVersion
   (JNIEnv *env, jobject ignored) {
-	return org_lwjgl_LinuxSysImplementation_JNI_VERSION;
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nInternAtom(JNIEnv *env, jclass unused, jlong display_ptr, jstring atom_name_obj, jboolean only_if_exists) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	char *atom_name = GetStringNativeChars(env, atom_name_obj);
-	if (atom_name == NULL)
-		return 0;
-	Atom atom = XInternAtom(disp, atom_name, only_if_exists ? True : False);
-	free(atom_name);
-	return atom;
+	return org_lwjgl_BoatSysImplementation_JNI_VERSION;
 }
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_openDisplay(JNIEnv *env, jclass clazz) {
