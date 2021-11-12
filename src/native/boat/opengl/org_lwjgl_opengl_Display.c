@@ -264,13 +264,6 @@ static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_m
 	return win;
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_reparentWindow(JNIEnv *env, jclass unused, jlong display, jlong window_ptr, jlong parent_ptr, jint x, jint y) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	Window parent = (Window)parent_ptr;
-	XReparentWindow(disp, window, parent, x, y);
-}
-
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_mapRaised(JNIEnv *env, jclass unused, jlong display, jlong window_ptr) {
 	Display *disp = (Display *)(intptr_t)display;
 	Window window = (Window)window_ptr;

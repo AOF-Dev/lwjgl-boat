@@ -396,7 +396,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private static native long getParentWindow(long display, long window) throws LWJGLException;
 	private static native int getChildCount(long display, long window) throws LWJGLException;
 	private static native void mapRaised(long display, long window);
-	private static native void reparentWindow(long display, long window, long parent, int x, int y);
 	private static native int nGetX(long display, long window);
 	private static native int nGetY(long display, long window);
 	private static native int nGetWidth(long display, long window);
