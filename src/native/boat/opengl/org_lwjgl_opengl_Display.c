@@ -223,27 +223,6 @@ static void updateWindowHints(JNIEnv *env, Display *disp, Window window) {
 	XFlush(disp);
 }
 
-static void updateWindowBounds(Display *disp, Window win, int x, int y, int width, int height, jboolean position, jboolean resizable) {
-	XSizeHints *window_hints = XAllocSizeHints();
-
-	if (position) {
-		window_hints->flags |= PPosition;
-		window_hints->x = x;
-		window_hints->y = y;
-	}
-
-	if (!resizable) {
-		window_hints->flags |= PMinSize | PMaxSize;
-		window_hints->min_width = width;
-		window_hints->max_width = width;
-		window_hints->min_height = height;
-		window_hints->max_height = height;
-	}
-
-	XSetWMNormalHints(disp, win, window_hints);
-	XFree(window_hints);
-}
-
 static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_mode, BoatPeerInfo *peer_info, int x, int y, int width, int height, long parent_handle, jboolean resizable) {
 	Window parent = (Window)parent_handle;
 	Window win;
@@ -271,7 +250,6 @@ static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_m
 //	printfDebugJava(env, "Created window");
 
 	if (RootWindow(disp, screen) == parent_handle) { // only set hints when Display.setParent isn't used
-		updateWindowBounds(disp, win, x, y, width, height, JNI_TRUE, resizable);
 		updateWindowHints(env, disp, win);
 	}
 
@@ -372,12 +350,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *
 		XFree(fb_config);
 	}
 	return win;
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetWindowSize(JNIEnv *env, jclass clazz, jlong display, jlong window_ptr, jint width, jint height, jboolean resizable) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window win = (Window)window_ptr;
-	updateWindowBounds(disp, win, 0, 0, width, height, JNI_FALSE, resizable);
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nDestroyWindow(JNIEnv *env, jclass clazz, jlong display, jlong window_ptr) {
