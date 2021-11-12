@@ -55,16 +55,6 @@
 
 #define ERR_MSG_SIZE 1024
 
-typedef struct {
-	unsigned long flags;
-	unsigned long functions;
-	unsigned long decorations;
-	long input_mode;
-	unsigned long status;
-} MotifWmHints;
-
-#define MWM_HINTS_DECORATIONS   (1L << 1)
-
 static EGLSurface egl_window = EGL_NO_SURFACE;
 
 static Colormap cmap;
@@ -208,21 +198,6 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetHeight(JNIEnv *env
 	return win_attribs.height;
 }
 
-static void updateWindowHints(JNIEnv *env, Display *disp, Window window) {
-	XWMHints* win_hints = XAllocWMHints();
-	if (win_hints == NULL) {
-		throwException(env, "XAllocWMHints failed");
-		return;
-	}
-
-	win_hints->flags = InputHint;
-	win_hints->input = True;
-
-	XSetWMHints(disp, window, win_hints);
-	XFree(win_hints);
-	XFlush(disp);
-}
-
 static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_mode, BoatPeerInfo *peer_info, int x, int y, int width, int height, long parent_handle, jboolean resizable) {
 	Window parent = (Window)parent_handle;
 	Window win;
@@ -248,10 +223,6 @@ static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_m
 
 	XFree(vis_info);
 //	printfDebugJava(env, "Created window");
-
-	if (RootWindow(disp, screen) == parent_handle) { // only set hints when Display.setParent isn't used
-		updateWindowHints(env, disp, win);
-	}
 
 #define NUM_ATOMS 1
 	Atom protocol_atoms[NUM_ATOMS] = {XInternAtom(disp, "WM_DELETE_WINDOW", False)/*, XInternAtom(disp, "WM_TAKE_FOCUS", False)*/};
