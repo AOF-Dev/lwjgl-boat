@@ -91,7 +91,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 	/** Window mode enum */
 	private static final int FULLSCREEN_LEGACY = 1;
-	private static final int FULLSCREEN_NETWM = 2;
 	private static final int WINDOWED = 3;
 
 	/** Current window mode */
@@ -218,23 +217,6 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 	private static native boolean nIsXF86VidModeSupported(long display) throws LWJGLException;
 
-	private static boolean isNetWMFullscreenSupported() throws LWJGLException {
-		if (Display.getPrivilegedBoolean("LWJGL_DISABLE_NETWM"))
-			return false;
-		try {
-			incDisplay();
-			try {
-				return nIsNetWMFullscreenSupported(getDisplay(), getDefaultScreen());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Got exception while querying NetWM support: " + e);
-			return false;
-		}
-	}
-	private static native boolean nIsNetWMFullscreenSupported(long display, int screen) throws LWJGLException;
-
 	/**
 	 * increment and decrement display usage.
 	 */
@@ -291,13 +273,8 @@ final class BoatDisplay implements DisplayImplementation {
 
 	private int getWindowMode(boolean fullscreen) throws LWJGLException {
 		if (fullscreen) {
-			if (current_displaymode_extension == XRANDR && isNetWMFullscreenSupported()) {
-				LWJGLUtil.log("Using NetWM for fullscreen window");
-				return FULLSCREEN_NETWM;
-			} else {
-				LWJGLUtil.log("Using legacy mode for fullscreen window");
-				return FULLSCREEN_LEGACY;
-			}
+			LWJGLUtil.log("Using legacy mode for fullscreen window");
+			return FULLSCREEN_LEGACY;
 		} else
 			return WINDOWED;
 	}
@@ -358,7 +335,7 @@ final class BoatDisplay implements DisplayImplementation {
 	static native int nUngrabPointer(long display);
 
 	private static boolean isFullscreen() {
-		return current_window_mode == FULLSCREEN_LEGACY || current_window_mode == FULLSCREEN_NETWM;
+		return current_window_mode == FULLSCREEN_LEGACY;
 	}
 
 	private boolean shouldGrab() {
@@ -935,26 +912,6 @@ final class BoatDisplay implements DisplayImplementation {
 			keyboard.releaseAll();
 		input_released = true;
 		updateInputGrab();
-		if (current_window_mode == FULLSCREEN_NETWM) {
-			nIconifyWindow(getDisplay(), getWindow(), getDefaultScreen());
-			try {
-				if( current_displaymode_extension == XRANDR )
-				{
-					AccessController.doPrivileged(new PrivilegedAction<Object>() {
-						public Object run() {
-							XRandR.restoreConfiguration();
-							return null;
-						}
-					});
-				}
-				else
-				{
-					switchDisplayModeOnTmpDisplay(saved_mode);
-				}
-			} catch (LWJGLException e) {
-				LWJGLUtil.log("Failed to restore saved mode: " + e.getMessage());
-			}
-		}
 	}
 	private static native void nIconifyWindow(long display, long window, int screen);
 
@@ -963,13 +920,6 @@ final class BoatDisplay implements DisplayImplementation {
 			return;
 		input_released = false;
 		updateInputGrab();
-		if (current_window_mode == FULLSCREEN_NETWM) {
-			try {
-				switchDisplayModeOnTmpDisplay(current_mode);
-			} catch (LWJGLException e) {
-				LWJGLUtil.log("Failed to restore mode: " + e.getMessage());
-			}
-		}
 	}
 
 	public void grabMouse(boolean new_grab) {
