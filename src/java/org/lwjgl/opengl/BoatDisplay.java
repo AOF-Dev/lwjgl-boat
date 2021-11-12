@@ -39,8 +39,6 @@ package org.lwjgl.opengl;
  */
 
 import java.awt.Canvas;
-import java.awt.event.FocusListener;
-import java.awt.event.FocusEvent;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -86,8 +84,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private static final int SetModeInsert = 0;
 	private static final int SaveSetRoot = 1;
 	private static final int SaveSetUnmap = 1;
-	
-	private static final int X_SetInputFocus = 42;
 
 	/** Window mode enum */
 	private static final int FULLSCREEN_LEGACY = 1;
@@ -127,7 +123,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private boolean pointer_grabbed;
 	private boolean input_released;
 	private boolean grab;
-	private boolean focused;
 	private boolean minimized;
 	private boolean dirty;
 	private boolean close_requested;
@@ -339,7 +334,6 @@ final class BoatDisplay implements DisplayImplementation {
 					mapRaised(getDisplay(), current_window);
 					blank_cursor = createBlankCursor();
 					current_cursor = None;
-					focused = false;
 					input_released = false;
 					pointer_grabbed = false;
 					close_requested = false;
@@ -509,7 +503,7 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public boolean isActive() {
-		return focused || isLegacyFullscreen();
+		return true;
 	}
 
 	public boolean isDirty() {
@@ -532,12 +526,6 @@ final class BoatDisplay implements DisplayImplementation {
 					 (keyboard != null && keyboard.filterEvent(event_buffer)))
 				continue;
 			switch (event_buffer.getType()) {
-				case LinuxEvent.FocusIn:
-					setFocused(true, event_buffer.getFocusDetail());
-					break;
-				case LinuxEvent.FocusOut:
-					setFocused(false, event_buffer.getFocusDetail());
-					break;
 				case LinuxEvent.ClientMessage:
 					if ((event_buffer.getClientFormat() == 32) && (event_buffer.getClientData(0) == delete_atom))
 						close_requested = true;
@@ -660,35 +648,6 @@ final class BoatDisplay implements DisplayImplementation {
 		try {
 			mouse.setCursorPosition(x, y);
 		}
-	}
-
-	private void setFocused(boolean got_focus, int focus_detail) {
-		if (focused == got_focus || focus_detail == NotifyDetailNone || focus_detail == NotifyPointer || focus_detail == NotifyPointerRoot)
-			return;
-		focused = got_focus;
-
-		if (focused) {
-			acquireInput();
-		}
-		else {
-			releaseInput();
-		}
-	}
-
-	private void releaseInput() {
-		if (isLegacyFullscreen() || input_released)
-			return;
-		if ( keyboard != null )
-			keyboard.releaseAll();
-		input_released = true;
-		updateInputGrab();
-	}
-
-	private void acquireInput() {
-		if (isLegacyFullscreen() || !input_released)
-			return;
-		input_released = false;
-		updateInputGrab();
 	}
 
 	public void grabMouse(boolean new_grab) {
