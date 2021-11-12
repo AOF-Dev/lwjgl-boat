@@ -349,11 +349,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 	public void destroyWindow() {
 		try {
-			try {
-				setNativeCursor(null);
-			} catch (LWJGLException e) {
-				LWJGLUtil.log("Failed to reset cursor: " + e.getMessage());
-			}
 			nDestroyWindow(getDisplay(), getWindow());
 			decDisplay();
 		}
