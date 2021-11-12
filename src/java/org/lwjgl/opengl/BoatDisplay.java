@@ -643,51 +643,20 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public int getNativeCursorCapabilities() {
-		try {
-			incDisplay();
-			try {
-				return nGetNativeCursorCapabilities(getDisplay());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			throw new RuntimeException(e);
-		}
+		return nGetNativeCursorCapabilities();
 	}
-	private static native int nGetNativeCursorCapabilities(long display) throws LWJGLException;
+	private static native int nGetNativeCursorCapabilities();
 
 	public void setNativeCursor(Object handle) throws LWJGLException {
 	}
 
 	public int getMinCursorSize() {
-		try {
-			incDisplay();
-			try {
-				return nGetMinCursorSize(getDisplay(), getWindow());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Exception occurred in getMinCursorSize: " + e);
-			return 0;
-		}
+		return 32;
 	}
-	private static native int nGetMinCursorSize(long display, long window);
 
 	public int getMaxCursorSize() {
-		try {
-			incDisplay();
-			try {
-				return nGetMaxCursorSize(getDisplay(), getWindow());
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Exception occurred in getMaxCursorSize: " + e);
-			return 0;
-		}
+		return 32;
 	}
-	private static native int nGetMaxCursorSize(long display, long window);
 
 	/* Keyboard */
 	public void createKeyboard() throws LWJGLException {

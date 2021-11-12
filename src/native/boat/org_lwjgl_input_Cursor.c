@@ -33,50 +33,21 @@
 /**
  * $Id$
  *
- * Linux cursor handling.
+ * Boat cursor stubs.
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  */
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xcursor/Xcursor.h>
+#include <boat.h>
 #include "org_lwjgl_input_Cursor.h"
-#include "org_lwjgl_opengl_LinuxDisplay.h"
+#include "org_lwjgl_opengl_BoatDisplay.h"
 #include "common_tools.h"
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetNativeCursorCapabilities
-  (JNIEnv *env, jclass clazz, jlong display) {
-	Display *disp = (Display *)(intptr_t)display;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nGetNativeCursorCapabilities
+  (JNIEnv *env, jclass clazz) {
 	int caps = 0;
-	XcursorBool argb_supported = XcursorSupportsARGB(disp);
-	XcursorBool anim_supported = XcursorSupportsAnim(disp);
-	if (argb_supported)
-		caps |= org_lwjgl_input_Cursor_CURSOR_8_BIT_ALPHA | org_lwjgl_input_Cursor_CURSOR_ONE_BIT_TRANSPARENCY;
-	if (anim_supported)
-		caps |= org_lwjgl_input_Cursor_CURSOR_ANIMATION;
+	caps |= org_lwjgl_input_Cursor_CURSOR_8_BIT_ALPHA | org_lwjgl_input_Cursor_CURSOR_ONE_BIT_TRANSPARENCY;
+	caps |= org_lwjgl_input_Cursor_CURSOR_ANIMATION;
 	return caps;
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetMinCursorSize
-  (JNIEnv *env, jclass clazz, jlong display, jlong window_ptr)
-{
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	unsigned int width_return = 0;
-	unsigned int height_return = 0;
-	XQueryBestCursor(disp, window, 1, 1, &width_return, &height_return);
-	return width_return > height_return ? width_return : height_return;
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetMaxCursorSize
-  (JNIEnv *env, jclass clazz, jlong display, jlong window_ptr)
-{
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	unsigned int width_return = 0;
-	unsigned int height_return = 0;
-	XQueryBestCursor(disp, window, 0xffffffff, 0xffffffff, &width_return, &height_return);
-	return width_return > height_return ? height_return : width_return;
 }
