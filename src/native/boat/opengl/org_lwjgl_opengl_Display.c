@@ -162,28 +162,6 @@ static bool isLegacyFullscreen(jint window_mode) {
 	return window_mode == org_lwjgl_opengl_LinuxDisplay_FULLSCREEN_LEGACY;
 }
 
-static void setWindowTitle(Display *disp, Window window, jlong title, jint len) {
-	Atom UTF8_STRING = XInternAtom(disp, "UTF8_STRING", True);
-	Atom _NET_WM_NAME = XInternAtom(disp, "_NET_WM_NAME", True);
-	Atom _NET_WM_ICON_NAME = XInternAtom(disp, "_NET_WM_ICON_NAME", True);
-
-	// ASCII fallback if XChangeProperty fails.
-    XmbSetWMProperties(disp, window, (const char *)(intptr_t)title, (const char *)(intptr_t)title, NULL, 0, NULL, NULL, NULL);
-
-	// Set the UTF-8 encoded title
-	if ( _NET_WM_NAME )
-		XChangeProperty(
-			disp, window, _NET_WM_NAME, UTF8_STRING,
-			8, PropModeReplace, (const unsigned char *)(intptr_t)title, len
-		);
-
-	if ( _NET_WM_ICON_NAME )
-		XChangeProperty(
-			disp, window, _NET_WM_ICON_NAME, UTF8_STRING,
-			8, PropModeReplace, (const unsigned char *)(intptr_t)title, len
-		);
-}
-
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_openDisplay(JNIEnv *env, jclass clazz) {
 	return openDisplay(env);
 }
@@ -201,12 +179,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplayPeerInfo_initDrawable(JN
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplayPeerInfo_initDefaultPeerInfo(JNIEnv *env, jclass clazz, jlong display, jobject peer_info_handle, jobject pixel_format) {
 	EGLDisplay disp = (EGLDisplay)(intptr_t)display;
 	initPeerInfo(env, peer_info_handle, disp, pixel_format, true, EGL_WINDOW_BIT);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetTitle(JNIEnv * env, jclass clazz, jlong display, jlong window_ptr, jlong title, jint len) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	setWindowTitle(disp, window, title, len);
 }
 
 static void destroyWindow(JNIEnv *env, Display *disp, Window window) {

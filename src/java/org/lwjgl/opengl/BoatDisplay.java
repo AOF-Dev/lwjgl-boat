@@ -632,12 +632,7 @@ final class BoatDisplay implements DisplayImplementation {
 	private static native DisplayMode nGetCurrentXRandrMode(long display, int screen) throws LWJGLException;
 
 	public void setTitle(String title) {
-		try {
-			final ByteBuffer titleText = MemoryUtil.encodeUTF8(title);
-			nSetTitle(getDisplay(), getWindow(), MemoryUtil.getAddress(titleText), titleText.remaining() - 1);
-		}
 	}
-	private static native void nSetTitle(long display, long window, long title, int len);
 
 	public boolean isCloseRequested() {
 		boolean result = close_requested;
