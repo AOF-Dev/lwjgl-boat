@@ -316,15 +316,10 @@ final class BoatDisplay implements DisplayImplementation {
 			int result = nGrabPointer(getDisplay(), getWindow(), None);
 			if (result == GrabSuccess) {
 				pointer_grabbed = true;
-				// make sure we have a centered window
-				if (isLegacyFullscreen()) {
-					nSetViewPort(getDisplay(), getWindow(), getDefaultScreen());
-				}
 			}
 		}
 	}
 	static native int nGrabPointer(long display, long window, long cursor);
-	private static native void nSetViewPort(long display, long window, int screen);
 
 	private void ungrabPointer() {
 		if (pointer_grabbed) {

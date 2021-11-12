@@ -523,15 +523,6 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer(JNIEnv *e
 	return XGrabPointer(disp, win, False, grab_mask, GrabModeAsync, GrabModeAsync, win, cursor, CurrentTime);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetViewPort(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jint screen) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XWindowAttributes win_attribs;
-
-	XGetWindowAttributes(disp, win, &win_attribs);
-	XF86VidModeSetViewPort(disp, screen, win_attribs.x, win_attribs.y);
-}
-
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer(JNIEnv *env, jclass unused, jlong display_ptr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	return XUngrabPointer(disp, CurrentTime);
