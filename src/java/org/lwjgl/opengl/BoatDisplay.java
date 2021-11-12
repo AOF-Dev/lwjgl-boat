@@ -179,11 +179,6 @@ final class BoatDisplay implements DisplayImplementation {
 		return display;
 	}
 
-	static int getDefaultScreen() {
-		return nGetDefaultScreen(getDisplay());
-	}
-	static native int nGetDefaultScreen(long display);
-
 	static long getWindow() {
 		return current_window;
 	}
@@ -250,9 +245,8 @@ final class BoatDisplay implements DisplayImplementation {
 					window_width = mode.getWidth();
 					window_height = mode.getHeight();
 
-					current_window = nCreateWindow(getDisplay(), getDefaultScreen(), handle, mode, current_window_mode, x, y, resizable);
+					current_window = nCreateWindow(getDisplay(), handle, mode, current_window_mode, x, y, resizable);
 					
-					mapRaised(getDisplay(), current_window);
 					input_released = false;
 					pointer_grabbed = false;
 					close_requested = false;
@@ -271,8 +265,7 @@ final class BoatDisplay implements DisplayImplementation {
 			}
 		}
 	}
-	private static native long nCreateWindow(long display, int screen, ByteBuffer peer_info_handle, DisplayMode mode, int window_mode, int x, int y, boolean resizable) throws LWJGLException;
-	private static native void mapRaised(long display, long window);
+	private static native long nCreateWindow(long display, ByteBuffer peer_info_handle, DisplayMode mode, int window_mode, int x, int y, boolean resizable) throws LWJGLException;
 	private static native int nGetX(long display, long window);
 	private static native int nGetY(long display, long window);
 	private static native int nGetWidth(long display, long window);
@@ -545,7 +538,7 @@ final class BoatDisplay implements DisplayImplementation {
 		try {
 			incDisplay();
 			try {
-				return nGetPbufferCapabilities(getDisplay(), getDefaultScreen());
+				return nGetPbufferCapabilities(getDisplay());
 			} finally {
 				decDisplay();
 			}
@@ -554,7 +547,7 @@ final class BoatDisplay implements DisplayImplementation {
 			return 0;
 		}
 	}
-	private static native int nGetPbufferCapabilities(long display, int screen);
+	private static native int nGetPbufferCapabilities(long display);
 
 	public boolean isBufferLost(PeerInfo handle) {
 		return false;

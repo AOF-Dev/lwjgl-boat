@@ -76,11 +76,6 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_DefaultSysImplementation_getJNIVersion
 	return org_lwjgl_LinuxSysImplementation_JNI_VERSION;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetDefaultScreen(JNIEnv *env, jclass unused, jlong display_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	return XDefaultScreen(disp);
-}
-
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nInternAtom(JNIEnv *env, jclass unused, jlong display_ptr, jstring atom_name_obj, jboolean only_if_exists) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	char *atom_name = GetStringNativeChars(env, atom_name_obj);
@@ -200,13 +195,7 @@ static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_m
 	return win;
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_mapRaised(JNIEnv *env, jclass unused, jlong display, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	XMapRaised(disp, window);
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jobject mode, jint window_mode, jint x, jint y, jboolean resizable) {
+JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *env, jclass clazz, jlong display, jobject peer_info_handle, jobject mode, jint window_mode, jint x, jint y, jboolean resizable) {
 	Display *disp = (Display *)(intptr_t)display;
 	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
 	GLXFBConfig *fb_config = NULL;
