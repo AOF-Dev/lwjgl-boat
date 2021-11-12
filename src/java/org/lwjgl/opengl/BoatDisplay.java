@@ -1136,59 +1136,6 @@ final class BoatDisplay implements DisplayImplementation {
 	public void releaseTexImageFromPbuffer(PeerInfo handle, int buffer) {
 		throw new UnsupportedOperationException();
 	}
-	
-	/**
-	 * This method will convert icon bytebuffers into a single bytebuffer
-	 * as the icon format required by _NET_WM_ICON should be in a cardinal
-	 * 32 bit ARGB format i.e. all icons in a single buffer the data starting
-	 * with 32 bit width & height followed by the color data as 32bit ARGB.
-	 * 
-	 * @param icons Array of icons in RGBA format
-	 */
-	private static ByteBuffer convertIcons(ByteBuffer[] icons) {
-		
-		int bufferSize = 0;
-		
-		// calculate size of bytebuffer
-		for ( ByteBuffer icon : icons ) {
-			int size = icon.limit() / 4;
-			int dimension = (int)Math.sqrt(size);
-			if ( dimension > 0 ) {
-				bufferSize += 2 * 4; // add 32 bit width & height, 4 bytes each
-				bufferSize += dimension * dimension * 4;
-			}
-		}
-		
-		if (bufferSize == 0) return null;
-		
-		ByteBuffer icon_argb = BufferUtils.createByteBuffer(bufferSize);//icon.capacity()+(2*4));
-		icon_argb.order(ByteOrder.BIG_ENDIAN);
-		
-		for ( ByteBuffer icon : icons ) {
-			int size = icon.limit() / 4;
-			int dimension = (int)Math.sqrt(size);
-			
-			icon_argb.putInt(dimension); // width
-			icon_argb.putInt(dimension); // height
-			
-			for (int y = 0; y < dimension; y++) {
-				for (int x = 0; x < dimension; x++) {
-					
-					byte r = icon.get((x*4)+(y*dimension*4));
-					byte g = icon.get((x*4)+(y*dimension*4)+1);
-					byte b = icon.get((x*4)+(y*dimension*4)+2);
-					byte a = icon.get((x*4)+(y*dimension*4)+3);
-					
-					icon_argb.put(a);
-					icon_argb.put(r);
-					icon_argb.put(g);
-					icon_argb.put(b);
-				}
-			}
-		}
-		
-		return icon_argb;
-	}
 
 	/**
 	 * Sets one or more icons for the Display.
@@ -1203,24 +1150,9 @@ final class BoatDisplay implements DisplayImplementation {
 	 * @return number of icons used.
 	 */
 	public int setIcon(ByteBuffer[] icons) {
-		try {
-			incDisplay();
-			try {
-				// get icons as cardinal ARGB format
-				ByteBuffer icons_data = convertIcons(icons);
-				if (icons_data == null) return 0;
-				nSetWindowIcon(getDisplay(), getWindow(), icons_data, icons_data.capacity());//, icon_mask, icon_mask.capacity(), dimension, dimension);
-				return icons.length;
-			} finally {
-				decDisplay();
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Failed to set display icon: " + e);
-			return 0;
-		}
+		LWJGLUtil.log("Failed to set display icon: no support on Boat.");
+		return 0;
 	}
-
-	private static native void nSetWindowIcon(long display, long window, ByteBuffer icons_data, int icons_size);
 
 	public int getX() {
 		return window_x;

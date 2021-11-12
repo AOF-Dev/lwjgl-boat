@@ -552,32 +552,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nUnlockAWT(JNIEnv *env
 	jawt.Unlock(env);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetWindowIcon
-  (JNIEnv *env, jclass clazz, jlong display, jlong window_ptr, jobject icons_buffer, jint icons_buffer_size)
-{
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	const unsigned char *icons_char_buffer = (const unsigned char *)(*env)->GetDirectBufferAddress(env, icons_buffer);
-	
-	int length = icons_buffer_size/4;
-	unsigned long icons_long_buffer[length];
-	int i = 0;
-
-	// copy byte array to long array
-	for (i = 0; i < icons_buffer_size; i += 4) {
-		unsigned long argb = (icons_char_buffer[i] << 24) | 
-							(icons_char_buffer[i+1] << 16) | 
-							(icons_char_buffer[i+2] << 8) | 
-							(icons_char_buffer[i+3]);
-		icons_long_buffer[i/4] = argb;
-	}
-
-	XChangeProperty(disp, window,
-					XInternAtom(disp, "_NET_WM_ICON", False),
-					XInternAtom(disp, "CARDINAL", False),
-					32, PropModeReplace, (const unsigned char*) icons_long_buffer, length);
-}
-
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nUngrabKeyboard(JNIEnv *env, jclass unused, jlong display_ptr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	return XUngrabKeyboard(disp, CurrentTime);
