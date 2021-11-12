@@ -141,32 +141,9 @@ final class BoatDisplay implements DisplayImplementation {
 	private int window_y;
 	private int window_width;
 	private int window_height;
-	
-	private Canvas parent;
-	private long parent_window;
-	private static boolean xembedded;
-	private long parent_proxy_focus_window;
-	private boolean parent_focused;
-	private boolean parent_focus_changed;
-	private long last_window_focus = 0;
 
 	private LinuxKeyboard keyboard;
 	private LinuxMouse mouse;
-
-	private final FocusListener focus_listener = new FocusListener() {
-		public void focusGained(FocusEvent e) {
-			synchronized (GlobalLock.lock) {
-				parent_focused = true;
-				parent_focus_changed = true;
-			}
-		}
-		public void focusLost(FocusEvent e) {
-			synchronized (GlobalLock.lock) {
-				parent_focused = false;
-				parent_focus_changed = true;
-			}
-		}
-	};
 
 	private static int getBestDisplayModeExtension() {
 		int result;
@@ -341,8 +318,6 @@ final class BoatDisplay implements DisplayImplementation {
 				try {
 					current_window_mode = getWindowMode(Display.isFullscreen());
 					
-					this.parent = parent;
-					parent_window = parent != null ? getHandle(parent) : getRootWindow(getDisplay(), getDefaultScreen());
 					resizable = Display.isResizable();
 					resized = false;
 					window_x = x;
@@ -359,10 +334,9 @@ final class BoatDisplay implements DisplayImplementation {
                                             y = primaryScreen.yPos;
                                         }
 
-					current_window = nCreateWindow(getDisplay(), getDefaultScreen(), handle, mode, current_window_mode, x, y, parent_window, resizable);
+					current_window = nCreateWindow(getDisplay(), getDefaultScreen(), handle, mode, current_window_mode, x, y, resizable);
 					
 					mapRaised(getDisplay(), current_window);
-					xembedded = parent != null && isAncestorXEmbedded(parent_window);
 					blank_cursor = createBlankCursor();
 					current_cursor = None;
 					focused = false;
@@ -375,12 +349,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 					if ( drawable instanceof DrawableGLES )
 						((DrawableGLES)drawable).initialize(current_window, getDisplay(), EGL.EGL_WINDOW_BIT, (org.lwjgl.opengles.PixelFormat)drawable.getPixelFormat());
-
-					if (parent != null) {
-						parent.addFocusListener(focus_listener);
-						parent_focused = parent.isFocusOwner();
-						parent_focus_changed = true;
-					}
 				} finally {
 					peer_info.unlock();
 				}
@@ -390,40 +358,12 @@ final class BoatDisplay implements DisplayImplementation {
 			}
 		}
 	}
-	private static native long nCreateWindow(long display, int screen, ByteBuffer peer_info_handle, DisplayMode mode, int window_mode, int x, int y, boolean undecorated, long parent_handle, boolean resizable) throws LWJGLException;
-	private static native long getRootWindow(long display, int screen);
-	private static native boolean hasProperty(long display, long window, long property);
-	private static native long getParentWindow(long display, long window) throws LWJGLException;
-	private static native int getChildCount(long display, long window) throws LWJGLException;
+	private static native long nCreateWindow(long display, int screen, ByteBuffer peer_info_handle, DisplayMode mode, int window_mode, int x, int y, boolean resizable) throws LWJGLException;
 	private static native void mapRaised(long display, long window);
 	private static native int nGetX(long display, long window);
 	private static native int nGetY(long display, long window);
 	private static native int nGetWidth(long display, long window);
 	private static native int nGetHeight(long display, long window);
-
-	private static boolean isAncestorXEmbedded(long window) throws LWJGLException {
-		long xembed_atom = internAtom("_XEMBED_INFO", true);
-		if (xembed_atom != None) {
-			long w = window;
-			while (w != None) {
-				if (hasProperty(getDisplay(), w, xembed_atom))
-					return true;
-				w = getParentWindow(getDisplay(), w);
-			}
-		}
-		return false;
-	}
-
-	private static long getHandle(Canvas parent) throws LWJGLException {
-		AWTCanvasImplementation awt_impl = AWTGLCanvas.createImplementation();
-		LinuxPeerInfo parent_peer_info = (LinuxPeerInfo)awt_impl.createPeerInfo(parent, null, null);
-		ByteBuffer parent_peer_info_handle = parent_peer_info.lockAndGetHandle();
-		try {
-			return parent_peer_info.getDrawable();
-		} finally {
-			parent_peer_info.unlock();
-		}
-	}
 
 	private void updateInputGrab() {
 		updatePointerGrab();
@@ -431,9 +371,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 	public void destroyWindow() {
 		try {
-			if (parent != null) {
-				parent.removeFocusListener(focus_listener);
-			}
 			try {
 				setNativeCursor(null);
 			} catch (LWJGLException e) {
@@ -586,38 +523,10 @@ final class BoatDisplay implements DisplayImplementation {
 		return peer_info;
 	}
 
-	private void relayEventToParent(LinuxEvent event_buffer, int event_mask) {
-		tmp_event_buffer.copyFrom(event_buffer);
-		tmp_event_buffer.setWindow(parent_window);
-		tmp_event_buffer.sendEvent(getDisplay(), parent_window, true, event_mask);
-	}
-
-	private void relayEventToParent(LinuxEvent event_buffer) {
-		if (parent == null)
-			return;
-		switch (event_buffer.getType()) {
-			case LinuxEvent.KeyPress:
-				relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			case LinuxEvent.KeyRelease:
-				relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			case LinuxEvent.ButtonPress:
-				if (xembedded || !focused) relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			case LinuxEvent.ButtonRelease:
-				if (xembedded || !focused) relayEventToParent(event_buffer, KeyPressMask);
-				break;
-			default:
-				break;
-		}
-	}
-
 	private void processEvents() {
 		while (LinuxEvent.getPending(getDisplay()) > 0) {
 			event_buffer.nextEvent(getDisplay());
 			long event_window = event_buffer.getWindow();
-			relayEventToParent(event_buffer);
 			if (event_window != getWindow() || event_buffer.filterEvent(event_window) ||
 					(mouse != null && mouse.filterEvent(grab, shouldWarpPointer(), event_buffer)) ||
 					 (keyboard != null && keyboard.filterEvent(event_buffer)))
@@ -753,50 +662,8 @@ final class BoatDisplay implements DisplayImplementation {
 		}
 	}
 
-	/**
-	 * This method will check if the parent window is active when running
-	 * in xembed mode. Every xembed embedder window has a focus proxy
-	 * window that recieves all the input. This method will test whether
-	 * the provided window handle is the focus proxy, if so it will get its
-	 * parent window and then test whether this is an ancestor to our
-	 * current_window. If so then parent window is active.
-	 *
-	 * @param window - the window handle to test
-	 */
-	private boolean isParentWindowActive(long window) {
-		try {
-			// parent window already active as window is current_window
-			if (window == current_window) return true;
-
-			// xembed focus proxy will have no children
-			if (getChildCount(getDisplay(), window) != 0) return false;
-
-			// get parent, will be xembed embedder window and ancestor of current_window
-			long parent_window = getParentWindow(getDisplay(), window);
-
-			// parent must not be None
-			if (parent_window == None) return false;
-
-			// scroll current_window's ancestors to find parent_window
-			long w = current_window;
-
-			while (w != None) {
-				w = getParentWindow(getDisplay(), w);
-				if (w == parent_window) {
-					parent_proxy_focus_window = window; // save focus proxy window
-					return true;
-				}
-			}
-		} catch (LWJGLException e) {
-			LWJGLUtil.log("Failed to detect if parent window is active: " + e.getMessage());
-			return true; // on failure assume still active
-		}
-
-		return false; // failed to find an active parent window
-	}
-
 	private void setFocused(boolean got_focus, int focus_detail) {
-		if (focused == got_focus || focus_detail == NotifyDetailNone || focus_detail == NotifyPointer || focus_detail == NotifyPointerRoot || xembedded)
+		if (focused == got_focus || focus_detail == NotifyDetailNone || focus_detail == NotifyPointer || focus_detail == NotifyPointerRoot)
 			return;
 		focused = got_focus;
 

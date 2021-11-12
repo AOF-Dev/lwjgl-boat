@@ -130,34 +130,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nReshape(JNIEnv *env, 
 	XResizeWindow(disp, window, width, height);
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow(JNIEnv *env, jclass clazz, jlong display, jint screen) {
-	Display *disp = (Display *)(intptr_t)display;
-	return RootWindow(disp, screen);
-}
-
-static Window getCurrentWindow(JNIEnv *env, jlong display_ptr, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-
-	Window parent = (Window)window_ptr;
-	Window win, root;
-
-	Window *children;
-	unsigned int nchildren;
-
-	do {
-		win = parent;
-
-		if (XQueryTree(disp, win, &root, &parent, &children, &nchildren) == 0) {
-			throwException(env, "XQueryTree failed");
-			return 0;
-		}
-
-		if (children != NULL) XFree(children);
-	} while (parent != root);
-
-	return win;
-}
-
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetX(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	Window win = getCurrentWindow(env, display_ptr, window_ptr);
@@ -198,7 +170,7 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetHeight(JNIEnv *env
 	return win_attribs.height;
 }
 
-static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_mode, BoatPeerInfo *peer_info, int x, int y, int width, int height, long parent_handle, jboolean resizable) {
+static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_mode, BoatPeerInfo *peer_info, int x, int y, int width, int height, jboolean resizable) {
 	Window parent = (Window)parent_handle;
 	Window win;
 	XSetWindowAttributes attribs;
@@ -241,57 +213,7 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_mapRaised(JNIEnv *env,
 	XMapRaised(disp, window);
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_getParentWindow(JNIEnv *env, jclass unused, jlong display, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	Window root, parent;
-	Window *children;
-	unsigned int nchildren;
-	if (XQueryTree(disp, window, &root, &parent, &children, &nchildren) == 0) {
-		throwException(env, "XQueryTree failed");
-		return None;
-	}
-	if (children != NULL)
-		XFree(children);
-	return parent;
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_getChildCount(JNIEnv *env, jclass unused, jlong display, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	Window root, parent;
-	Window *children;
-	unsigned int nchildren;
-	if (XQueryTree(disp, window, &root, &parent, &children, &nchildren) == 0) {
-		throwException(env, "XQueryTree failed");
-		return None;
-	}
-	if (children != NULL)
-		XFree(children);
-
-	return nchildren;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_lwjgl_opengl_LinuxDisplay_hasProperty(JNIEnv *env, jclass unusued, jlong display, jlong window_ptr, jlong property_ptr) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	Atom property = (Atom)property_ptr;
-	int num_props;
-	Atom *properties = XListProperties(disp, window, &num_props);
-	if (properties == NULL)
-		return JNI_FALSE;
-	jboolean result = JNI_FALSE;
-	for (int i = 0; i < num_props; i++) {
-		if (properties[i] == property) {
-			result = JNI_TRUE;
-			break;
-		}
-	}
-	XFree(properties);
-	return result;
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jobject mode, jint window_mode, jint x, jint y, jlong parent_handle, jboolean resizable) {
+JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jobject mode, jint window_mode, jint x, jint y, jboolean resizable) {
 	Display *disp = (Display *)(intptr_t)display;
 	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
 	GLXFBConfig *fb_config = NULL;
