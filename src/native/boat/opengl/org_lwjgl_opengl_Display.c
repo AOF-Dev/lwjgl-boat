@@ -72,29 +72,6 @@ static int current_depth;
 
 static Visual *current_visual;
 
-static bool checkXError(JNIEnv *env, Display *disp) {
-	XSync(disp, False);
-	return (*env)->ExceptionCheck(env) == JNI_FALSE;
-}
-
-static int global_error_handler(Display *disp, XErrorEvent *error) {
-	JNIEnv *env = getThreadEnv();
-	if (env != NULL) {
-		jclass org_lwjgl_LinuxDisplay_class = (*env)->FindClass(env, "org/lwjgl/opengl/LinuxDisplay");
-		if (org_lwjgl_LinuxDisplay_class == NULL) {
-			// Don't propagate error
-			(*env)->ExceptionClear(env);
-			return 0;
-		}
-		jmethodID handler_method = (*env)->GetStaticMethodID(env, org_lwjgl_LinuxDisplay_class, "globalErrorHandler", "(JJJJJJJ)I");
-		if (handler_method == NULL)
-			return 0;
-		return (*env)->CallStaticIntMethod(env, org_lwjgl_LinuxDisplay_class, handler_method, (jlong)(intptr_t)disp, (jlong)(intptr_t)error,
-				(jlong)(intptr_t)error->display, (jlong)error->serial, (jlong)error->error_code, (jlong)error->request_code, (jlong)error->minor_code);
-	} else
-		return 0;
-}
-
 static jlong openDisplay(JNIEnv *env) {
 	EGLDisplay display_connection = lwjgl_eglGetDisplay(EGL_DEFAULT_DISPLAY);
 	if (display_connection == NULL) {
@@ -107,30 +84,6 @@ static jlong openDisplay(JNIEnv *env) {
 JNIEXPORT jint JNICALL Java_org_lwjgl_DefaultSysImplementation_getJNIVersion
   (JNIEnv *env, jobject ignored) {
 	return org_lwjgl_LinuxSysImplementation_JNI_VERSION;
-}
-
-JNIEXPORT jstring JNICALL Java_org_lwjgl_opengl_LinuxDisplay_getErrorText(JNIEnv *env, jclass unused, jlong display_ptr, jlong error_code) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	char err_msg_buffer[ERR_MSG_SIZE];
-	XGetErrorText(disp, error_code, err_msg_buffer, ERR_MSG_SIZE);
-	err_msg_buffer[ERR_MSG_SIZE - 1] = '\0';
-	return NewStringNativeWithLength(env, err_msg_buffer, strlen(err_msg_buffer));
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_callErrorHandler(JNIEnv *env, jclass unused, jlong handler_ptr, jlong display_ptr, jlong event_ptr) {
-	XErrorHandler handler = (XErrorHandler)(intptr_t)handler_ptr;
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	XErrorEvent *event = (XErrorEvent *)(intptr_t)event_ptr;
-	return (jint)handler(disp, event);
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_setErrorHandler(JNIEnv *env, jclass unused) {
-	return (intptr_t)XSetErrorHandler(global_error_handler);
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_resetErrorHandler(JNIEnv *env, jclass unused, jlong handler_ptr) {
-	XErrorHandler handler = (XErrorHandler)(intptr_t)handler_ptr;
-	return (intptr_t)XSetErrorHandler(handler);
 }
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetDefaultScreen(JNIEnv *env, jclass unused, jlong display_ptr) {
@@ -185,11 +138,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nReshape(JNIEnv *env, 
 	Window window = (Window)window_ptr;
 	XMoveWindow(disp, window, x, y);
 	XResizeWindow(disp, window, width, height);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_synchronize(JNIEnv *env, jclass clazz, jlong display, jboolean synchronize) {
-	Display *disp = (Display *)(intptr_t)display;
-	XSynchronize(disp, synchronize ? True : False);
 }
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_getRootWindow(JNIEnv *env, jclass clazz, jlong display, jint screen) {
@@ -320,10 +268,6 @@ static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_m
 	current_visual = vis_info->visual;
 
 	XFree(vis_info);
-	if (!checkXError(env, disp)) {
-		XFreeColormap(disp, cmap);
-		return false;
-	}
 //	printfDebugJava(env, "Created window");
 
 	if (RootWindow(disp, screen) == parent_handle) { // only set hints when Display.setParent isn't used
@@ -338,10 +282,6 @@ static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_m
 		Atom fullscreen_atom = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
 		XChangeProperty(disp, win, XInternAtom(disp, "_NET_WM_STATE", False),
 						XInternAtom(disp, "ATOM", False), 32, PropModeReplace, (const unsigned char*)&fullscreen_atom, 1);
-	}
-	if (!checkXError(env, disp)) {
-		destroyWindow(env, disp, win);
-		return 0;
 	}
 	return win;
 }
@@ -430,10 +370,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *
 	if (peer_info->glx13) {
 		glx_window = lwjgl_glXCreateWindow(disp, *fb_config, win, NULL);
 		XFree(fb_config);
-	}
-	if (!checkXError(env, disp)) {
-		lwjgl_glXDestroyWindow(disp, glx_window);
-		destroyWindow(env, disp, win);
 	}
 	return win;
 }

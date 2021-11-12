@@ -104,7 +104,6 @@ final class BoatDisplay implements DisplayImplementation {
 	/** Current X11 Display pointer */
 	private static long display;
 	private static long current_window;
-	private static long saved_error_handler;
 
 	private static int display_connection_usage_count;
 
@@ -228,28 +227,10 @@ final class BoatDisplay implements DisplayImplementation {
 				org.lwjgl.opengles.GLContext.loadOpenGLLibrary();
 			} catch (Throwable t) {
 			}
-			saved_error_handler = setErrorHandler();
 			display = openDisplay();
-//			synchronize(display, true);
 		}
 		display_connection_usage_count++;
 	}
-	private static native int callErrorHandler(long handler, long display, long error_ptr);
-	private static native long setErrorHandler();
-	private static native long resetErrorHandler(long handler);
-	private static native void synchronize(long display, boolean synchronize);
-
-	private static int globalErrorHandler(long display, long event_ptr, long error_display, long serial, long error_code, long request_code, long minor_code) throws LWJGLException {
-		if (xembedded && request_code == X_SetInputFocus) return 0; // ignore X error in xembeded mode to fix a browser issue when dragging or switching tabs 
-		
-		if (display == getDisplay()) {
-			String error_msg = getErrorText(display, error_code);
-			throw new LWJGLException("X Error - disp: 0x" + Long.toHexString(error_display) + " serial: " + serial + " error: " + error_msg + " request_code: " + request_code + " minor_code: " + minor_code);
-		} else if (saved_error_handler != 0)
-			return callErrorHandler(saved_error_handler, display, event_ptr);
-		return 0;
-	}
-	private static native String getErrorText(long display, long error_code);
 
 	static void decDisplay() {
 		/*
