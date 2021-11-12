@@ -123,13 +123,6 @@ static void destroyWindow(JNIEnv *env, Display *disp, Window window) {
 	XFreeColormap(disp, cmap);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nReshape(JNIEnv *env, jclass clazz, jlong display, jlong window_ptr, jint x, jint y, jint width, jint height) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	XMoveWindow(disp, window, x, y);
-	XResizeWindow(disp, window, width, height);
-}
-
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetX(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	Window win = getCurrentWindow(env, display_ptr, window_ptr);

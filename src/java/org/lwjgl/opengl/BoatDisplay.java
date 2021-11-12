@@ -577,11 +577,7 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void reshape(int x, int y, int width, int height) {
-		try {
-			nReshape(getDisplay(), getWindow(), x, y, width, height);
-		}
 	}
-	private static native void nReshape(long display, long window, int x, int y, int width, int height);
 
 	public DisplayMode[] getAvailableDisplayModes() throws LWJGLException {
 		try {
