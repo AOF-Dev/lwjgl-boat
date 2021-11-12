@@ -436,8 +436,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private static native int getChildCount(long display, long window) throws LWJGLException;
 	private static native void mapRaised(long display, long window);
 	private static native void reparentWindow(long display, long window, long parent, int x, int y);
-	private static native long nGetInputFocus(long display) throws LWJGLException;
-	private static native void nSetInputFocus(long display, long window, long time);
 	private static native void nSetWindowSize(long display, long window, int width, int height, boolean resizable);
 	private static native int nGetX(long display, long window);
 	private static native int nGetY(long display, long window);
@@ -721,7 +719,6 @@ final class BoatDisplay implements DisplayImplementation {
 	public void update() {
 		try {
 			processEvents();
-			checkInput();
 		}
 	}
 
@@ -798,52 +795,6 @@ final class BoatDisplay implements DisplayImplementation {
 			mouse.setCursorPosition(x, y);
 		}
 	}
-
-	private void checkInput() {
-		if (parent == null) return;
-
-		if (xembedded) {
-			long current_focus_window = 0;
-
-			if (last_window_focus != current_focus_window || parent_focused != focused) {
-				if (isParentWindowActive(current_focus_window)) {
-					if (parent_focused) {
-						nSetInputFocus(getDisplay(), current_window, CurrentTime);
-						last_window_focus = current_window;
-						focused = true;
-					}
-					else {
-						// return focus to the parent proxy focus window
-						nSetInputFocus(getDisplay(), parent_proxy_focus_window, CurrentTime);
-						last_window_focus = parent_proxy_focus_window;
-						focused = false;
-					}
-				}
-				else {
-					last_window_focus = current_focus_window;
-					focused = false;
-				}
-			}
-		}
-		else {
-			if (parent_focus_changed && parent_focused) {
-				setInputFocusUnsafe(getWindow());
-				parent_focus_changed = false;
-			}
-		}
-	}
-	
-	private void setInputFocusUnsafe(long window) {
-		try {
-			nSetInputFocus(getDisplay(), window, CurrentTime);
-			nSync(getDisplay(), false);
-		} catch (LWJGLException e) {
-			// Since we don't have any event timings for XSetInputFocus, a race condition might give a BadMatch, which we'll catch and ignore
-			LWJGLUtil.log("Got exception while trying to focus: " + e);
-		}
-	}
-	
-	private static native void nSync(long display, boolean throw_away_events) throws LWJGLException;
 
 	/**
 	 * This method will check if the parent window is active when running

@@ -133,16 +133,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_resetErrorHandler(JNI
 	return (intptr_t)XSetErrorHandler(handler);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSync(JNIEnv *env, jclass unused, jlong display_ptr, jboolean throw_away_events) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	XSync(disp, throw_away_events ? True : False);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_sync(JNIEnv *env, jclass unused, jlong display_ptr, jboolean throw_away_events) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	XSync(disp, throw_away_events ? True : False);
-}
-
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetDefaultScreen(JNIEnv *env, jclass unused, jlong display_ptr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	return XDefaultScreen(disp);
@@ -417,20 +407,6 @@ JNIEXPORT jboolean JNICALL Java_org_lwjgl_opengl_LinuxDisplay_hasProperty(JNIEnv
 	}
 	XFree(properties);
 	return result;
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetInputFocus(JNIEnv *env, jclass unused, jlong display_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	int revert_mode;
-	Window win;
-	XGetInputFocus(disp, &win, &revert_mode);
-	return win;
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetInputFocus(JNIEnv *env, jclass clazz, jlong display, jlong window_ptr, jlong time) {
-	Display *disp = (Display *)(intptr_t)display;
-	Window window = (Window)window_ptr;
-	XSetInputFocus(disp, window, RevertToParent, time);
 }
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jobject mode, jint window_mode, jint x, jint y, jlong parent_handle, jboolean resizable) {
