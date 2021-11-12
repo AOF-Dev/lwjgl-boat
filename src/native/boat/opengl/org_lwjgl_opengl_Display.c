@@ -190,36 +190,6 @@ static void destroyWindow(JNIEnv *env, Display *disp, Window window) {
 	XFreeColormap(disp, cmap);
 }
 
-static bool isNetWMFullscreenSupported(JNIEnv *env, Display *disp, int screen) {
-	unsigned long nitems;
-	Atom actual_type;
-	int actual_format;
-	unsigned long bytes_after;
-	Atom *supported_list;
-	Atom netwm_supported_atom = XInternAtom(disp, "_NET_SUPPORTED", False);
-	int result = XGetWindowProperty(disp, RootWindow(disp, screen), netwm_supported_atom, 0, 10000, False, AnyPropertyType, &actual_type, &actual_format, &nitems, &bytes_after, (void *)&supported_list);
-	if (result != Success) {
-		throwException(env, "Unable to query _NET_SUPPORTED window property");
-		return false;
-	}
-	Atom fullscreen_atom = XInternAtom(disp, "_NET_WM_STATE_FULLSCREEN", False);
-	bool supported = false;
-	unsigned long i;
-	for (i = 0; i < nitems; i++) {
-		if (fullscreen_atom == supported_list[i]) {
-			supported = true;
-			break;
-		}
-	}
-	XFree(supported_list);
-	return supported;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nIsNetWMFullscreenSupported(JNIEnv *env, jclass unused, jlong display, jint screen) {
-	Display *disp = (Display *)(intptr_t)display;
-	return isNetWMFullscreenSupported(env, disp, screen) ? JNI_TRUE : JNI_FALSE;
-}
-
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nReshape(JNIEnv *env, jclass clazz, jlong display, jlong window_ptr, jint x, jint y, jint width, jint height) {
 	Display *disp = (Display *)(intptr_t)display;
 	Window window = (Window)window_ptr;
