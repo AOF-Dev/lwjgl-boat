@@ -96,9 +96,9 @@ static int global_error_handler(Display *disp, XErrorEvent *error) {
 }
 
 static jlong openDisplay(JNIEnv *env) {
-	Display *display_connection = XOpenDisplay(NULL);
+	EGLDisplay display_connection = lwjgl_eglGetDisplay(EGL_DEFAULT_DISPLAY);
 	if (display_connection == NULL) {
-		throwException(env, "Could not open X display connection");
+		throwException(env, "Could not open EGL display connection");
 		return (intptr_t)NULL;
 	}
 	return (intptr_t)display_connection;
@@ -184,13 +184,13 @@ static void setWindowTitle(Display *disp, Window window, jlong title, jint len) 
 		);
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_openDisplay(JNIEnv *env, jclass clazz) {
+JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_openDisplay(JNIEnv *env, jclass clazz) {
 	return openDisplay(env);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_closeDisplay(JNIEnv *env, jclass clazz, jlong display) {
-	Display *disp = (Display *)(intptr_t)display;
-	XCloseDisplay(disp);
+JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplay_closeDisplay(JNIEnv *env, jclass clazz, jlong display) {
+	EGLDisplay disp = (EGLDisplay)(intptr_t)display;
+	lwjgl_eglTerminate(disp);
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplayPeerInfo_initDrawable(JNIEnv *env, jclass clazz, jobject peer_info_handle) {
