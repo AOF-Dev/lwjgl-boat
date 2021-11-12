@@ -913,7 +913,6 @@ final class BoatDisplay implements DisplayImplementation {
 		input_released = true;
 		updateInputGrab();
 	}
-	private static native void nIconifyWindow(long display, long window, int screen);
 
 	private void acquireInput() {
 		if (isLegacyFullscreen() || !input_released)
