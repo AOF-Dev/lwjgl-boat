@@ -249,30 +249,3 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer(JNIEnv 
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	return XUngrabPointer(disp, CurrentTime);
 }
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nDefineCursor(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jlong cursor_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	Cursor cursor = (Cursor)cursor_ptr;
-	XDefineCursor(disp, win, cursor);
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nCreateBlankCursor(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	unsigned int best_width, best_height;
-	if (XQueryBestCursor(disp, win, 1, 1, &best_width, &best_height) == 0) {
-		throwException(env, "Could not query best cursor size");
-		return false;
-	}
-	Pixmap mask = XCreatePixmap(disp, win, best_width, best_height, 1);
-	XGCValues gc_values;
-	gc_values.foreground = 0;
-	GC gc = XCreateGC(disp, mask, GCForeground, &gc_values);
-	XFillRectangle(disp, mask, gc, 0, 0, best_width, best_height);
-	XFreeGC(disp, gc);
-	XColor dummy_color;
-	Cursor cursor = XCreatePixmapCursor(disp, mask, mask, &dummy_color, &dummy_color, 0, 0);
-	XFreePixmap(disp, mask);
-	return cursor;
-}

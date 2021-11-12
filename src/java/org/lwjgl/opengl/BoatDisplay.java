@@ -126,8 +126,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private boolean minimized;
 	private boolean dirty;
 	private boolean close_requested;
-	private long current_cursor;
-	private long blank_cursor;
 	private boolean mouseInside = true;
 	private boolean resizable;
 	private boolean resized;
@@ -284,19 +282,7 @@ final class BoatDisplay implements DisplayImplementation {
 		} else {
 			ungrabPointer();
 		}
-		updateCursor();
 	}
-
-	private void updateCursor() {
-		long cursor;
-		if (shouldGrab()) {
-			cursor = blank_cursor;
-		} else {
-			cursor = current_cursor;
-		}
-		nDefineCursor(getDisplay(), getWindow(), cursor);
-	}
-	private static native void nDefineCursor(long display, long window, long cursor_handle);
 
 	private static boolean isLegacyFullscreen() {
 		return current_window_mode == FULLSCREEN_LEGACY;
@@ -332,8 +318,6 @@ final class BoatDisplay implements DisplayImplementation {
 					current_window = nCreateWindow(getDisplay(), getDefaultScreen(), handle, mode, current_window_mode, x, y, resizable);
 					
 					mapRaised(getDisplay(), current_window);
-					blank_cursor = createBlankCursor();
-					current_cursor = None;
 					input_released = false;
 					pointer_grabbed = false;
 					close_requested = false;
@@ -370,8 +354,6 @@ final class BoatDisplay implements DisplayImplementation {
 			} catch (LWJGLException e) {
 				LWJGLUtil.log("Failed to reset cursor: " + e.getMessage());
 			}
-			nDestroyCursor(getDisplay(), blank_cursor);
-			blank_cursor = None;
 			nDestroyWindow(getDisplay(), getWindow());
 			decDisplay();
 		}
@@ -675,10 +657,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private static native int nGetNativeCursorCapabilities(long display) throws LWJGLException;
 
 	public void setNativeCursor(Object handle) throws LWJGLException {
-		current_cursor = getCursorHandle(handle);
-		try {
-			updateCursor();
-		}
 	}
 
 	public int getMinCursorSize() {
@@ -737,37 +715,12 @@ final class BoatDisplay implements DisplayImplementation {
 		}
 	}
 
-	private static native long nCreateCursor(long display, int width, int height, int xHotspot, int yHotspot, int numImages, IntBuffer images, int images_offset, IntBuffer delays, int delays_offset) throws LWJGLException;
-
-	private static long createBlankCursor() {
-		return nCreateBlankCursor(getDisplay(), getWindow());
-	}
-	static native long nCreateBlankCursor(long display, long window);
-
 	public Object createCursor(int width, int height, int xHotspot, int yHotspot, int numImages, IntBuffer images, IntBuffer delays) throws LWJGLException {
-		try {
-			incDisplay();
-			try {
-				long cursor = nCreateCursor(getDisplay(), width, height, xHotspot, yHotspot, numImages, images, images.position(), delays, delays != null ? delays.position() : -1);
-				return cursor;
-			} catch (LWJGLException e) {
-				decDisplay();
-				throw e;
-			}
-		}
-	}
-
-	private static long getCursorHandle(Object cursor_handle) {
-		return cursor_handle != null ? (Long)cursor_handle : None;
+		return null;
 	}
 
 	public void destroyCursor(Object cursorHandle) {
-		try {
-			nDestroyCursor(getDisplay(), getCursorHandle(cursorHandle));
-			decDisplay();
-		}
 	}
-	static native void nDestroyCursor(long display, long cursorHandle);
 
 	public int getPbufferCapabilities() {
 		try {
