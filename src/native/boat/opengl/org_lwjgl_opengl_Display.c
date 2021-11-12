@@ -79,10 +79,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nInternAtom(JNIEnv *e
 	return atom;
 }
 
-static bool isLegacyFullscreen(jint window_mode) {
-	return window_mode == org_lwjgl_opengl_BoatDisplay_FULLSCREEN_LEGACY;
-}
-
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_openDisplay(JNIEnv *env, jclass clazz) {
 	return openDisplay(env);
 }
@@ -109,44 +105,24 @@ static void destroyWindow(JNIEnv *env, EGLDisplay disp, ANativeWindow* window) {
 	}
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetX(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = getCurrentWindow(env, display_ptr, window_ptr);
-
-	XWindowAttributes win_attribs;
-	XGetWindowAttributes(disp, win, &win_attribs);
-
-	return win_attribs.x;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nGetX(JNIEnv *env, jclass unused, jlong window_ptr) {
+	return 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetY(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = getCurrentWindow(env, display_ptr, window_ptr);
-
-	XWindowAttributes win_attribs;
-	XGetWindowAttributes(disp, win, &win_attribs);
-
-	return win_attribs.y;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nGetY(JNIEnv *env, jclass unused, jlong window_ptr) {
+	return 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetWidth(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XWindowAttributes win_attribs;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nGetWidth(JNIEnv *env, jclass unused, jlong window_ptr) {
+	ANativeWindow* win = (ANativeWindow*)(intptr_t)window_ptr;
 
-	XGetWindowAttributes(disp, win, &win_attribs);
-
-	return win_attribs.width;
+	return ANativeWindow_getWidth(win);
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGetHeight(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XWindowAttributes win_attribs;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nGetHeight(JNIEnv *env, jclass unused, jlong window_ptr) {
+	ANativeWindow* win = (ANativeWindow*)(intptr_t)window_ptr;
 
-	XGetWindowAttributes(disp, win, &win_attribs);
-
-	return win_attribs.height;
+	return ANativeWindow_getHeight(win);
 }
 
 static ANativeWindow* createWindow(JNIEnv* env, EGLDisplay disp, jint window_mode, BoatPeerInfo *peer_info, int x, int y, int width, int height, jboolean resizable) {

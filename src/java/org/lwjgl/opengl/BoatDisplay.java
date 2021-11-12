@@ -266,10 +266,10 @@ final class BoatDisplay implements DisplayImplementation {
 		}
 	}
 	private static native long nCreateWindow(long display, ByteBuffer peer_info_handle, DisplayMode mode, int window_mode, int x, int y, boolean resizable) throws LWJGLException;
-	private static native int nGetX(long display, long window);
-	private static native int nGetY(long display, long window);
-	private static native int nGetWidth(long display, long window);
-	private static native int nGetHeight(long display, long window);
+	private static native int nGetX(long window);
+	private static native int nGetY(long window);
+	private static native int nGetWidth(long window);
+	private static native int nGetHeight(long window);
 
 	private void updateInputGrab() {
 		updatePointerGrab();
@@ -383,11 +383,11 @@ final class BoatDisplay implements DisplayImplementation {
 					dirty = true;
 					break;
 				case LinuxEvent.ConfigureNotify:
-					int x = nGetX(getDisplay(), getWindow());
-					int y = nGetY(getDisplay(), getWindow());
+					int x = nGetX(getWindow());
+					int y = nGetY(getWindow());
 					
-					int width = nGetWidth(getDisplay(), getWindow());
-					int height = nGetHeight(getDisplay(), getWindow());
+					int width = nGetWidth(getWindow());
+					int height = nGetHeight(getWindow());
 					
 					window_x = x;
 					window_y = y;
