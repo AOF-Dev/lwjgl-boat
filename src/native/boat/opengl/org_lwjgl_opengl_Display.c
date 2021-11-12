@@ -158,14 +158,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nInternAtom(JNIEnv *e
 	return atom;
 }
 
-static void setDecorations(Display *disp, Window window, int dec) {
-	Atom motif_hints_atom = XInternAtom(disp, "_MOTIF_WM_HINTS", False);
-	MotifWmHints motif_hints;
-	motif_hints.flags = MWM_HINTS_DECORATIONS;
-	motif_hints.decorations = dec;
-	XChangeProperty(disp, window, motif_hints_atom, motif_hints_atom, 32, PropModeReplace, (unsigned char *)&motif_hints, sizeof(MotifWmHints)/sizeof(long));
-}
-
 static bool isLegacyFullscreen(jint window_mode) {
 	return window_mode == org_lwjgl_opengl_LinuxDisplay_FULLSCREEN_LEGACY;
 }
@@ -372,7 +364,7 @@ static void updateWindowBounds(Display *disp, Window win, int x, int y, int widt
 	XFree(window_hints);
 }
 
-static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_mode, X11PeerInfo *peer_info, int x, int y, int width, int height, jboolean undecorated, long parent_handle, jboolean resizable) {
+static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_mode, BoatPeerInfo *peer_info, int x, int y, int width, int height, long parent_handle, jboolean resizable) {
 	Window parent = (Window)parent_handle;
 	Window win;
 	XSetWindowAttributes attribs;
@@ -401,10 +393,6 @@ static Window createWindow(JNIEnv* env, Display *disp, int screen, jint window_m
 		return false;
 	}
 //	printfDebugJava(env, "Created window");
-	if (undecorated) {
-		// Use Motif decoration hint property and hope the window manager respects them
-		setDecorations(disp, win, 0);
-	}
 
 	if (RootWindow(disp, screen) == parent_handle) { // only set hints when Display.setParent isn't used
 		updateWindowBounds(disp, win, x, y, width, height, JNI_TRUE, resizable);
@@ -503,7 +491,7 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nSetInputFocus(JNIEnv 
 	XSetInputFocus(disp, window, RevertToParent, time);
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nCreateWindow(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jobject mode, jint window_mode, jint x, jint y, jboolean undecorated, jlong parent_handle, jboolean resizable) {
+JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *env, jclass clazz, jlong display, jint screen, jobject peer_info_handle, jobject mode, jint window_mode, jint x, jint y, jlong parent_handle, jboolean resizable) {
 	Display *disp = (Display *)(intptr_t)display;
 	X11PeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, peer_info_handle);
 	GLXFBConfig *fb_config = NULL;
@@ -517,7 +505,7 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nCreateWindow(JNIEnv 
 	jfieldID fid_height = (*env)->GetFieldID(env, cls_displayMode, "height", "I");
 	int width = (*env)->GetIntField(env, mode, fid_width);
 	int height = (*env)->GetIntField(env, mode, fid_height);
-	Window win = createWindow(env, disp, screen, window_mode, peer_info, x, y, width, height, undecorated, parent_handle, resizable);
+	Window win = createWindow(env, disp, screen, window_mode, peer_info, x, y, width, height, parent_handle, resizable);
 	if ((*env)->ExceptionOccurred(env)) {
 		return 0;
 	}
