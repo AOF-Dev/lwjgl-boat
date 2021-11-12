@@ -124,7 +124,6 @@ final class BoatDisplay implements DisplayImplementation {
 	private DisplayMode current_mode;
 
 
-	private boolean keyboard_grabbed;
 	private boolean pointer_grabbed;
 	private boolean input_released;
 	private boolean grab;
@@ -276,21 +275,10 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	private void ungrabKeyboard() {
-		if (keyboard_grabbed) {
-			nUngrabKeyboard(getDisplay());
-			keyboard_grabbed = false;
-		}
 	}
-	static native int nUngrabKeyboard(long display);
 
 	private void grabKeyboard() {
-		if (!keyboard_grabbed) {
-			int res = nGrabKeyboard(getDisplay(), getWindow());
-			if (res == GrabSuccess)
-				keyboard_grabbed = true;
-		}
 	}
-	static native int nGrabKeyboard(long display, long window);
 
 	private void grabPointer() {
 		if (!pointer_grabbed) {
@@ -342,13 +330,6 @@ final class BoatDisplay implements DisplayImplementation {
 		return current_window_mode == FULLSCREEN_LEGACY;
 	}
 
-	private void updateKeyboardGrab() {
-		if (isLegacyFullscreen())
-			grabKeyboard();
-		else
-			ungrabKeyboard();
-	}
-
 	public void createWindow(final DrawableLWJGL drawable, DisplayMode mode, Canvas parent, int x, int y) throws LWJGLException {
 		try {
 			incDisplay();
@@ -387,7 +368,6 @@ final class BoatDisplay implements DisplayImplementation {
 					focused = false;
 					input_released = false;
 					pointer_grabbed = false;
-					keyboard_grabbed = false;
 					close_requested = false;
 					grab = false;
 					minimized = false;
@@ -449,7 +429,6 @@ final class BoatDisplay implements DisplayImplementation {
 
 	private void updateInputGrab() {
 		updatePointerGrab();
-		updateKeyboardGrab();
 	}
 
 	public void destroyWindow() {
@@ -464,7 +443,6 @@ final class BoatDisplay implements DisplayImplementation {
 			}
 			nDestroyCursor(getDisplay(), blank_cursor);
 			blank_cursor = None;
-			ungrabKeyboard();
 			nDestroyWindow(getDisplay(), getWindow());
 			decDisplay();
 		}
