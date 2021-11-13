@@ -331,7 +331,7 @@ final class BoatDisplay implements DisplayImplementation {
 				continue;
 			switch (event_buffer.getType()) {
 				case BoatEvent.BoatMessage:
-					if ((event_buffer.getClientFormat() == 32) && (event_buffer.getClientData(0) == delete_atom))
+					if (event_buffer.getBoatMessageMessage() == BoatEvent.CloseRequest)
 						close_requested = true;
 					break;
 				case BoatEvent.ConfigureNotify:

@@ -47,6 +47,8 @@ final class BoatEvent {
 	public static final int ConfigureNotify = 22;
 	public static final int BoatMessage     = 37;
 
+	public static final int CloseRequest    = 0;
+
 	private final ByteBuffer event_buffer;
 
 	BoatEvent() {
@@ -71,22 +73,12 @@ final class BoatEvent {
 	}
 	private static native int nGetType(ByteBuffer event_buffer);
 
-	/* ClientMessage methods */
+	/* BoatMessage methods */
 
-	public long getClientMessageType() {
-		return nGetClientMessageType(event_buffer);
+	public int getBoatMessageMessage() {
+		return nGetBoatMessageMessage(event_buffer);
 	}
-	private static native long nGetClientMessageType(ByteBuffer event_buffer);
-
-	public int getClientData(int index) {
-		return nGetClientData(event_buffer, index);
-	}
-	private static native int nGetClientData(ByteBuffer event_buffer, int index);
-
-	public int getClientFormat() {
-		return nGetClientFormat(event_buffer);
-	}
-	private static native int nGetClientFormat(ByteBuffer event_buffer);
+	private static native int nGetBoatMessageMessage(ByteBuffer event_buffer);
 
 	/* Button methods */
 
