@@ -56,17 +56,12 @@ final class BoatEvent {
 	}
 	private static native ByteBuffer createEventBuffer();
 
-	public static native int getPending(long display);
+	public static native int getPending();
 
-	public void sendEvent(long display, long window, boolean propagate, long event_mask) {
-		nSendEvent(event_buffer, display, window, propagate, event_mask);
+	public int nextEvent() {
+		return nNextEvent(event_buffer);
 	}
-	private static native void nSendEvent(ByteBuffer event_buffer, long display, long window, boolean propagate, long event_mask);
-
-	public void nextEvent(long display) {
-		nNextEvent(display, event_buffer);
-	}
-	private static native void nNextEvent(long display, ByteBuffer event_buffer);
+	private static native int nNextEvent(ByteBuffer event_buffer);
 
 	public int getType() {
 		return nGetType(event_buffer);

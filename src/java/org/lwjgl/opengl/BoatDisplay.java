@@ -324,8 +324,10 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	private void processEvents() {
-		while (LinuxEvent.getPending(getDisplay()) > 0) {
-			event_buffer.nextEvent(getDisplay());
+		while (BoatEvent.getPending() > 0) {
+			if (event_buffer.nextEvent() == 0) {
+				break;
+			}
 			if ((mouse != null && mouse.filterEvent(grab, shouldWarpPointer(), event_buffer)) ||
 			    (keyboard != null && keyboard.filterEvent(event_buffer)))
 				continue;

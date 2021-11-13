@@ -40,26 +40,17 @@
 #include "common_tools.h"
 #include "org_lwjgl_opengl_BoatEvent.h"
 
-JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_LinuxEvent_createEventBuffer(JNIEnv *env, jclass unused) {
-	return newJavaManagedByteBuffer(env, sizeof(XEvent));
+JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_BoatEvent_createEventBuffer(JNIEnv *env, jclass unused) {
+	return newJavaManagedByteBuffer(env, sizeof(BoatEvent));
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_getPending(JNIEnv *env, jclass unused, jlong display_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	return XPending(disp);
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_getPending(JNIEnv *env, jclass unused) {
+	return boatWaitForEvent(0);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxEvent_nSendEvent(JNIEnv *env, jclass unused, jobject event_buffer, jlong display_ptr, jlong window_ptr, jboolean propagate, jlong eventmask) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window window = (Window)window_ptr;
-	XSendEvent(disp, window, propagate == JNI_TRUE ? True : False, eventmask, event);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxEvent_nNextEvent(JNIEnv *env, jclass unused, jlong display_ptr, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	XNextEvent(disp, event);
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nNextEvent(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return boatPollEvent(event);
 }
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetType(JNIEnv *env, jclass unused, jobject event_buffer) {
