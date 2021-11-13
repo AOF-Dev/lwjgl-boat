@@ -151,15 +151,12 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplay_nDestroyWindow(JNIEnv *
 	destroyWindow(env, disp, window);
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nGrabPointer(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jlong cursor_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	Cursor cursor = (Cursor)cursor_ptr;
-	int grab_mask = PointerMotionMask | ButtonPressMask | ButtonReleaseMask;
-	return XGrabPointer(disp, win, False, grab_mask, GrabModeAsync, GrabModeAsync, win, cursor, CurrentTime);
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nGrabPointer(JNIEnv *env, jclass unused) {
+	boatSetCursorMode(CursorDisabled);
+	return 0; // GrabSuccess
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxDisplay_nUngrabPointer(JNIEnv *env, jclass unused, jlong display_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	return XUngrabPointer(disp, CurrentTime);
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatDisplay_nUngrabPointer(JNIEnv *env, jclass unused) {
+	boatSetCursorMode(CursorEnabled);
+	return 0;
 }

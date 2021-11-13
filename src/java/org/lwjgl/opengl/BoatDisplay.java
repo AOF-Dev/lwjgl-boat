@@ -61,9 +61,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class BoatDisplay implements DisplayImplementation {
-	/* X11 constants */
+	/* Boat constants */
 	public static final int GrabSuccess = 0;
-	public static final int None = 0;
 
 	/** Window mode enum */
 	private static final int FULLSCREEN_LEGACY = 1;
@@ -168,21 +167,21 @@ final class BoatDisplay implements DisplayImplementation {
 
 	private void grabPointer() {
 		if (!pointer_grabbed) {
-			int result = nGrabPointer(getDisplay(), getWindow(), None);
+			int result = nGrabPointer();
 			if (result == GrabSuccess) {
 				pointer_grabbed = true;
 			}
 		}
 	}
-	static native int nGrabPointer(long display, long window, long cursor);
+	static native int nGrabPointer();
 
 	private void ungrabPointer() {
 		if (pointer_grabbed) {
 			pointer_grabbed = false;
-			nUngrabPointer(getDisplay());
+			nUngrabPointer();
 		}
 	}
-	static native int nUngrabPointer(long display);
+	static native int nUngrabPointer();
 
 	private static boolean isFullscreen() {
 		return current_window_mode == FULLSCREEN_LEGACY;
