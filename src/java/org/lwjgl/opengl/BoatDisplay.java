@@ -62,27 +62,8 @@ import java.util.List;
 
 final class BoatDisplay implements DisplayImplementation {
 	/* X11 constants */
-	public static final int CurrentTime = 0;
 	public static final int GrabSuccess = 0;
-	public static final int AutoRepeatModeOff  = 0;
-	public static final int AutoRepeatModeOn = 1;
-	public static final int AutoRepeatModeDefault = 2;
 	public static final int None = 0;
-
-	private static final int KeyPressMask = 1 << 0;
-	private static final int KeyReleaseMask = 1 << 1;
-	private static final int ButtonPressMask = 1 << 2;
-	private static final int ButtonReleaseMask = 1 << 3;
-
-	private static final int NotifyAncestor = 0;
-	private static final int NotifyNonlinear = 3;
-	private static final int NotifyPointer = 5;
-	private static final int NotifyPointerRoot = 6;
-	private static final int NotifyDetailNone = 7;
-
-	private static final int SetModeInsert = 0;
-	private static final int SaveSetRoot = 1;
-	private static final int SaveSetUnmap = 1;
 
 	/** Window mode enum */
 	private static final int FULLSCREEN_LEGACY = 1;
@@ -91,15 +72,14 @@ final class BoatDisplay implements DisplayImplementation {
 	/** Current window mode */
 	private static int current_window_mode = WINDOWED;
 
-	/** Current X11 Display pointer */
+	/** Current EGL Display pointer */
 	private static long display;
 	private static long current_window;
 
 	private static int display_connection_usage_count;
 
 	/** Event buffer */
-	private final LinuxEvent event_buffer = new LinuxEvent();
-	private final LinuxEvent tmp_event_buffer = new LinuxEvent();
+	private final BoatEvent event_buffer = new BoatEvent();
 
 	private PeerInfo peer_info;
 
