@@ -31,18 +31,14 @@
  */
 
 /**
- * $Id: org_lwjgl_opengl_LinuxEvent.c 2598 2006-10-24 08:33:09Z elias_naur $
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
- * @version $Revision: 2598 $
+ * @author cosine
  */
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include <boat.h>
 #include <jni.h>
 #include "common_tools.h"
-#include "org_lwjgl_opengl_LinuxEvent.h"
+#include "org_lwjgl_opengl_BoatEvent.h"
 
 JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_LinuxEvent_createEventBuffer(JNIEnv *env, jclass unused) {
 	return newJavaManagedByteBuffer(env, sizeof(XEvent));
@@ -53,33 +49,11 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_getPending(JNIEnv *env, 
 	return XPending(disp);
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxEvent_nSetWindow(JNIEnv *env, jclass unused, jobject event_buffer, jlong window_ptr) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	Window window = (Window)window_ptr;
-	event->xany.window = window;
-}
-
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxEvent_nSendEvent(JNIEnv *env, jclass unused, jobject event_buffer, jlong display_ptr, jlong window_ptr, jboolean propagate, jlong eventmask) {
 	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	Window window = (Window)window_ptr;
 	XSendEvent(disp, window, propagate == JNI_TRUE ? True : False, eventmask, event);
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetFocusDetail(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xfocus.detail;
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetFocusMode(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xfocus.mode;
-}
-
-JNIEXPORT jboolean JNICALL Java_org_lwjgl_opengl_LinuxEvent_nFilterEvent(JNIEnv *env, jclass unused, jobject event_buffer, jlong window_ptr) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	Window window = (Window)window_ptr;
-	return XFilterEvent(event, window) == True ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxEvent_nNextEvent(JNIEnv *env, jclass unused, jlong display_ptr, jobject event_buffer) {
@@ -91,11 +65,6 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxEvent_nNextEvent(JNIEnv *env, 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetType(JNIEnv *env, jclass unused, jobject event_buffer) {
 	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
 	return event->type;
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetWindow(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xany.window;
 }
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetClientMessageType(JNIEnv *env, jclass unused, jobject event_buffer) {
