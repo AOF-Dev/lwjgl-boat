@@ -332,22 +332,11 @@ final class BoatDisplay implements DisplayImplementation {
 					 (keyboard != null && keyboard.filterEvent(event_buffer)))
 				continue;
 			switch (event_buffer.getType()) {
-				case LinuxEvent.ClientMessage:
+				case BoatEvent.BoatMessage:
 					if ((event_buffer.getClientFormat() == 32) && (event_buffer.getClientData(0) == delete_atom))
 						close_requested = true;
 					break;
-				case LinuxEvent.MapNotify:
-					dirty = true;
-					minimized = false;
-					break;
-				case LinuxEvent.UnmapNotify:
-					dirty = true;
-					minimized = true;
-					break;
-				case LinuxEvent.Expose:
-					dirty = true;
-					break;
-				case LinuxEvent.ConfigureNotify:
+				case BoatEvent.ConfigureNotify:
 					int x = nGetX(getWindow());
 					int y = nGetY(getWindow());
 					
@@ -363,12 +352,6 @@ final class BoatDisplay implements DisplayImplementation {
 						window_height = height;
 					}
 					
-					break;
-				case LinuxEvent.EnterNotify:
-					mouseInside = true;
-					break;
-				case LinuxEvent.LeaveNotify:
-					mouseInside = false;
 					break;
 				default:
 					break;
