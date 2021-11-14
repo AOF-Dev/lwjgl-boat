@@ -168,63 +168,8 @@ final class BoatKeyboard {
 		}
 	}
 
-	private static boolean isKeypadKeysym(long keysym) {
-		return (0xFF80 <= keysym && keysym <= 0xFFBD) ||
-			(0x11000000 <= keysym && keysym <= 0x1100FFFF);
-	}
-
-	private static boolean isNoSymbolOrVendorSpecific(long keysym) {
-		return keysym == NoSymbol || (keysym & (1 << 28)) != 0;
-	}
-
-	private static long getKeySym(long event_ptr, int group, int index) {
-		long keysym = lookupKeysym(event_ptr, group*2 + index);
-		if (isNoSymbolOrVendorSpecific(keysym) && index == 1) {
-			keysym = lookupKeysym(event_ptr, group*2 + 0);
-		}
-		if (isNoSymbolOrVendorSpecific(keysym) && group == 1)
-			keysym = getKeySym(event_ptr, 0, index);
-		return keysym;
-	}
-	private static native long lookupKeysym(long event_ptr, int index);
-	private static native long toUpper(long keysym);
-
-	private long mapEventToKeySym(long event_ptr, int event_state) {
-		int group;
-		long keysym;
-		if ((event_state & modeswitch_mask) != 0)
-			group = 1;
-		else
-			group = 0;
-		if ((event_state & numlock_mask) != 0 && isKeypadKeysym(keysym = getKeySym(event_ptr, group, 1))) {
-			if ((event_state & (ShiftMask | shift_lock_mask)) != 0) {
-				return getKeySym(event_ptr, group, 0);
-			} else {
-				return keysym;
-			}
-		} else if ((event_state & (ShiftMask | LockMask)) == 0) {
-			return getKeySym(event_ptr, group, 0);
-		} else if ((event_state & ShiftMask) == 0) {
-			keysym = getKeySym(event_ptr, group, 0);
-			if ((event_state & caps_lock_mask) != 0)
-				keysym = toUpper(keysym);
-			return keysym;
-		} else {
-			keysym = getKeySym(event_ptr, group, 1);
-			if ((event_state & caps_lock_mask) != 0)
-				keysym = toUpper(keysym);
-			return keysym;
-		}
-	}
-
 	private int getKeycode(long event_ptr, int event_state) {
-		long keysym = mapEventToKeySym(event_ptr, event_state);
-		int keycode = LinuxKeycodes.mapKeySymToLWJGLKeyCode(keysym);
-		if (keycode == Keyboard.KEY_NONE) {
-			// Try unshifted keysym mapping
-			keysym = lookupKeysym(event_ptr, 0);
-			keycode = LinuxKeycodes.mapKeySymToLWJGLKeyCode(keysym);
-		}
+		int keycode = BoatKeycodes.mapBoatKeyCodeToLWJGLKeyCode(keysym);
 		return keycode;
 	}
 

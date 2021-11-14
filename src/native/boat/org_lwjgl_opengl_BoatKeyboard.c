@@ -75,14 +75,3 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_keycodeToKeySym(JNIE
 	KeySym key_sym = XKeycodeToKeysym(disp, key_code, 0);
 	return key_sym;
 }
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_lookupKeysym(JNIEnv *env, jclass unused, jlong event_ptr, jint index) {
-	XKeyEvent *event = (XKeyEvent *)(intptr_t)event_ptr;
-	return XLookupKeysym(event, index);
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_toUpper(JNIEnv *env, jclass unused, jlong keysym) {
-	KeySym lower_case, upper_case;
-	XConvertCase(keysym, &lower_case, &upper_case);
-	return upper_case;
-}

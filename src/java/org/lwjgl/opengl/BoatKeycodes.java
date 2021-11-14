@@ -170,8 +170,8 @@ final class BoatKeycodes {
 
 	public static final int  KEY_UNKNOWN         = 240;
 
-	public static int mapKeySymToLWJGLKeyCode(long keysym) {
-		switch ((int)keysym) {
+	public static int mapBoatKeyCodeToLWJGLKeyCode(int keycode) {
+		switch (keycode) {
 			case KEY_BACKSPACE:
 				return Keyboard.KEY_BACK;
 			case KEY_TAB:
