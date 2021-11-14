@@ -63,12 +63,6 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxMouse_nGetWindowWidth(JNIEnv *
 	return window_attributes.width;
 }
 
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxMouse_nWarpCursor(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jint x, jint y) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XWarpPointer(disp, None, win, 0, 0, 0, 0, x, y);
-}
-
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jobject result_buffer) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
 	Window win = (Window)window_ptr;
@@ -88,20 +82,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer(JNIEnv *e
 	result[2] = win_x;
 	result[3] = win_y;
 	return root_return;
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxMouse_nSendWarpEvent(JNIEnv *env, jclass unusued, jlong display_ptr, jlong window_ptr, jlong warp_atom_ptr, jint x, jint y) {
-	Atom warp_atom = (Atom)warp_atom_ptr;
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XEvent warp_event;
-	warp_event.type = ClientMessage;
-	warp_event.xclient.window = win;
-	warp_event.xclient.message_type = warp_atom;
-	warp_event.xclient.format = 32;
-	warp_event.xclient.data.l[0] = x;
-	warp_event.xclient.data.l[1] = y;
-	XSendEvent(disp, win, False, 0, &warp_event);
 }
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount(JNIEnv *env, jclass unused, jlong display_ptr) {
