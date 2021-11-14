@@ -103,7 +103,7 @@ final class BoatDisplay implements DisplayImplementation {
 	private int window_height;
 
 	private LinuxKeyboard keyboard;
-	private LinuxMouse mouse;
+	private BoatMouse mouse;
 
 	/**
 	 * increment and decrement display usage.
@@ -392,7 +392,7 @@ final class BoatDisplay implements DisplayImplementation {
 
 	public void createMouse() throws LWJGLException {
 		try {
-			mouse = new LinuxMouse(getDisplay(), getWindow(), getWindow());
+			mouse = new BoatMouse(getWindow());
 		}
 	}
 

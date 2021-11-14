@@ -41,43 +41,14 @@
 #include "common_tools.h"
 #include "org_lwjgl_opengl_BoatMouse.h"
 
-static void getWindowAttributes(jlong display_ptr, jlong window_ptr, XWindowAttributes *attr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XGetWindowAttributes(disp, win, attr);
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatMouse_nGetWindowHeight(JNIEnv *env, jclass unused, jlong window_ptr) {
+	ANativeWindow *win = (ANativeWindow *)(intptr_t)window_ptr;
+	return ANativeWindow_getHeight(win);
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxMouse_nGetWindowHeight(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-	XWindowAttributes window_attributes;
-	getWindowAttributes(display_ptr, window_ptr, &window_attributes);
-	return window_attributes.height;
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxMouse_nGetWindowWidth(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr) {
-	XWindowAttributes window_attributes;
-	getWindowAttributes(display_ptr, window_ptr, &window_attributes);
-	return window_attributes.width;
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jobject result_buffer) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	Window root_return, child_return;
-	int root_x, root_y, win_x, win_y;
-	unsigned int mask_return;
-	jint *result = (jint *)(*env)->GetDirectBufferAddress(env, result_buffer);
-	int result_size = (*env)->GetDirectBufferCapacity(env, result_buffer);
-	if (result_size < 4) {
-		throwFormattedException(env, "Not enough space in result buffer (%d)", result_size);
-		return (intptr_t)NULL;
-	}
-	
-	XQueryPointer(disp, win, &root_return, &child_return, &root_x, &root_y, &win_x, &win_y, &mask_return);
-	result[0] = root_x;
-	result[1] = root_y;
-	result[2] = win_x;
-	result[3] = win_y;
-	return root_return;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatMouse_nGetWindowWidth(JNIEnv *env, jclass unused, jlong window_ptr) {
+	ANativeWindow *win = (ANativeWindow *)(intptr_t)window_ptr;
+	return ANativeWindow_getWidth(win);
 }
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatMouse_nGetButtonCount(JNIEnv *env, jclass unused) {

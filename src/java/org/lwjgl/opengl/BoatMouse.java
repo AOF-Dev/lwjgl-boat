@@ -63,10 +63,7 @@ final class BoatMouse {
 	private static final int ButtonPress = 4;
 	private static final int ButtonRelease = 5;
 
-	private final long display;
 	private final long window;
-	private final long input_window;
-	private final IntBuffer query_pointer_buffer = BufferUtils.createIntBuffer(4);
 	private final ByteBuffer event_buffer = ByteBuffer.allocate(Mouse.EVENT_SIZE);
 
 	private int last_x;
@@ -78,10 +75,8 @@ final class BoatMouse {
 	private EventQueue event_queue;
 	private long last_event_nanos;
 
-	BoatMouse(long display, long window, long input_window) throws LWJGLException {
-		this.display = display;
+	BoatMouse(long window) throws LWJGLException {
 		this.window = window;
-		this.input_window = input_window;
 		button_count = nGetButtonCount();
 		buttons = new byte[button_count];
 		reset(false, false);
@@ -90,16 +85,11 @@ final class BoatMouse {
 	private void reset(boolean grab, boolean warp_pointer) {
 		event_queue = new EventQueue(event_buffer.capacity());
 		accum_dx = accum_dy = 0;
-		long root_window = nQueryPointer(display, window, query_pointer_buffer);
 
-		int root_x = query_pointer_buffer.get(0);
-		int root_y = query_pointer_buffer.get(1);
-		int win_x = query_pointer_buffer.get(2);
-		int win_y = query_pointer_buffer.get(3);
 		// Pretend that the cursor never moved
-		last_x = win_x;
-		last_y = transformY(win_y);
-		doHandlePointerMotion(grab, warp_pointer, root_window, root_x, root_y, win_x, win_y, last_event_nanos);
+		// last_x = win_x;
+		// last_y = transformY(win_y);
+		// doHandlePointerMotion(grab, warp_pointer, win_x, win_y, last_event_nanos);
 	}
 
 	public void read(ByteBuffer buffer) {
@@ -145,7 +135,7 @@ final class BoatMouse {
 		}
 	}
 
-	private void doHandlePointerMotion(boolean grab, boolean warp_pointer, long root_window, int root_x, int root_y, int win_x, int win_y, long nanos) {
+	private void doHandlePointerMotion(boolean grab, boolean warp_pointer, int win_x, int win_y, long nanos) {
 		setCursorPos(grab, win_x, win_y, nanos);
 	}
 
@@ -158,20 +148,18 @@ final class BoatMouse {
 	}
 
 	private int transformY(int y) {
-		return nGetWindowHeight(display, window) - 1 - y;
+		return nGetWindowHeight(window) - 1 - y;
 	}
-	private static native int nGetWindowHeight(long display, long window);
-	private static native int nGetWindowWidth(long display, long window);
+	private static native int nGetWindowHeight(long window);
+	private static native int nGetWindowWidth(long window);
 	
 	private static native int nGetButtonCount();
-
-	private static native long nQueryPointer(long display, long window, IntBuffer result);
 
 	public void setCursorPosition(int x, int y) {
 	}
 
-	private void handlePointerMotion(boolean grab, boolean warp_pointer, long millis, long root_window, int x_root, int y_root, int x, int y) {
-		doHandlePointerMotion(grab, warp_pointer, root_window, x_root, y_root, x, y, millis*1000000);
+	private void handlePointerMotion(boolean grab, boolean warp_pointer, long millis, int x, int y) {
+		doHandlePointerMotion(grab, warp_pointer, x, y, millis*1000000);
 	}
 
 	private void handleButton(boolean grab, int button, byte state, long nanos) {
@@ -256,7 +244,7 @@ final class BoatMouse {
 				handleButtonEvent(grab, event.getButtonTime(), event.getButtonType(), (byte)event.getButtonButton());
 				return true;
 			case BoatEvent.MotionNotify:
-				handlePointerMotion(grab, warp_pointer, event.getButtonTime(), event.getButtonRoot(), event.getButtonXRoot(), event.getButtonYRoot(), event.getButtonX(), event.getButtonY());
+				handlePointerMotion(grab, warp_pointer, event.getButtonTime(), event.getButtonX(), event.getButtonY());
 				return true;
 			default:
 				break;
