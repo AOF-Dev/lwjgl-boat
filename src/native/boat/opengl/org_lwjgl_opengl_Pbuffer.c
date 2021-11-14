@@ -33,7 +33,7 @@
 /**
  * $Id$
  *
- * Linux Pbuffer.
+ * Boat Pbuffer.
  *
  * @author cosine
  * @version $Revision$

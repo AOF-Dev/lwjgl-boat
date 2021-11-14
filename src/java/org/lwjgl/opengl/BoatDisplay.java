@@ -319,7 +319,7 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public PeerInfo createPeerInfo(PixelFormat pixel_format, ContextAttribs attribs) throws LWJGLException {
-		peer_info = new LinuxDisplayPeerInfo(pixel_format);
+		peer_info = new BoatDisplayPeerInfo(pixel_format);
 		return peer_info;
 	}
 
@@ -504,7 +504,7 @@ final class BoatDisplay implements DisplayImplementation {
 	public PeerInfo createPbuffer(int width, int height, PixelFormat pixel_format, ContextAttribs attribs,
 			IntBuffer pixelFormatCaps,
 			IntBuffer pBufferAttribs) throws LWJGLException {
-		return new LinuxPbufferPeerInfo(width, height, pixel_format);
+		return new BoatPbufferPeerInfo(width, height, pixel_format);
 	}
 
 	public void setPbufferAttrib(PeerInfo handle, int attrib, int value) {
