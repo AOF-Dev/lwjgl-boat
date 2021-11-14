@@ -31,21 +31,15 @@
  */
  
 /**
- * $Id: org_lwjgl_input_Keyboard.c 2399 2006-06-30 19:28:00Z elias_naur $
  *
- * Linux keyboard handling.
+ * Boat keyboard handling.
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
- * @version $Revision: 2399 $
+ * @author cosine
  */
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/XKBlib.h>
-#include <X11/Xutil.h>
-#include <X11/keysym.h>
+#include <boat.h>
 #include "common_tools.h"
-#include "org_lwjgl_opengl_LinuxKeyboard.h"
+#include "org_lwjgl_opengl_BoatKeyboard.h"
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_getModifierMapping(JNIEnv *env, jclass unused, jlong display_ptr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
@@ -82,43 +76,6 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_keycodeToKeySym(JNIE
 	return key_sym;
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_openIM(JNIEnv *env, jclass unused, jlong display_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	XSetLocaleModifiers ("@im=none");
-	XIM xim = XOpenIM(disp, NULL, NULL, NULL);
-	return (intptr_t)xim;
-}
-
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_createIC(JNIEnv *env, jclass unused, jlong xim_ptr, jlong window_ptr) {
-	Window win = (Window)window_ptr;
-	XIM xim = (XIM)(intptr_t)xim_ptr;
-	XIC xic = XCreateIC(xim,  XNClientWindow, win, XNFocusWindow, win, XNInputStyle, XIMPreeditNothing | XIMStatusNothing, NULL);
-	return (intptr_t)xic;
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_setupIMEventMask(JNIEnv *env, jclass unused, jlong display_ptr, jlong window_ptr, jlong xic_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-	Window win = (Window)window_ptr;
-	XIC xic = (XIC)(intptr_t)xic_ptr;
-	long im_event_mask;
-	XWindowAttributes win_attributes;
-
-	XGetWindowAttributes(disp, win, &win_attributes);
-	XGetICValues(xic, XNFilterEvents, &im_event_mask, NULL);
-	XSelectInput(disp, win, win_attributes.your_event_mask | im_event_mask);
-	XSetICFocus(xic);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_destroyIC(JNIEnv *env, jclass unused, jlong xic_ptr) {
-	XIC xic = (XIC)(intptr_t)xic_ptr;
-	XDestroyIC(xic);
-}
-
-JNIEXPORT void JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_closeIM(JNIEnv *env, jclass unused, jlong xim_ptr) {
-	XIM xim = (XIM)(intptr_t)xim_ptr;
-	XCloseIM(xim);
-}
-
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_lookupKeysym(JNIEnv *env, jclass unused, jlong event_ptr, jint index) {
 	XKeyEvent *event = (XKeyEvent *)(intptr_t)event_ptr;
 	return XLookupKeysym(event, index);
@@ -128,26 +85,4 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_toUpper(JNIEnv *env,
 	KeySym lower_case, upper_case;
 	XConvertCase(keysym, &lower_case, &upper_case);
 	return upper_case;
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_lookupString(JNIEnv *env, jclass unused, jlong event_ptr, jobject buffer_obj, jobject compose_status_obj) {
-	XKeyEvent *event = (XKeyEvent *)(intptr_t)event_ptr;
-	char *buffer = (char *)(*env)->GetDirectBufferAddress(env, buffer_obj);
-	int capacity = (*env)->GetDirectBufferCapacity(env, buffer_obj);
-	XComposeStatus *status = (XComposeStatus *)(*env)->GetDirectBufferAddress(env, compose_status_obj);
-	return XLookupString(event, buffer, capacity, NULL, status);
-}
-
-JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_allocateComposeStatus(JNIEnv *env, jclass unused) {
-	return newJavaManagedByteBuffer(env, sizeof(XComposeStatus));
-}
-
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxKeyboard_utf8LookupString(JNIEnv *env, jclass unused, jlong xic_ptr, jlong event_ptr, jobject buffer_obj, jint buffer_position, jint buffer_size) {
-	XIC xic = (XIC)(intptr_t)xic_ptr;
-	XKeyEvent *event = (XKeyEvent *)(intptr_t)event_ptr;
-	char *buffer = buffer_position + (char *)(*env)->GetDirectBufferAddress(env, buffer_obj);
-	Status status;
-	size_t num_bytes = Xutf8LookupString(xic, event, buffer, buffer_size, NULL, &status);
-	positionBuffer(env, buffer_obj, num_bytes);
-	return status;
 }

@@ -44,34 +44,24 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLUtil;
 import org.lwjgl.input.Keyboard;
 
-final class LinuxKeyboard {
+final class BoatKeyboard {
 	private static final int LockMapIndex                      = 1;
 	private static final long NoSymbol = 0;
 	private static final long ShiftMask = 1 << 0;
 	private static final long LockMask = 1 << 1;
-	private static final int XLookupChars            = 2;
-	private static final int XLookupBoth             = 4;
 
 	private static final int KEYBOARD_BUFFER_SIZE = 50;
-
-	private final long xim;
-	private final long xic;
 
 	private final int numlock_mask;
 	private final int modeswitch_mask;
 	private final int caps_lock_mask;
 	private final int shift_lock_mask;
 
-	private final ByteBuffer compose_status;
-
 	private final byte[] key_down_buffer = new byte[Keyboard.KEYBOARD_SIZE];
 	private final EventQueue event_queue = new EventQueue(Keyboard.EVENT_SIZE);
 
 	private final ByteBuffer tmp_event = ByteBuffer.allocate(Keyboard.EVENT_SIZE);
 	private final int[] temp_translation_buffer = new int[KEYBOARD_BUFFER_SIZE];
-	private final ByteBuffer native_translation_buffer = BufferUtils.createByteBuffer(KEYBOARD_BUFFER_SIZE);
-	private final CharsetDecoder utf8_decoder = Charset.forName("UTF-8").newDecoder();
-	private final CharBuffer char_buffer = CharBuffer.allocate(KEYBOARD_BUFFER_SIZE);
 
 	// Deferred key released event, to detect key repeat
 	private boolean has_deferred_event;
@@ -80,7 +70,7 @@ final class LinuxKeyboard {
 	private long deferred_nanos;
 	private byte deferred_key_state;
 
-	LinuxKeyboard(long display, long window) {
+	BoatKeyboard(long display, long window) {
 		long modifier_map = getModifierMapping(display);
 		int tmp_numlock_mask = 0;
 		int tmp_modeswitch_mask = 0;
@@ -124,29 +114,12 @@ final class LinuxKeyboard {
 		caps_lock_mask = tmp_caps_lock_mask;
 		shift_lock_mask = tmp_shift_lock_mask;
 		setDetectableKeyRepeat(display, true);
-		xim = openIM(display);
-		if (xim != 0) {
-			xic = createIC(xim, window);
-			if (xic != 0) {
-				setupIMEventMask(display, window, xic);
-			} else {
-				destroy(display);
-			}
-		} else {
-			xic = 0;
-		}
-		compose_status = allocateComposeStatus();
 	}
 	private static native long getModifierMapping(long display);
 	private static native void freeModifierMapping(long modifier_map);
 	private static native int getMaxKeyPerMod(long modifier_map);
 	private static native int lookupModifierMap(long modifier_map, int index);
 	private static native long keycodeToKeySym(long display, int key_code);
-
-	private static native long openIM(long display);
-	private static native long createIC(long xim, long window);
-	private static native void setupIMEventMask(long display, long window, long xic);
-	private static native ByteBuffer allocateComposeStatus();
 
 	private static void setDetectableKeyRepeat(long display, boolean enabled) {
 		boolean success = nSetDetectableKeyRepeat(display, enabled);
@@ -156,14 +129,8 @@ final class LinuxKeyboard {
 	private static native boolean nSetDetectableKeyRepeat(long display, boolean enabled);
 
 	public void destroy(long display) {
-		if (xic != 0)
-			destroyIC(xic);
-		if (xim != 0)
-			closeIM(xim);
 		setDetectableKeyRepeat(display, false);
 	}
-	private static native void destroyIC(long xic);
-	private static native void closeIM(long xim);
 
 	public void read(ByteBuffer buffer) {
 		flushDeferredEvent();
@@ -182,41 +149,6 @@ final class LinuxKeyboard {
 		tmp_event.putInt(keycode).put(state).putInt(ch).putLong(nanos).put(repeat ? (byte)1 : (byte)0);
 		tmp_event.flip();
 		event_queue.putEvent(tmp_event);
-	}
-
-	private int lookupStringISO88591(long event_ptr, int[] translation_buffer) {
-		int i;
-
-		int num_chars = lookupString(event_ptr, native_translation_buffer, compose_status);
-		for (i = 0; i < num_chars; i++) {
-			translation_buffer[i] = ((int)native_translation_buffer.get(i)) & 0xff;
-		}
-		return num_chars;
-	}
-	private static native int lookupString(long event_ptr, ByteBuffer buffer, ByteBuffer compose_status);
-
-	private int lookupStringUnicode(long event_ptr, int[] translation_buffer) {
-		int status = utf8LookupString(xic, event_ptr, native_translation_buffer, native_translation_buffer.position(), native_translation_buffer.remaining());
-		if (status != XLookupChars && status != XLookupBoth)
-			return 0;
-		native_translation_buffer.flip();
-		utf8_decoder.decode(native_translation_buffer, char_buffer, true);
-		native_translation_buffer.compact();
-		char_buffer.flip();
-		int i = 0;
-		while (char_buffer.hasRemaining() && i < translation_buffer.length) {
-			translation_buffer[i++] = char_buffer.get();
-		}
-		char_buffer.compact();
-		return i;
-	}
-	private static native int utf8LookupString(long xic, long event_ptr, ByteBuffer buffer, int pos, int size);
-
-	private int lookupString(long event_ptr, int[] translation_buffer) {
-		if (xic != 0) {
-			return lookupStringUnicode(event_ptr, translation_buffer);
-		} else
-			return lookupStringISO88591(event_ptr, translation_buffer);
 	}
 
 	private void translateEvent(long event_ptr, int keycode, byte key_state, long nanos, boolean repeat) {
