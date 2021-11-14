@@ -31,19 +31,15 @@
  */
  
 /**
- * $Id: org_lwjgl_input_Keyboard.c 2399 2006-06-30 19:28:00Z elias_naur $
  *
- * Linux mouse handling.
+ * Boat mouse handling.
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
- * @version $Revision: 2399 $
+ * @author cosine
  */
 
-#include <X11/X.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include <boat.h>
 #include "common_tools.h"
-#include "org_lwjgl_opengl_LinuxMouse.h"
+#include "org_lwjgl_opengl_BoatMouse.h"
 
 static void getWindowAttributes(jlong display_ptr, jlong window_ptr, XWindowAttributes *attr) {
 	Display *disp = (Display *)(intptr_t)display_ptr;
@@ -84,15 +80,8 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxMouse_nQueryPointer(JNIEnv *e
 	return root_return;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxMouse_nGetButtonCount(JNIEnv *env, jclass unused, jlong display_ptr) {
-	Display *disp = (Display *)(intptr_t)display_ptr;
-
-	int count = 256;
-
-	unsigned char * pointer_map = malloc(sizeof(unsigned char) * count);
-	count = XGetPointerMapping(disp, pointer_map, count);
-
-	free(pointer_map);
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatMouse_nGetButtonCount(JNIEnv *env, jclass unused) {
+	int count = 16;
 
 	return count;
 }

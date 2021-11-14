@@ -32,7 +32,7 @@
 package org.lwjgl.opengl;
 
 /**
- * @author elias_naur
+ * @author cosine
  */
 
 import java.nio.ByteBuffer;
@@ -42,13 +42,13 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Mouse;
 
-final class LinuxMouse {
+final class BoatMouse {
 	// scale the mouse wheel according to DirectInput
 	private static final int WHEEL_SCALE = 120;
 
 	private int button_count;
 	
-	/* X11 constants */
+	/* Boat constants */
 	private static final int Button1 = 1;
 	private static final int Button2 = 2;
 	private static final int Button3 = 3;
@@ -78,11 +78,11 @@ final class LinuxMouse {
 	private EventQueue event_queue;
 	private long last_event_nanos;
 
-	LinuxMouse(long display, long window, long input_window) throws LWJGLException {
+	BoatMouse(long display, long window, long input_window) throws LWJGLException {
 		this.display = display;
 		this.window = window;
 		this.input_window = input_window;
-		button_count = nGetButtonCount(display);
+		button_count = nGetButtonCount();
 		buttons = new byte[button_count];
 		reset(false, false);
 	}
@@ -163,7 +163,7 @@ final class LinuxMouse {
 	private static native int nGetWindowHeight(long display, long window);
 	private static native int nGetWindowWidth(long display, long window);
 	
-	private static native int nGetButtonCount(long display);
+	private static native int nGetButtonCount();
 
 	private static native long nQueryPointer(long display, long window, IntBuffer result);
 
@@ -249,13 +249,13 @@ final class LinuxMouse {
 		}
 	}
 
-	public boolean filterEvent(boolean grab, boolean warp_pointer, LinuxEvent event) {
+	public boolean filterEvent(boolean grab, boolean warp_pointer, BoatEvent event) {
 		switch (event.getType()) {
-			case LinuxEvent.ButtonPress: /* Fall through */
-			case LinuxEvent.ButtonRelease:
+			case BoatEvent.ButtonPress: /* Fall through */
+			case BoatEvent.ButtonRelease:
 				handleButtonEvent(grab, event.getButtonTime(), event.getButtonType(), (byte)event.getButtonButton());
 				return true;
-			case LinuxEvent.MotionNotify:
+			case BoatEvent.MotionNotify:
 				handlePointerMotion(grab, warp_pointer, event.getButtonTime(), event.getButtonRoot(), event.getButtonXRoot(), event.getButtonYRoot(), event.getButtonX(), event.getButtonY());
 				return true;
 			default:

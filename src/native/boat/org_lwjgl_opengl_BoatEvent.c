@@ -63,9 +63,9 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetBoatMessageMessage(JN
 	return event->message;
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetButtonTime(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xbutton.time;
+JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetButtonTime(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->time;
 }
 
 JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetButtonState(JNIEnv *env, jclass unused, jobject event_buffer) {
@@ -73,14 +73,14 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetButtonState(JNIEnv *
 	return event->xbutton.state;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetButtonType(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xbutton.type;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetButtonType(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->type;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetButtonButton(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xbutton.button;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetButtonButton(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->button;
 }
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetButtonRoot(JNIEnv *env, jclass unused, jobject event_buffer) {
