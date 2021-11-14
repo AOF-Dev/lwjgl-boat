@@ -38,51 +38,18 @@ import java.lang.UnsatisfiedLinkError;
 
 /**
  *
- * @author elias_naur <elias_naur@users.sourceforge.net>
+ * @author cosine
  * @version $Revision$
  * $Id$
  */
-final class LinuxSysImplementation extends J2SESysImplementation {
+final class BoatSysImplementation extends J2SESysImplementation {
 	private static final int JNI_VERSION = 19;
-
-	static {
-		// Load libawt.so and libmawt.so, needed for libjawt.so
-		java.awt.Toolkit.getDefaultToolkit();
-		
-		// manually load libjawt.so into vm, needed since Java 7
-		AccessController.doPrivileged(new PrivilegedAction<Object>() {
-			public Object run() {
-				try {
-					System.loadLibrary("jawt");
-				} catch (UnsatisfiedLinkError e) {
-			        // catch and ignore an already loaded in another classloader 
-					// exception, as vm already has it loaded
-			    }
-				return null;
-			}
-		});
-	}
 
 	public int getRequiredJNIVersion() {
 		return JNI_VERSION;
 	}
 
 	public boolean openURL(final String url) {
-		// Linux may as well resort to pure Java hackery, as there's no Linux native way of doing it
-		// right anyway.
-
-		String[] browsers = {"sensible-browser", "xdg-open", "google-chrome", "chromium", "firefox", "iceweasel", "mozilla", "opera", "konqueror", "nautilus", "galeon", "netscape"};
-
-		for ( final String browser : browsers ) {
-			try {
-				LWJGLUtil.execPrivileged(new String[] { browser, url });
-				return true;
-			} catch (Exception e) {
-				// Ignore
-				e.printStackTrace(System.err);
-			}
-		}
-
 		// Seems to have failed
 		return false;
 	}
