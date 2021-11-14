@@ -71,65 +71,9 @@ final class BoatKeyboard {
 	private byte deferred_key_state;
 
 	BoatKeyboard(long display, long window) {
-		long modifier_map = getModifierMapping(display);
-		int tmp_numlock_mask = 0;
-		int tmp_modeswitch_mask = 0;
-		int tmp_caps_lock_mask = 0;
-		int tmp_shift_lock_mask = 0;
-		if (modifier_map != 0) {
-			int max_keypermod = getMaxKeyPerMod(modifier_map);
-			// Find modifier masks
-			int i, j;
-			for (i = 0; i < 8; i++) {
-				for (j = 0; j < max_keypermod; j++) {
-					int key_code = lookupModifierMap(modifier_map, i*max_keypermod + j);
-					int key_sym = (int)keycodeToKeySym(display, key_code);
-					int mask = 1 << i;
-					switch (key_sym) {
-						case LinuxKeycodes.XK_Num_Lock:
-							tmp_numlock_mask |= mask;
-							break;
-						case LinuxKeycodes.XK_Mode_switch:
-							tmp_modeswitch_mask |= mask;
-							break;
-						case LinuxKeycodes.XK_Caps_Lock:
-							if (i == LockMapIndex) {
-								tmp_caps_lock_mask = mask;
-								tmp_shift_lock_mask = 0;
-							}
-							break;
-						case LinuxKeycodes.XK_Shift_Lock:
-							if (i == LockMapIndex && tmp_caps_lock_mask == 0)
-								tmp_shift_lock_mask = mask;
-							break;
-						default:
-							break;
-					}
-				}
-			}
-			freeModifierMapping(modifier_map);
-		}
-		numlock_mask = tmp_numlock_mask;
-		modeswitch_mask = tmp_modeswitch_mask;
-		caps_lock_mask = tmp_caps_lock_mask;
-		shift_lock_mask = tmp_shift_lock_mask;
-		setDetectableKeyRepeat(display, true);
 	}
-	private static native long getModifierMapping(long display);
-	private static native void freeModifierMapping(long modifier_map);
-	private static native int getMaxKeyPerMod(long modifier_map);
-	private static native int lookupModifierMap(long modifier_map, int index);
-	private static native long keycodeToKeySym(long display, int key_code);
-
-	private static void setDetectableKeyRepeat(long display, boolean enabled) {
-		boolean success = nSetDetectableKeyRepeat(display, enabled);
-		if (!success)
-			LWJGLUtil.log("Failed to set detectable key repeat to " + enabled);
-	}
-	private static native boolean nSetDetectableKeyRepeat(long display, boolean enabled);
 
 	public void destroy(long display) {
-		setDetectableKeyRepeat(display, false);
 	}
 
 	public void read(ByteBuffer buffer) {
