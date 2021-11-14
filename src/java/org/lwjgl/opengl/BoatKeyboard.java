@@ -32,36 +32,22 @@
 package org.lwjgl.opengl;
 
 /**
- * @author elias_naur
+ * @author cosine
  */
 
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLUtil;
 import org.lwjgl.input.Keyboard;
 
 final class BoatKeyboard {
-	private static final int LockMapIndex                      = 1;
-	private static final long NoSymbol = 0;
-	private static final long ShiftMask = 1 << 0;
-	private static final long LockMask = 1 << 1;
-
 	private static final int KEYBOARD_BUFFER_SIZE = 50;
-
-	private final int numlock_mask;
-	private final int modeswitch_mask;
-	private final int caps_lock_mask;
-	private final int shift_lock_mask;
 
 	private final byte[] key_down_buffer = new byte[Keyboard.KEYBOARD_SIZE];
 	private final EventQueue event_queue = new EventQueue(Keyboard.EVENT_SIZE);
 
 	private final ByteBuffer tmp_event = ByteBuffer.allocate(Keyboard.EVENT_SIZE);
-	private final int[] temp_translation_buffer = new int[KEYBOARD_BUFFER_SIZE];
 
 	// Deferred key released event, to detect key repeat
 	private boolean has_deferred_event;
@@ -70,10 +56,10 @@ final class BoatKeyboard {
 	private long deferred_nanos;
 	private byte deferred_key_state;
 
-	BoatKeyboard(long display, long window) {
+	BoatKeyboard() {
 	}
 
-	public void destroy(long display) {
+	public void destroy() {
 	}
 
 	public void read(ByteBuffer buffer) {
@@ -95,33 +81,22 @@ final class BoatKeyboard {
 		event_queue.putEvent(tmp_event);
 	}
 
-	private void translateEvent(long event_ptr, int keycode, byte key_state, long nanos, boolean repeat) {
-		int num_chars, i;
-		int ch;
+	private void translateEvent(int keycode, byte key_state, int keychar, long nanos, boolean repeat) {
+		int ch = keychar;
 
-		num_chars = lookupString(event_ptr, temp_translation_buffer);
-		if (num_chars > 0) {
-			ch = temp_translation_buffer[0];
-			putKeyboardEvent(keycode, key_state, ch, nanos, repeat);
-			for (i = 1; i < num_chars; i++) {
-				ch = temp_translation_buffer[i];
-				putKeyboardEvent(0, (byte)0, ch, nanos, repeat);
-			}
-		} else {
-			putKeyboardEvent(keycode, key_state, 0, nanos, repeat);
-		}
+		putKeyboardEvent(keycode, key_state, ch, nanos, repeat);
 	}
 
-	private int getKeycode(long event_ptr, int event_state) {
-		int keycode = BoatKeycodes.mapBoatKeyCodeToLWJGLKeyCode(keysym);
+	private int getKeycode(int event_keycode) {
+		int keycode = BoatKeycodes.mapBoatKeyCodeToLWJGLKeyCode(event_keycode);
 		return keycode;
 	}
 
 	private static byte getKeyState(int event_type) {
 		switch (event_type) {
-			case LinuxEvent.KeyPress:
+			case BoatEvent.KeyPress:
 				return 1;
-			case LinuxEvent.KeyRelease:
+			case BoatEvent.KeyRelease:
 				return 0;
 			default:
 				throw new IllegalArgumentException("Unknown event_type: " + event_type);
@@ -138,15 +113,14 @@ final class BoatKeyboard {
 		}
 	}
 
-	private void handleKeyEvent(long event_ptr, long millis, int event_type, int event_keycode, int event_state) {
-		int keycode = getKeycode(event_ptr, event_state);
+	private void handleKeyEvent(long nanos, int event_type, int event_keycode, int event_keychar) {
+		int keycode = getKeycode(event_keycode);
 		byte key_state = getKeyState(event_type);
 		boolean repeat = key_state == key_down_buffer[keycode];
-		if ( repeat && event_type == LinuxEvent.KeyRelease ) // This can happen for modifier keys after losing and regaining focus.
+		if ( repeat && event_type == BoatEvent.KeyRelease ) // This can happen for modifier keys after losing and regaining focus.
 			return;
 		key_down_buffer[keycode] = key_state;
-		long nanos = millis*1000000;
-		if (event_type == LinuxEvent.KeyPress) {
+		if (event_type == BoatEvent.KeyPress) {
 			if (has_deferred_event) {
 				if (nanos == deferred_nanos && event_keycode == deferred_event_keycode) {
 					has_deferred_event = false;
@@ -154,7 +128,7 @@ final class BoatKeyboard {
 				} else
 					flushDeferredEvent();
 			}
-			translateEvent(event_ptr, keycode, key_state, nanos, repeat);
+			translateEvent(keycode, key_state, event_keychar, nanos, repeat);
 		} else {
 			flushDeferredEvent();
 			has_deferred_event = true;
@@ -172,11 +146,11 @@ final class BoatKeyboard {
 		}
 	}
 
-	public boolean filterEvent(LinuxEvent event) {
+	public boolean filterEvent(BoatEvent event) {
 		switch (event.getType()) {
-			case LinuxEvent.KeyPress: /* Fall through */
-			case LinuxEvent.KeyRelease:
-				handleKeyEvent(event.getKeyAddress(), event.getKeyTime(), event.getKeyType(), event.getKeyKeyCode(), event.getKeyState());
+			case BoatEvent.KeyPress: /* Fall through */
+			case BoatEvent.KeyRelease:
+				handleKeyEvent(event.getKeyTime(), event.getKeyType(), event.getKeyKeyCode(), event.getKeyKeyChar());
 				return true;
 			default:
 				break;

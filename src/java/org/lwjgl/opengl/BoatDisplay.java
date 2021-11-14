@@ -102,7 +102,7 @@ final class BoatDisplay implements DisplayImplementation {
 	private int window_width;
 	private int window_height;
 
-	private LinuxKeyboard keyboard;
+	private BoatKeyboard keyboard;
 	private BoatMouse mouse;
 
 	/**
@@ -452,13 +452,13 @@ final class BoatDisplay implements DisplayImplementation {
 	/* Keyboard */
 	public void createKeyboard() throws LWJGLException {
 		try {
-			keyboard = new LinuxKeyboard(getDisplay(), getWindow());
+			keyboard = new BoatKeyboard();
 		}
 	}
 
 	public void destroyKeyboard() {
 		try {
-			keyboard.destroy(getDisplay());
+			keyboard.destroy();
 			keyboard = null;
 		}
 	}

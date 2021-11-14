@@ -93,28 +93,27 @@ JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetButtonY(JNIEnv *env, 
 	return event->y;
 }
 
-JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetKeyAddress(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	XKeyEvent *key_event = &(event->xkey);
-	return (jlong)(intptr_t)key_event;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetKeyTime(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->time;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetKeyTime(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xkey.time;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetKeyType(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->type;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetKeyType(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xkey.type;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetKeyKeyCode(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->keycode;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetKeyKeyCode(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xkey.keycode;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetKeyState(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->state;
 }
 
-JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_LinuxEvent_nGetKeyState(JNIEnv *env, jclass unused, jobject event_buffer) {
-	XEvent *event = (XEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
-	return event->xkey.state;
+JNIEXPORT jint JNICALL Java_org_lwjgl_opengl_BoatEvent_nGetKeyKeyChar(JNIEnv *env, jclass unused, jobject event_buffer) {
+	BoatEvent *event = (BoatEvent *)(*env)->GetDirectBufferAddress(env, event_buffer);
+	return event->keychar;
 }

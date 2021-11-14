@@ -109,11 +109,6 @@ final class BoatEvent {
 
 	/* Key methods */
 
-	public long getKeyAddress() {
-		return nGetKeyAddress(event_buffer);
-	}
-	private static native long nGetKeyAddress(ByteBuffer event_buffer);
-
 	public long getKeyTime() {
 		return nGetKeyTime(event_buffer);
 	}
@@ -133,4 +128,9 @@ final class BoatEvent {
 		return nGetKeyState(event_buffer);
 	}
 	private static native int nGetKeyState(ByteBuffer event_buffer);
+
+	public int getKeyKeyChar() {
+		return nGetKeyKeyChar(event_buffer);
+	}
+	private static native int nGetKeyKeyChar(ByteBuffer event_buffer);
 }
