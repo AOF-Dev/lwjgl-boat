@@ -54,5 +54,5 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatPeerInfo_nGetDisplay(JNIEnv *e
 
 JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatPeerInfo_nGetDrawable(JNIEnv *env, jclass unused, jobject handle) {
 	BoatPeerInfo *peer_info = (*env)->GetDirectBufferAddress(env, handle);
-	return peer_info->drawable;
+	return (jlong)(intptr_t)peer_info->drawable;
 }
