@@ -57,6 +57,6 @@ extern EGLConfig *chooseVisualEGL(JNIEnv *env, EGLDisplay disp, jobject pixel_fo
 
 extern EGLConfig *getFBConfigFromPeerInfo(JNIEnv *env, BoatPeerInfo *peer_info);
 
-extern bool initPeerInfo(JNIEnv *env, jobject peer_info_handle, EGLDisplay *display, jobject pixel_format, bool use_display_bpp, int drawable_type);
+extern bool initPeerInfo(JNIEnv *env, jobject peer_info_handle, EGLDisplay display, jobject pixel_format, bool use_display_bpp, int drawable_type);
 
 #endif /* _LWJGL_CONTEXT_H_INCLUDED_ */

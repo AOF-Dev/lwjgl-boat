@@ -113,12 +113,12 @@ static EGLConfig *chooseVisualEGLFromBPP(JNIEnv *env, EGLDisplay disp, jobject p
 	putAttrib(&attrib_list, EGL_NONE); putAttrib(&attrib_list, EGL_NONE);
 	int num_formats = 0;
 	EGLBoolean ret;
-	ret = lwjgl_eglChooseConfig(disp, attribs, NULL, 0, &num_formats);
+	ret = lwjgl_eglChooseConfig(disp, attrib_list.attribs, NULL, 0, &num_formats);
 	if (!ret) {
 		return NULL;
 	}
 	EGLConfig* configs = calloc(num_formats, sizeof(EGLConfig));
-	ret = lwjgl_eglChooseConfig(disp, attribs, configs, num_formats, &num_formats);
+	ret = lwjgl_eglChooseConfig(disp, attrib_list.attribs, configs, num_formats, &num_formats);
 	if (ret && num_formats > 0) {
 		return configs;
 	} else {
