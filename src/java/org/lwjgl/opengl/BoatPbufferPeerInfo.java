@@ -43,20 +43,18 @@ import org.lwjgl.LWJGLException;
  */
 final class BoatPbufferPeerInfo extends BoatPeerInfo {
 	BoatPbufferPeerInfo(int width, int height, PixelFormat pixel_format) throws LWJGLException {
+		GLContext.loadOpenGLLibrary();
 		try {
-			GLContext.loadOpenGLLibrary();
+			BoatDisplay.incDisplay();
 			try {
-				BoatDisplay.incDisplay();
-				try {
-					nInitHandle(BoatDisplay.getDisplay(), getHandle(), width, height, pixel_format);
-				} catch (LWJGLException e) {
-					BoatDisplay.decDisplay();
-					throw e;
-				}
+				nInitHandle(BoatDisplay.getDisplay(), getHandle(), width, height, pixel_format);
 			} catch (LWJGLException e) {
-				GLContext.unloadOpenGLLibrary();
+				BoatDisplay.decDisplay();
 				throw e;
 			}
+		} catch (LWJGLException e) {
+			GLContext.unloadOpenGLLibrary();
+			throw e;
 		}
 	}
 	private static native void nInitHandle(long display, ByteBuffer handle, int width, int height, PixelFormat pixel_format) throws LWJGLException;
