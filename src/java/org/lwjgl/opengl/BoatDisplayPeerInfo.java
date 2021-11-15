@@ -52,28 +52,24 @@ final class BoatDisplayPeerInfo extends BoatPeerInfo {
 
 	BoatDisplayPeerInfo(PixelFormat pixel_format) throws LWJGLException {
 		gles = false;
+		GLContext.loadOpenGLLibrary();
 		try {
-			GLContext.loadOpenGLLibrary();
+			BoatDisplay.incDisplay();
 			try {
-				BoatDisplay.incDisplay();
-				try {
-					initDefaultPeerInfo(BoatDisplay.getDisplay(), getHandle(), pixel_format);
-				} catch (LWJGLException e) {
-					BoatDisplay.decDisplay();
-					throw e;
-				}
+				initDefaultPeerInfo(BoatDisplay.getDisplay(), getHandle(), pixel_format);
 			} catch (LWJGLException e) {
-				GLContext.unloadOpenGLLibrary();
+				BoatDisplay.decDisplay();
 				throw e;
 			}
+		} catch (LWJGLException e) {
+			GLContext.unloadOpenGLLibrary();
+			throw e;
 		}
 	}
 	private static native void initDefaultPeerInfo(long display, ByteBuffer peer_info_handle, PixelFormat pixel_format) throws LWJGLException;
 
 	protected void doLockAndInitHandle() throws LWJGLException {
-		try {
-			initDrawable(getHandle());
-		}
+		initDrawable(getHandle());
 	}
 	private static native void initDrawable(ByteBuffer peer_info_handle);
 
