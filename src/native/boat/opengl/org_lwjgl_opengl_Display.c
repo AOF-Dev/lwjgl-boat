@@ -44,7 +44,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <jni.h>
-#include <jawt_md.h>
 #include "common_tools.h"
 #include "extgl.h"
 #include "extgl_egl.h"
@@ -142,7 +141,7 @@ JNIEXPORT jlong JNICALL Java_org_lwjgl_opengl_BoatDisplay_nCreateWindow(JNIEnv *
 	}
 	egl_window = lwjgl_eglCreateWindowSurface(disp, *fb_config, win, NULL);
 	free(fb_config);
-	return win;
+	return (jlong)(intptr_t)win;
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatDisplay_nDestroyWindow(JNIEnv *env, jclass clazz, jlong display, jlong window_ptr) {
