@@ -66,8 +66,8 @@ JNIEXPORT void JNICALL Java_org_lwjgl_opengl_BoatPbufferPeerInfo_nInitHandle
 	bool result = initPeerInfo(env, peer_info_handle, disp, pixel_format, false, EGL_PBUFFER_BIT);
 	if (!result)
 		return;
-	const int buffer_attribs[] = {EGL_PBUFFER_WIDTH, width,
-				      EGL_PBUFFER_HEIGHT, height,
+	const int buffer_attribs[] = {EGL_WIDTH, width,
+				      EGL_HEIGHT, height,
 				      EGL_LARGEST_PBUFFER, EGL_FALSE,
 					  EGL_NONE, EGL_NONE};
 
