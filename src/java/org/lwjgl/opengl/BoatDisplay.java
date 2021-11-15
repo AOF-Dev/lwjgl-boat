@@ -204,41 +204,39 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void createWindow(final DrawableLWJGL drawable, DisplayMode mode, Canvas parent, int x, int y) throws LWJGLException {
+		incDisplay();
 		try {
-			incDisplay();
+			if ( drawable instanceof DrawableGLES )
+				peer_info = new BoatDisplayPeerInfo();
+
+			ByteBuffer handle = peer_info.lockAndGetHandle();
 			try {
+				current_window_mode = getWindowMode(Display.isFullscreen());
+
+				resizable = Display.isResizable();
+				resized = false;
+				window_x = x;
+				window_y = y;
+				window_width = mode.getWidth();
+				window_height = mode.getHeight();
+
+				current_window = nCreateWindow(getDisplay(), handle, mode, current_window_mode, x, y, resizable);
+
+				input_released = false;
+				pointer_grabbed = false;
+				close_requested = false;
+				grab = false;
+				minimized = false;
+				dirty = true;
+
 				if ( drawable instanceof DrawableGLES )
-					peer_info = new BoatDisplayPeerInfo();
-
-				ByteBuffer handle = peer_info.lockAndGetHandle();
-				try {
-					current_window_mode = getWindowMode(Display.isFullscreen());
-					
-					resizable = Display.isResizable();
-					resized = false;
-					window_x = x;
-					window_y = y;
-					window_width = mode.getWidth();
-					window_height = mode.getHeight();
-
-					current_window = nCreateWindow(getDisplay(), handle, mode, current_window_mode, x, y, resizable);
-					
-					input_released = false;
-					pointer_grabbed = false;
-					close_requested = false;
-					grab = false;
-					minimized = false;
-					dirty = true;
-
-					if ( drawable instanceof DrawableGLES )
-						((DrawableGLES)drawable).initialize(current_window, getDisplay(), EGL.EGL_WINDOW_BIT, (org.lwjgl.opengles.PixelFormat)drawable.getPixelFormat());
-				} finally {
-					peer_info.unlock();
-				}
-			} catch (LWJGLException e) {
-				decDisplay();
-				throw e;
+					((DrawableGLES)drawable).initialize(current_window, getDisplay(), EGL.EGL_WINDOW_BIT, (org.lwjgl.opengles.PixelFormat)drawable.getPixelFormat());
+			} finally {
+				peer_info.unlock();
 			}
+		} catch (LWJGLException e) {
+			decDisplay();
+			throw e;
 		}
 	}
 	private static native long nCreateWindow(long display, ByteBuffer peer_info_handle, DisplayMode mode, int window_mode, int x, int y, boolean resizable) throws LWJGLException;
@@ -252,10 +250,8 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void destroyWindow() {
-		try {
-			nDestroyWindow(getDisplay(), getWindow());
-			decDisplay();
-		}
+		nDestroyWindow(getDisplay(), getWindow());
+		decDisplay();
 	}
 	static native void nDestroyWindow(long display, long window);
 
@@ -265,7 +261,11 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void resetDisplayMode() {
-		switchDisplayMode(saved_mode);
+		try {
+			switchDisplayMode(saved_mode);
+		}
+		catch (LWJGLException e) {
+		}
 	}
 
 	public int getGammaRampLength() {
@@ -285,14 +285,12 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public DisplayMode init() throws LWJGLException {
-		try {
-			DisplayMode[] modes = getAvailableDisplayModes();
-			if (modes == null || modes.length == 0)
-				throw new LWJGLException("No modes available");
-			saved_mode = modes[0];
-			current_mode = saved_mode;
-			return saved_mode;
-		}
+		DisplayMode[] modes = getAvailableDisplayModes();
+		if (modes == null || modes.length == 0)
+			throw new LWJGLException("No modes available");
+		saved_mode = modes[0];
+		current_mode = saved_mode;
+		return saved_mode;
 	}
 
 	public void setTitle(String title) {
@@ -360,24 +358,20 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void update() {
-		try {
-			processEvents();
-		}
+		processEvents();
 	}
 
 	public void reshape(int x, int y, int width, int height) {
 	}
 
 	public DisplayMode[] getAvailableDisplayModes() throws LWJGLException {
-		try {
-                        incDisplay();
-                        try {
-                                DisplayMode[] modes = nGetAvailableDisplayModes();
-                                return modes;
-                        } finally {
-                                decDisplay();
-                        }
-		}
+                incDisplay();
+                try {
+                        DisplayMode[] modes = nGetAvailableDisplayModes();
+                        return modes;
+                } finally {
+                        decDisplay();
+                }
 	}
 	private static native DisplayMode[] nGetAvailableDisplayModes() throws LWJGLException;
 
@@ -391,9 +385,7 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void createMouse() throws LWJGLException {
-		try {
-			mouse = new BoatMouse(getWindow());
-		}
+		mouse = new BoatMouse(getWindow());
 	}
 
 	public void destroyMouse() {
@@ -402,30 +394,22 @@ final class BoatDisplay implements DisplayImplementation {
 	}
 
 	public void pollMouse(IntBuffer coord_buffer, ByteBuffer buttons) {
-		try {
-			mouse.poll(grab, coord_buffer, buttons);
-		}
+		mouse.poll(grab, coord_buffer, buttons);
 	}
 
 	public void readMouse(ByteBuffer buffer) {
-		try {
-			mouse.read(buffer);
-		}
+		mouse.read(buffer);
 	}
 
 	public void setCursorPosition(int x, int y) {
-		try {
-			mouse.setCursorPosition(x, y);
-		}
+		mouse.setCursorPosition(x, y);
 	}
 
 	public void grabMouse(boolean new_grab) {
-		try {
-			if (new_grab != grab) {
-				grab = new_grab;
-				updateInputGrab();
-				mouse.changeGrabbed(grab, shouldWarpPointer());
-			}
+		if (new_grab != grab) {
+			grab = new_grab;
+			updateInputGrab();
+			mouse.changeGrabbed(grab, shouldWarpPointer());
 		}
 	}
 
@@ -451,28 +435,20 @@ final class BoatDisplay implements DisplayImplementation {
 
 	/* Keyboard */
 	public void createKeyboard() throws LWJGLException {
-		try {
-			keyboard = new BoatKeyboard();
-		}
+		keyboard = new BoatKeyboard();
 	}
 
 	public void destroyKeyboard() {
-		try {
-			keyboard.destroy();
-			keyboard = null;
-		}
+		keyboard.destroy();
+		keyboard = null;
 	}
 
 	public void pollKeyboard(ByteBuffer keyDownBuffer) {
-		try {
-			keyboard.poll(keyDownBuffer);
-		}
+		keyboard.poll(keyDownBuffer);
 	}
 
 	public void readKeyboard(ByteBuffer buffer) {
-		try {
-			keyboard.read(buffer);
-		}
+		keyboard.read(buffer);
 	}
 
 	public Object createCursor(int width, int height, int xHotspot, int yHotspot, int numImages, IntBuffer images, IntBuffer delays) throws LWJGLException {
