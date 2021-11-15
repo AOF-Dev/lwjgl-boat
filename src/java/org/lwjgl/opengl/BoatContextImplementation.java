@@ -42,13 +42,11 @@ import java.nio.IntBuffer;
 final class BoatContextImplementation implements ContextImplementation {
 
 	public ByteBuffer create(PeerInfo peer_info, IntBuffer attribs, ByteBuffer shared_context_handle) throws LWJGLException {
+		ByteBuffer peer_handle = peer_info.lockAndGetHandle();
 		try {
-			ByteBuffer peer_handle = peer_info.lockAndGetHandle();
-			try {
-				return nCreate(peer_handle, attribs, shared_context_handle);
-			} finally {
-				peer_info.unlock();
-			}
+			return nCreate(peer_handle, attribs, shared_context_handle);
+		} finally {
+			peer_info.unlock();
 		}
 	}
 
@@ -67,13 +65,11 @@ final class BoatContextImplementation implements ContextImplementation {
 			throw new IllegalStateException("No context is current");
 		synchronized ( current_context ) {
 			PeerInfo current_peer_info = current_context.getPeerInfo();
+			ByteBuffer peer_handle = current_peer_info.lockAndGetHandle();
 			try {
-				ByteBuffer peer_handle = current_peer_info.lockAndGetHandle();
-				try {
-					nSwapBuffers(peer_handle);
-				} finally {
-					current_peer_info.unlock();
-				}
+				nSwapBuffers(peer_handle);
+			} finally {
+				current_peer_info.unlock();
 			}
 		}
 	}
@@ -86,13 +82,11 @@ final class BoatContextImplementation implements ContextImplementation {
 			throw new IllegalStateException("No context is current");
 		synchronized ( current_context ) {
 			PeerInfo current_peer_info = current_context.getPeerInfo();
+			ByteBuffer peer_handle = current_peer_info.lockAndGetHandle();
 			try {
-				ByteBuffer peer_handle = current_peer_info.lockAndGetHandle();
-				try {
-					nReleaseCurrentContext(peer_handle);
-				} finally {
-					current_peer_info.unlock();
-				}
+				nReleaseCurrentContext(peer_handle);
+			} finally {
+				current_peer_info.unlock();
 			}
 		}
 	}
@@ -103,23 +97,19 @@ final class BoatContextImplementation implements ContextImplementation {
 	}
 
 	public void makeCurrent(PeerInfo peer_info, ByteBuffer handle) throws LWJGLException {
+		ByteBuffer peer_handle = peer_info.lockAndGetHandle();
 		try {
-			ByteBuffer peer_handle = peer_info.lockAndGetHandle();
-			try {
-				nMakeCurrent(peer_handle, handle);
-			} finally {
-				peer_info.unlock();
-			}
+			nMakeCurrent(peer_handle, handle);
+		} finally {
+			peer_info.unlock();
 		}
 	}
 
 	private static native void nMakeCurrent(ByteBuffer peer_handle, ByteBuffer context_handle) throws LWJGLException;
 
 	public boolean isCurrent(ByteBuffer handle) throws LWJGLException {
-		try {
-			boolean result = nIsCurrent(handle);
-			return result;
-		}
+		boolean result = nIsCurrent(handle);
+		return result;
 	}
 
 	private static native boolean nIsCurrent(ByteBuffer context_handle) throws LWJGLException;
@@ -148,13 +138,11 @@ final class BoatContextImplementation implements ContextImplementation {
 	private static native void nSetSwapInterval(ByteBuffer peer_handle, ByteBuffer context_handle, int value);
 
 	public void destroy(PeerInfo peer_info, ByteBuffer handle) throws LWJGLException {
+		ByteBuffer peer_handle = peer_info.lockAndGetHandle();
 		try {
-			ByteBuffer peer_handle = peer_info.lockAndGetHandle();
-			try {
-				nDestroy(peer_handle, handle);
-			} finally {
-				peer_info.unlock();
-			}
+			nDestroy(peer_handle, handle);
+		} finally {
+			peer_info.unlock();
 		}
 	}
 
