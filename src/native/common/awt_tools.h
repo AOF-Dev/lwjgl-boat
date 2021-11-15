@@ -41,6 +41,7 @@
 #define __LWJGL_AWT_TOOLS_H
 
 #include <jni.h>
+#ifndef PLATFORM_BOAT
 #include <jawt_md.h>
 
 typedef struct {
@@ -48,6 +49,13 @@ typedef struct {
 	JAWT_DrawingSurface* ds;
 	JAWT_DrawingSurfaceInfo *dsi;
 } AWTSurfaceLock;
+#else
+typedef struct {
+	int awt;
+	void* ds;
+	void *dsi;
+} AWTSurfaceLock;
+#endif
 
 #endif
 

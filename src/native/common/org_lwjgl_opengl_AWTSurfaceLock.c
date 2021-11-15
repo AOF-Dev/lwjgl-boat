@@ -42,7 +42,9 @@
 #ifdef __MACH__
 #include <JavaVM/jawt_md.h>
 #else
+#ifndef PLATFORM_BOAT
 #include <jawt_md.h>
+#endif
 #endif
 #include "org_lwjgl_opengl_AWTSurfaceLock.h"
 #include "awt_tools.h"
@@ -55,6 +57,7 @@ JNIEXPORT jobject JNICALL Java_org_lwjgl_opengl_AWTSurfaceLock_createHandle
 
 JNIEXPORT jboolean JNICALL Java_org_lwjgl_opengl_AWTSurfaceLock_lockAndInitHandle
   (JNIEnv *env, jclass clazz, jobject lock_buffer_handle, jobject canvas) {
+#ifndef PLATFORM_BOAT
 	JAWT awt;
 	JAWT_DrawingSurface* ds;
 	JAWT_DrawingSurfaceInfo *dsi;
@@ -99,13 +102,18 @@ JNIEXPORT jboolean JNICALL Java_org_lwjgl_opengl_AWTSurfaceLock_lockAndInitHandl
 	ds->Unlock(ds);
 	awt.FreeDrawingSurface(ds);
 	return JNI_FALSE;
+#else // PLATFORM_BOAT
+	return JNI_TRUE;
+#endif
 }
 
 JNIEXPORT void JNICALL Java_org_lwjgl_opengl_AWTSurfaceLock_nUnlock
   (JNIEnv *env, jclass clazz, jobject lock_buffer_handle) {
+#ifndef PLATFORM_BOAT
 	AWTSurfaceLock *awt_lock = (AWTSurfaceLock *)(*env)->GetDirectBufferAddress(env, lock_buffer_handle);
 	awt_lock->ds->FreeDrawingSurfaceInfo(awt_lock->dsi);
 	awt_lock->ds->Unlock(awt_lock->ds);
 	awt_lock->awt.FreeDrawingSurface(awt_lock->ds);
+#endif
 }
 
