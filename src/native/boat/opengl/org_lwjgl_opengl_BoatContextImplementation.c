@@ -59,6 +59,10 @@ static void createContextEGL(JNIEnv *env, BoatPeerInfo *peer_info, BoatContext *
 	EGLConfig *config = getFBConfigFromPeerInfo(env, peer_info);
 	if (config == NULL)
 		return;
+	if (!lwjgl_eglBindAPI(EGL_OPENGL_API)) {
+		throwException(env, "Could not bind OpenGL API");
+		return;
+	}
 	EGLContext context;
 	if (attribs) {
 		EGLint *attrib_list = (EGLint *)(*env)->GetDirectBufferAddress(env, attribs);
