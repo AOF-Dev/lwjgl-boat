@@ -56,15 +56,15 @@ static bool checkContext(JNIEnv *env, EGLDisplay display, EGLContext context) {
 }
 
 static void createContextEGL(JNIEnv *env, BoatPeerInfo *peer_info, BoatContext *context_info, jobject attribs, EGLContext shared_context) {
-	EGLConfig config = getEGLConfigFromPeerInfo(env, peer_info);
+	EGLConfig *config = getFBConfigFromPeerInfo(env, peer_info);
 	if (config == NULL)
 		return;
 	EGLContext context;
 	if (attribs) {
-		EGLint *attrib_list = (const int *)(*env)->GetDirectBufferAddress(env, attribs);
-		context = lwjgl_eglCreateContext(peer_info->display, config, shared_context, attrib_list);
+		EGLint *attrib_list = (EGLint *)(*env)->GetDirectBufferAddress(env, attribs);
+		context = lwjgl_eglCreateContext(peer_info->display, *config, shared_context, attrib_list);
 	} else {
-		context = lwjgl_eglCreateContext(peer_info->display, config, shared_context, NULL);
+		context = lwjgl_eglCreateContext(peer_info->display, *config, shared_context, NULL);
 	}
 	if (!checkContext(env, peer_info->display, context))
 		return;
