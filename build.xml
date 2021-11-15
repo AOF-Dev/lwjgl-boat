@@ -36,6 +36,7 @@
 		<mkdir dir="${lwjgl.temp}/native/openbsd"   taskname="initialiazing temp/openbsd folder" />
 		<mkdir dir="${lwjgl.temp}/native/macosx"    taskname="initialiazing temp/macosx folder" />
 		<mkdir dir="${lwjgl.temp}/native/solaris"   taskname="initialiazing temp/solaris folder" />
+		<mkdir dir="${lwjgl.temp}/native/boat"      taskname="initialiazing temp/boat folder" />
 	</target>
 
 	<!-- Cleans up any files created during the execution of this script -->
@@ -58,7 +59,7 @@
 	<!-- Creates a distribution of LWJGL -->
 	<target name="release" description="Creates a distribution of LWJGL using supplied native binaries">
 		<!-- Warn user -->
-        <echo message="Before running the release target, please manually compile all platforms and place required files in ${lwjgl.lib}/windows, ${lwjgl.lib}/linux, ${lwjgl.lib}/freebsd and ${lwjgl.lib}/macosx${line.separator}Missing files will result in a successfull built, but with incomplete release zips"/>
+        <echo message="Before running the release target, please manually compile all platforms and place required files in ${lwjgl.lib}/windows, ${lwjgl.lib}/linux, ${lwjgl.lib}/freebsd, ${lwjgl.lib}/boat and ${lwjgl.lib}/macosx${line.separator}Missing files will result in a successfull built, but with incomplete release zips"/>
         <input
             message="All data in the ${lwjgl.dist} folder will be deleted. Continue? "
             validargs="yes,no"
@@ -265,6 +266,11 @@
 				<patternset refid="lwjgl-solaris.fileset" />
 			</fileset>
 		</copy>
+		<copy todir="${lwjgl.temp}/native/boat">
+			<fileset dir="${lwjgl.lib}/boat">
+				<patternset refid="lwjgl-boat.fileset" />
+			</fileset>
+		</copy>
 
 		<!-- create base package -->
 		<zip destfile="${lwjgl.dist}/lwjgl-${lwjgl.version}.zip">
@@ -310,6 +316,21 @@
 			<class name="org.lwjgl.opengl.LinuxAWTGLCanvasPeerInfo"/>
 			<class name="org.lwjgl.opengl.LinuxContextImplementation"/>
 			<class name="org.lwjgl.opengl.LinuxCanvasImplementation"/>
+		</javah>
+
+		<javah classpath="${lwjgl.bin}" destdir="${lwjgl.src.native}/boat">
+			<class name="org.lwjgl.BoatSysImplementation" />
+			<class name="org.lwjgl.opengl.BoatEvent" />
+			<class name="org.lwjgl.opengl.BoatMouse" />
+			<class name="org.lwjgl.opengl.BoatKeyboard" />
+			<class name="org.lwjgl.opengl.BoatDisplay" />
+			<class name="org.lwjgl.opengl.BoatPeerInfo" />
+		</javah>
+
+		<javah classpath="${lwjgl.bin}" destdir="${lwjgl.src.native}/boat/opengl">
+			<class name="org.lwjgl.opengl.BoatPbufferPeerInfo"/>
+			<class name="org.lwjgl.opengl.BoatDisplayPeerInfo"/>
+			<class name="org.lwjgl.opengl.BoatContextImplementation"/>
 		</javah>
 
 		<javah classpath="${lwjgl.bin}" destdir="${lwjgl.src.native}/windows">
@@ -376,6 +397,7 @@
 	<target name="touch-version">
 		<touch file="${lwjgl.src.native}/windows/org_lwjgl_opengl_Display.c"/>
 		<touch file="${lwjgl.src.native}/linux/org_lwjgl_opengl_Display.c"/>
+		<touch file="${lwjgl.src.native}/boat/org_lwjgl_opengl_Display.c"/>
 		<touch file="${lwjgl.src.native}/macosx/org_lwjgl_opengl_Display.m"/>
 	</target>
 
@@ -388,6 +410,13 @@
 			</filterchain>
 		</loadfile>
 		<loadfile srcfile="${lwjgl.src}/java/org/lwjgl/LinuxSysImplementation.java" property="lwjgl.java.linux.version">
+			<filterchain>
+				<tokenfilter>
+	    		<containsstring contains="JNI_VERSION ="/>
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
+		<loadfile srcfile="${lwjgl.src}/java/org/lwjgl/BoatSysImplementation.java" property="lwjgl.java.boat.version">
 			<filterchain>
 				<tokenfilter>
 	    		<containsstring contains="JNI_VERSION ="/>
@@ -415,6 +444,13 @@
 				</tokenfilter>
 			</filterchain>
 		</loadfile>
+		<loadfile srcfile="${lwjgl.src.native}/boat/org_lwjgl_BoatSysImplementation.h" property="lwjgl.native.boat.version">
+			<filterchain>
+				<tokenfilter>
+	    		<containsstring contains="#define org_lwjgl_BoatSysImplementation_JNI_VERSION"/>
+				</tokenfilter>
+			</filterchain>
+		</loadfile>
 		<loadfile srcfile="${lwjgl.src.native}/macosx/org_lwjgl_MacOSXSysImplementation.h" property="lwjgl.native.macosx.version">
 			<filterchain>
 				<tokenfilter>
@@ -427,6 +463,8 @@
 			lwjgl.native.windows.version = ${lwjgl.native.windows.version}
 			lwjgl.java.linux.version = ${lwjgl.java.linux.version}
 			lwjgl.native.linux.version = ${lwjgl.native.linux.version}
+			lwjgl.java.boat.version = ${lwjgl.java.boat.version}
+			lwjgl.native.boat.version = ${lwjgl.native.boat.version}
 			lwjgl.java.freebsd.version = ${lwjgl.java.linux.version}
 			lwjgl.native.freebsd.version = ${lwjgl.native.linux.version}
 			lwjgl.java.openbsd.version = ${lwjgl.java.linux.version}
@@ -486,9 +524,15 @@
 		<antcall target="-compile_native_win32" />
 
 		<condition property="lwjgl.platform.linux">
-			<os name="Linux" />
+			<and>
+				<os name="Linux" />
+				<not>
+					<isset property="lwjgl.platform.boat" />
+				</not>
+			</and>
 		</condition>
 		<antcall target="-compile_native_linux" />
+		<antcall target="-compile_native_boat" />
 
 		<condition property="lwjgl.platform.freebsd">
 			<os name="FreeBSD" />
@@ -527,6 +571,15 @@
 			<fileset dir="${lwjgl.bin}/lwjgl" includes="liblwjgl*.so"/>
 		</copy>
 		<!-- headless issues <version-check platform="linux"/> -->
+	</target>
+
+	<!-- Compiles LWJGL on Boat platforms -->
+	<target name="-compile_native_boat" if="lwjgl.platform.boat">
+		<ant antfile="platform_build/boat_ant/build.xml" inheritAll="false"/>
+		<copy todir="${lwjgl.lib}/boat">
+			<fileset dir="${lwjgl.bin}/lwjgl" includes="liblwjgl*.so"/>
+		</copy>
+		<!-- headless issues <version-check platform="boat"/> -->
 	</target>
 
 	<!-- Compiles LWJGL on FreeBSD platforms -->
