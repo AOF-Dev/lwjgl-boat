@@ -133,6 +133,8 @@ public final class Sys {
 				return new WindowsSysImplementation();
 			case LWJGLUtil.PLATFORM_MACOSX:
 				return new MacOSXSysImplementation();
+			case LWJGLUtil.PLATFORM_BOAT:
+				return new BoatSysImplementation();
 			default:
 				throw new IllegalStateException("Unsupported platform");
 		}

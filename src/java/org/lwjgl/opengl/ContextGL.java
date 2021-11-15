@@ -90,6 +90,8 @@ final class ContextGL implements Context {
 				return new WindowsContextImplementation();
 			case LWJGLUtil.PLATFORM_MACOSX:
 				return new MacOSXContextImplementation();
+			case LWJGLUtil.PLATFORM_BOAT:
+				return new BoatContextImplementation();
 			default:
 				throw new IllegalStateException("Unsupported platform");
 		}

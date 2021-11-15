@@ -214,6 +214,7 @@ public class Cursor {
 				}
 				break;
 			case LWJGLUtil.PLATFORM_LINUX:
+			case LWJGLUtil.PLATFORM_BOAT:
 				// create our cursor elements
 				Object handle = Mouse.getImplementation().createCursor(width, height, xHotspot, yHotspot, numImages, images_copy, delays);
 				CursorElement cursor_element = new CursorElement(handle, -1, -1);

@@ -127,6 +127,10 @@ public final class AL {
 				libname = "openal";
 				library_names = new String[]{"libopenal64.so", "libopenal.so", "libopenal.so.0"};
 				break;
+			case LWJGLUtil.PLATFORM_BOAT:
+				libname = "openal";
+				library_names = new String[]{"libopenal.so.1"};
+				break;
 			case LWJGLUtil.PLATFORM_MACOSX:
 				libname = "openal";
 				library_names = new String[]{"openal.dylib"};
